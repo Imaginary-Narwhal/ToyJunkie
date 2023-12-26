@@ -1,0 +1,14 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+UI_shared.xsd">
+
+    <Button name="HeaderTemplate" virtual="true" inherits="BackdropTemplate">
+        <Size y="21" />
+        <KeyValues>
+            <KeyValue key = "backdropInfo" value="TJ_HEADER_BACKDROP" type="global" />
+        </KeyValues>
+    </Button>
+
+    <Button name="ToyTemplate" virtual="true" inherits="UIPanelButtonTemplate">
+        <Size y="42"/>
+    </Button>
+</Ui>
