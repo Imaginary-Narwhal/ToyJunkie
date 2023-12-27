@@ -6,12 +6,12 @@ local addonName, L = ...
 
 L.AttachedFrame = CreateFrame("Frame", "ToyJunkie_CollectionAttachedFrame", UIParent, "ButtonFrameTemplate")
 ButtonFrameTemplate_HidePortrait(L.AttachedFrame)
-ButtonFrameTemplate_HideButtonBar(L.AttachedFrame)
 ButtonFrameTemplate_HideAttic(L.AttachedFrame)
+
 L.AttachedFrame.CloseButton:Hide()
 L.AttachedFrame:SetTitle("ToyJunkie")
 L.AttachedFrame:SetSize(300, 500)
-L.AttachedFrame.Inset:SetPoint("BOTTOMRIGHT", -18, 4)
+L.AttachedFrame.Inset:SetPoint("BOTTOMRIGHT", -18, 24)
 L.AttachedFrame:Hide()
 L.AttachedFrame.isAttached = false
 
@@ -67,11 +67,11 @@ function L.AttachedFrame:Toggle()
     end
 end
 
-L.AttachedFrame.ScrollFrame = Mixin(CreateFrame("Frame", "$parent_ScrollFrame", L.AttachedFrame.Inset), AttachedScrollTemplateMixin)
+L.AttachedFrame.ScrollFrame = Mixin(CreateFrame("Frame", "$parent_ScrollFrame", L.AttachedFrame), AttachedScrollTemplateMixin)
 
 --L.AttachedFrame.ScrollFrame = CreateFrame("Frame", "$parent_ScrollFrame", L.AttachedFrame.Inset, "TJ_ScrollFrameTemplate")
-L.AttachedFrame.ScrollFrame:SetPoint("TOPLEFT", 18, -7)
-L.AttachedFrame.ScrollFrame:SetPoint("BOTTOMRIGHT", 0, 5)
+L.AttachedFrame.ScrollFrame:SetPoint("TOPLEFT", L.AttachedFrame.Inset, "TOPLEFT", 18, -7)
+L.AttachedFrame.ScrollFrame:SetPoint("BOTTOMRIGHT", L.AttachedFrame.Inset, "BOTTOMRIGHT", 0, 5)
 L.AttachedFrame.ScrollFrame:OnLoad()
 
 -- Attached Main Frame Scrolling Frame --

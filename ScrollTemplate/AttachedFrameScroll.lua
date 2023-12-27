@@ -4,15 +4,15 @@ local addonName, L = ...
 -- Backdrops --
 ---------------
 
-TJ_HEADER_BACKDROP = {
-    bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-    tile = true,
-    tileEdge = true,
-    tileSize = 8,
-    edgeSize = 8,
-    insets = { left = 1, right = 1, top = 1, bottom = 1 },
-}
+TJ_TOYLISTBACKDROP = {
+	bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+	edgeFile = "Interface\\FriendsFrame\\UI-Toast-Border",
+	tile = true,
+	tileEdge = true,
+	tileSize = 12,
+	edgeSize = 12,
+	insets = { left = 5, right = 5, top = 5, bottom = 5 },
+};
 
 
 AttachedScrollTemplateMixin = {}
@@ -20,26 +20,35 @@ AttachedScrollTemplateMixin = {}
 local ItemListMixin = CreateFromMixins(CallbackRegistryMixin)
 ItemListMixin:GenerateCallbackEvents(
     {
-        "OnClick",
+        "OnMouseDown",
     }
 )
 
 function ItemListMixin:OnLoad()
     CallbackRegistryMixin.OnLoad(self)
-    self:SetScript("OnClick", self.OnClick)
+    self:SetScript("OnMouseDown", self.OnClick)
 end
 
 function ItemListMixin:OnClick()
-    self:TriggerEvent("OnClick", self)
+    self:TriggerEvent("OnMouseDown", self)
 end
 
 function ItemListMixin:Init(elementData)
-    print(elementData.name)
-    self:SetText(elementData.name)
-    if(elementData.isHeader) then
-        --is collapsed set possible plus/minus icon
+    if(elementData.name == "Bat Visage Bobber") then
+        but = self
     end
-    --self:Icon thingy
+    self.Text:SetText(elementData.name)
+    self.icon:SetTexture(elementData.icon)
+    if(elementData.isHeader) then
+        if(elementData.isCollapsed) then
+            self.expandIcon:SetTexture(130838)
+        else
+            self.expandIcon:SetTexture(130821)
+        end
+    else
+        self:SetBackdrop(TJ_TOYLISTBACKDROP)
+        self:SetBackdropColor(0, 0, 1, .5)
+    end
 end
 
 local ListMixin = {}
@@ -49,28 +58,16 @@ function ListMixin:OnLoad()
     self.scrollView = CreateScrollBoxListLinearView()
     self.scrollView:SetElementFactory(function(factory, data)
         if(data.isHeader) then
-            factory("HeaderTemplate", function(button, data)
-                if(not button.OnLoad) then
-                    Mixin(button, ItemListMixin)
-                    button:OnLoad()
-                end
-
-                button:Init(data)
-                button:RegisterCallback("OnClick", self.OnElementClicked, self)
+            factory("TJ_ToyBoxHeaderTemplate", function(button, data)
+                self:OnElementInitialize(button, data)
             end)
         else
-            factory("ToyTemplate", function(button, data)
-                if(not button.OnLoad) then
-                    Mixin(button, ItemListMixin)
-                    button:OnLoad()
-                end
-
-                button:Init(data)
-                button:RegisterCallback("OnClick", self.OnElementClicked, self)
+            factory("TJ_ToyTemplate", function(button, data)
+                self:OnElementInitialize(button, data)
             end)
         end
     end)
-    self.scrollView:SetElementResetter(GenerateClosure(self.OnElementReset), self)
+    self.scrollView:SetElementResetter(GenerateClosure(self.OnElementReset, self))
 
     self.scrollBox = CreateFrame("Frame", "$parent_ScrollBox", self, "WowScrollBoxList")
     self.scrollBox:SetPoint("TOPLEFT")
@@ -83,16 +80,61 @@ function ListMixin:OnLoad()
     ScrollUtil.InitScrollBoxWithScrollBar(self.scrollBox, self.scrollBar, self.scrollView)
 end
 
+function ListMixin:OnElementInitialize(element, elementData)
+    if(not element.OnLoad) then
+        Mixin(element, ItemListMixin)
+        element:OnLoad()
+    end
+    element:Init(elementData)
+    element:RegisterCallback("OnMouseDown", self.OnElementClicked, self)
+end
+
 function ListMixin:OnElementReset(element)
-    element:UnregisterCallback("OnClick", self)
+    element:UnregisterCallback("OnMouseDown", self)
 end
 
 function ListMixin:OnElementClicked(element)
-    print("Clicked")
+    bub = self
+    local data = element.GetData()
+    if(data.isHeader) then
+        for key, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
+            if(key == data.id) then
+                L.ToyJunkie.db.profile.boxes[key].isCollapsed = not data.isCollapsed
+            else
+                L.ToyJunkie.db.profile.boxes[key].isCollapsed = true
+            end
+        end
+        
+        self:Refresh()
+    else
+        --clicked toy
+    end
+end
+
+function ListMixin:Refresh()
+    if(L.ToyJunkie.db.profile.boxes ~= nil) then
+        local data = self.scrollView.dataProvider
+        data:Flush()
+        for id, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
+            data:InsertTable({
+                { id = id, name = toyBox.name, isHeader = true, isCollapsed = toyBox.isCollapsed, icon = toyBox.icon }
+            })
+            if(not toyBox.isCollapsed) then
+                for _, toyId in pairs(toyBox.toys) do
+                    local _, toyName, toyIcon = C_ToyBox.GetToyInfo(toyId)
+                    data:InsertTable({
+                        { name = toyName, isHeader = false, icon = toyIcon }
+                    })
+                end
+            end
+        end
+    end
 end
 
 function ListMixin:GetDataProvider()
-    return self.scrollView:GetDataProvider()
+    if(self ~= nil) then
+        return self.scrollView:GetDataProvider()
+    end
 end
 
 function ListMixin:SetDataProvider(dataProvider)
@@ -101,12 +143,7 @@ end
 
 function AttachedScrollTemplateMixin:OnLoad()
     self.dataProvider = CreateDataProvider()
-    self.dataProvider:InsertTable(
-        {
-            { name = "Toy Header", isHeader = true },
-            --{ name = "Toy 1", isHeader = false}
-        }
-    )
+
     self.listView = Mixin(CreateFrame("Frame", nil, self), ListMixin)
     self.listView:OnLoad()
     self.listView:SetDataProvider(self.dataProvider)

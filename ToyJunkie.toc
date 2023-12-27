@@ -21,17 +21,14 @@ Libs\AceConfig-3.0\AceConfig-3.0.xml
 Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 Libs\LibDBIcon-1.0\lib.xml
 
+Config.lua
+Functions.lua
+Core.lua
+
 ScrollTemplate\AttachedFrameScroll.lua
 ScrollTemplate\templates.xml
 
-Config.lua
-Functions.lua
-
-#Windows\ScrollTemplate.xml
 Windows\CollectionAttachedWindow.lua
-
 #Windows\ToyboxWindow.lua
-
-Core.lua
 
 #stuff.lua

@@ -30,7 +30,7 @@ function SelectionDemoListItemMixin:OnClick()
 end
 
 function SelectionDemoListItemMixin:Init(elementData)
-    self:SetText(elementData.text);
+    self.Text:SetText(elementData.text);
     self:SetSelected(elementData.selected);
 end
 
@@ -53,11 +53,11 @@ function SelectionDemoListMixin:OnLoad()
     self.scrollView = CreateScrollBoxListLinearView();
     self.scrollView:SetElementFactory(function(factory, data)
         if(data.isHeader) then
-            factory("HeaderTemplate", function(button, data)
+            factory("TJ_ToyBoxHeaderTemplate", function(button, data)
                 self:OnElementInitialize(button, data)
             end)
         else
-            factory("ToyTemplate", function(button, data)
+            factory("TJ_ToyTemplate", function(button, data)
                 self:OnElementInitialize(button, data)
             end)
         end
@@ -78,8 +78,6 @@ function SelectionDemoListMixin:OnLoad()
 
     self.selectionBehavior = ScrollUtil.AddSelectionBehavior(self.scrollBox);
     self.selectionBehavior:RegisterCallback("OnSelectionChanged", self.OnElementSelectionChanged, self);
-
-    demo = self
 end
 
 function SelectionDemoListMixin:OnElementInitialize(element, elementData)

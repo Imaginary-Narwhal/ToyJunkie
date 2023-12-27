@@ -35,6 +35,23 @@ function L.ToyJunkie:OnInitialize()
 end
 
 function L.ToyJunkie:OnEnable()
+    L.AttachedFrame.ScrollFrame.listView:Refresh()
+    ----------------------------------
+    -- Update old profile if needed --
+
+    if(L.ToyJunkie.db.profile.boxes ~= nil) then
+        for key, toybox in pairs(L.ToyJunkie.db.profile.boxes) do
+            if(toybox.isCollapsed == nil) then
+                toybox.isCollapsed = false
+            end
+            if(toybox.icon == nil) then
+                toybox.icon = 454046
+            end
+        end
+    end
+    ----------------------------------
+
+
     self:RegisterEvent("TOYS_UPDATED")
     --self:RegisterEvent("PLAYER_REGEN_DISABLED")
     --self:RegisterEvent("PLAYER_REGEN_ENABLED")

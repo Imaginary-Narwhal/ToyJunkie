@@ -37,6 +37,11 @@
         "CreateScrollBoxListLinearView",
         "GenerateClosure",
         "CreateDataProvider",
-        "ScrollUtil"
+        "ScrollUtil",
+        "HybridScrollFrame_Update",
+        "HybridScrollFrame_GetButtons",
+        "HybridScrollFrame_GetOffset",
+        "HybridScrollFrame_CreateButtons",
+        "ScrollBoxConstants"
     ]
 }
