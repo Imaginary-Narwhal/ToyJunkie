@@ -29,16 +29,18 @@ function ItemListMixin:OnLoad()
     self:SetScript("OnMouseDown", self.OnClick)
 end
 
-function ItemListMixin:OnClick()
-    self:TriggerEvent("OnMouseDown", self)
+function ItemListMixin:OnClick(button)
+    self:TriggerEvent("OnMouseDown", self, button)
 end
 
 function ItemListMixin:Init(elementData)
-    if(elementData.name == "Bat Visage Bobber") then
-        but = self
+    if(elementData.isHeader) then
+        self.Text:SetText(elementData.name)
+        self.icon:SetTexture(elementData.icon)
+    else
+        self.toyCard.Text:SetText(elementData.name)
+        self.icon.texture:SetTexture(elementData.icon)
     end
-    self.Text:SetText(elementData.name)
-    self.icon:SetTexture(elementData.icon)
     if(elementData.isHeader) then
         if(elementData.isCollapsed) then
             self.expandIcon:SetTexture(130838)
@@ -46,8 +48,8 @@ function ItemListMixin:Init(elementData)
             self.expandIcon:SetTexture(130821)
         end
     else
-        self:SetBackdrop(TJ_TOYLISTBACKDROP)
-        self:SetBackdropColor(0, 0, 1, .5)
+        self.toyCard:SetBackdrop(TJ_TOYLISTBACKDROP)
+        self.toyCard:SetBackdropColor(0, 0, 1, .5)
     end
 end
 
@@ -93,8 +95,8 @@ function ListMixin:OnElementReset(element)
     element:UnregisterCallback("OnMouseDown", self)
 end
 
-function ListMixin:OnElementClicked(element)
-    bub = self
+function ListMixin:OnElementClicked(element, button)
+    el = element
     local data = element.GetData()
     if(data.isHeader) then
         for key, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
@@ -107,7 +109,7 @@ function ListMixin:OnElementClicked(element)
         
         self:Refresh()
     else
-        --clicked toy
+        L.ToyJunkie:Print(button .. " - clicked toy")
     end
 end
 

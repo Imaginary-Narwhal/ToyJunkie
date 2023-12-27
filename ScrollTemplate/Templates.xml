@@ -8,10 +8,10 @@ UI_shared.xsd">
         </KeyValues>
         <Layers>
             <Layer level="ARTWORK">
-                <FontString parentKey="Text" inherits="GameFontNormalLeft" wordwrap="false">
+                <FontString parentKey="Text" inherits="GameFontWhite" justifyH="LEFT" wordwrap="false">
                     <Anchors>
-                        <Anchor point="TOPLEFT" x="47" y="2"/>
-                        <Anchor point="BOTTOMRIGHT" x="-4" y="1"/>
+                        <Anchor point="TOPLEFT" x="50" y="0"/>
+                        <Anchor point="BOTTOMRIGHT" x="-4" y="0"/>
                     </Anchors>
                 </FontString>
             </Layer>
@@ -32,25 +32,41 @@ UI_shared.xsd">
         </Layers>
     </Button>
 
-    <Button name="TJ_ToyTemplate" virtual="true" inherits="BackdropTemplate">
+    <Button name="TJ_ToyTemplate" virtual="true">
         <Size y="42"/>
-        <Layers>
-            <Layer level="ARTWORK">
-                <FontString parentKey="Text" inherits="GameFontNormalLeft" wordwrap="true">
-                    <Anchors>
-                        <Anchor point="TOPLEFT" x="47" y="2"/>
-                        <Anchor point="BOTTOMRIGHT" x="-10" y="2"/>
-                    </Anchors>
-                </FontString>
-            </Layer>
-            <Layer level="BORDER">
-                <Texture parentKey="icon">
-                    <Size x="32" y="32"/>
-                    <Anchors>
-                        <Anchor point="LEFT" x="10" y="0.5"/>
-                    </Anchors>
-                </Texture>
-            </Layer>
-        </Layers>
+        <Frames>
+            <Frame parentKey="icon">
+                <Size x="35" y="35"/>
+                <Anchors>
+                    <Anchor point="LEFT" x="0"/>
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture parentKey="texture">
+                            <Size x="32" y="32"/>
+                            <Anchors>
+                                <Anchor point="LEFT" x="10" y="0.5"/>
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Frame>
+            <Frame parentKey="toyCard" inherits="BackdropTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="21" y="0"/>
+                    <Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" wordwrap="true">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" x="27" y="0"/>
+                                <Anchor point="BOTTOMRIGHT" x="-10" y="0"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
+        </Frames>
     </Button>
 </Ui>
