@@ -35,7 +35,6 @@ function L.ToyJunkie:OnInitialize()
 end
 
 function L.ToyJunkie:OnEnable()
-    L.AttachedFrame.ScrollFrame.listView:Refresh()
     ----------------------------------
     -- Update old profile if needed --
 
@@ -46,6 +45,14 @@ function L.ToyJunkie:OnEnable()
             end
             if(toybox.icon == nil) then
                 toybox.icon = 454046
+            end
+            if(toybox.toyColor == nil) then
+                toybox.toyColor = {
+                    red = 0.0,
+                    green = 0.0,
+                    blue = 1.0,
+                    alpha = 0.25
+                }
             end
         end
     end
@@ -78,7 +85,7 @@ function L.ToyJunkie:TOYS_UPDATED()
             L.AttachedFrame:SetFrame()
         end
     end
-
+    L.AttachedFrame.ScrollFrame.listView:Refresh()
     --[[if(L.ToyJunkie.db.profile.selectedToybox == nil) then
         if(#L.ToyJunkie.db.profile.boxes > 0) then
             L:ToyJunkieToyboxSelectedChange(1)

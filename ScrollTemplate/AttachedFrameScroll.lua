@@ -49,7 +49,7 @@ function ItemListMixin:Init(elementData)
         end
     else
         self.toyCard:SetBackdrop(TJ_TOYLISTBACKDROP)
-        self.toyCard:SetBackdropColor(0, 0, 1, .5)
+        self.toyCard:SetBackdropColor(L:GetBackdropColorByToyboxId(elementData.toyBoxId))
     end
 end
 
@@ -96,27 +96,41 @@ function ListMixin:OnElementReset(element)
 end
 
 function ListMixin:OnElementClicked(element, button)
-    el = element
     local data = element.GetData()
     if(data.isHeader) then
-        for key, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
-            if(key == data.id) then
-                L.ToyJunkie.db.profile.boxes[key].isCollapsed = not data.isCollapsed
-            else
-                L.ToyJunkie.db.profile.boxes[key].isCollapsed = true
+        if(button == "LeftButton") then
+            for key, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
+                if(key == data.id) then
+                    L.ToyJunkie.db.profile.boxes[key].isCollapsed = not data.isCollapsed
+                else
+                    if(not L.ToyJunkie.db.profile.allowMultipleBoxesOpen) then
+                        L.ToyJunkie.db.profile.boxes[key].isCollapsed = true
+                    end
+                end
             end
+            self:Refresh()
+        elseif (button == "RightButton") then
+            local headerMenu = {
+                name = "headerContextMenu",
+                parent = element,
+                title = "Header Options",
+                items = {
+                    "Edit Toy Box",
+                    (data.isCollapsed) and "Expand" or "Collapse",
+                    "Close"
+                }
+            }
+            local headerContext = L:CreateContextMenu(headerMenu)
+            ToggleDropDownMenu(1, nil, headerContext, "cursor", 10, 5)
         end
-        
-        self:Refresh()
     else
-        L.ToyJunkie:Print(button .. " - clicked toy")
+        
     end
 end
 
 function ListMixin:Refresh()
     if(L.ToyJunkie.db.profile.boxes ~= nil) then
-        local data = self.scrollView.dataProvider
-        data:Flush()
+        local data = CreateDataProvider()
         for id, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
             data:InsertTable({
                 { id = id, name = toyBox.name, isHeader = true, isCollapsed = toyBox.isCollapsed, icon = toyBox.icon }
@@ -125,11 +139,12 @@ function ListMixin:Refresh()
                 for _, toyId in pairs(toyBox.toys) do
                     local _, toyName, toyIcon = C_ToyBox.GetToyInfo(toyId)
                     data:InsertTable({
-                        { name = toyName, isHeader = false, icon = toyIcon }
+                        { name = toyName, isHeader = false, icon = toyIcon, toyBoxId = id }
                     })
                 end
             end
         end
+        self.scrollView:SetDataProvider(data, ScrollBoxConstants.RetainScrollPosition)
     end
 end
 
@@ -148,7 +163,7 @@ function AttachedScrollTemplateMixin:OnLoad()
 
     self.listView = Mixin(CreateFrame("Frame", nil, self), ListMixin)
     self.listView:OnLoad()
-    self.listView:SetDataProvider(self.dataProvider)
+    self.listView:SetDataProvider(self.dataProvider, true)
     self.listView:SetPoint("TOPLEFT")
     self.listView:SetPoint("BOTTOMRIGHT")
 end

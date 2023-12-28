@@ -30,7 +30,8 @@ L.defaults = {
         addonCompartment = true,
         boxes = {
             
-        }
+        },
+        allowMultipleBoxesOpen = false,
     }
 }
 
