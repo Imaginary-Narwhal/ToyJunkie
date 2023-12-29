@@ -115,11 +115,34 @@ function ListMixin:OnElementClicked(element, button)
                 parent = element,
                 title = "Header Options",
                 items = {
-                    "Edit Toy Box",
-                    (data.isCollapsed) and "Expand" or "Collapse",
-                    "Close"
+                    {
+                        text = "Edit Toy Box",
+                        func = function()
+                            local box = L.ToyJunkie.db.profile.boxes[data.id]
+                            L.ToyboxEditFrame:EditToy(box)
+                        end
+                    },
+                    {
+                        text = (data.isCollapsed) and "Expand" or "Collapse",
+                        func = function()
+                            for key, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
+                                if(key == data.id) then
+                                    L.ToyJunkie.db.profile.boxes[key].isCollapsed = not data.isCollapsed
+                                else
+                                    if(not L.ToyJunkie.db.profile.allowMultipleBoxesOpen) then
+                                        L.ToyJunkie.db.profile.boxes[key].isCollapsed = true
+                                    end
+                                end
+                            end
+                            self:Refresh()
+                        end
+                    },
+                    {
+                        text = "Close"
+                    }
                 }
             }
+
             local headerContext = L:CreateContextMenu(headerMenu)
             ToggleDropDownMenu(1, nil, headerContext, "cursor", 10, 5)
         end
