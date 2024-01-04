@@ -30,6 +30,67 @@ UI_shared.xsd">
                 </Texture>
             </Layer>
         </Layers>
+        <Frames>
+            <EditBox parentKey="RenameBox" inherits="InputBoxTemplate" autoFocus="false">
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="54" y="0"/>
+                    <Anchor point="BOTTOMRIGHT" x="-8" y="0"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        self:Hide()
+                    </OnLoad>
+                </Scripts>
+                <Frames>
+                    <Button parentKey="Cancel">
+                        <Size x="16" y="16"/>
+                        <NormalTexture atlas="Radial_Wheel_Icon_Close"/>
+                        <Anchors>
+                            <Anchor Point="RIGHT" x="-4" y="-1"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnEnter>
+                                GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                                GameTooltip:AddLine("Cancel")
+                                GameTooltip:Show()
+                            </OnEnter>
+                            <OnLeave>
+                                GameTooltip:Hide()
+                            </OnLeave>
+                        </Scripts>
+                    </Button>
+                    <Button parentKey="Submit">
+                        <Size x="16" y="16"/>
+                        <Layers>
+                            <Layer level="ARTWORK">
+                                <Texture parentKey="Texture" atlas="orderhalltalents-done-checkmark">
+                                    <Size x="16" y="16"/>                                    
+                                </Texture>
+                            </Layer>
+                        </Layers>
+                        <Anchors>
+                            <Anchor Point="RIGHT" x="-22" y="-1"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnEnter>
+                                GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                                GameTooltip:AddLine("Okay")
+                                GameTooltip:Show()
+                            </OnEnter>
+                            <OnLeave>
+                                GameTooltip:Hide()
+                            </OnLeave>
+                            <OnDisable>
+                                self.Texture:SetVertexColor(.2,.2,.2,1)
+                            </OnDisable>
+                            <OnEnable>
+                                self.Texture:SetVertexColor(1,1,1,1)
+                            </OnEnable>
+                        </Scripts>
+                    </Button>
+                </Frames>
+            </EditBox>
+        </Frames>
     </Button>
 
     <Button name="TJ_ToyTemplate" virtual="true">
@@ -68,5 +129,9 @@ UI_shared.xsd">
                 </Layers>
             </Frame>
         </Frames>
+    </Button>
+
+    <Button name="TJ_IconSelector" virtual="true">
+        
     </Button>
 </Ui>
