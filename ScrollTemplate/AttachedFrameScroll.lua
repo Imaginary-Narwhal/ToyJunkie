@@ -1,7 +1,8 @@
 local addonName, L = ...
 
 local renamingToybox = false
-
+local searchText = ""
+local colorPickerToyBoxId = nil
 
 local function ValidateName(newName, oldName)
     local changes = 0 -- 0 = invalid, 1 = duplicate, 2 = valid
@@ -17,7 +18,7 @@ local function ValidateName(newName, oldName)
     return changes
 end
 
-invalidFrame = CreateFrame("Frame", "ToyJunkie_InvalidNameFrame", UIParent, "BackdropTemplate")
+local invalidFrame = CreateFrame("Frame", "ToyJunkie_InvalidNameFrame", UIParent, "BackdropTemplate")
 invalidFrame:SetBackdrop({
     bgFile = "Interface\\FriendsFrame\\UI-Toast-Background",
     edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -35,6 +36,32 @@ invalidFrame.Text:SetAllPoints()
 invalidFrame.Text:SetText("That toy box name already exists")
 invalidFrame.Text:SetTextColor(1, 0, 0, 1)
 invalidFrame:Hide()
+
+local function toyColorCallback(restore)
+    local newR, newG, newB, newA
+    if(restore) then
+        newR, newG, newB, newA = unpack(restore)
+    else
+        newA, newR, newG, newB = OpacitySliderFrame:GetValue(), ColorPickerFrame:GetColorRGB()
+    end
+    L.ToyJunkie.db.profile.boxes[colorPickerToyBoxId].toyColor.red = newR
+    L.ToyJunkie.db.profile.boxes[colorPickerToyBoxId].toyColor.green = newG
+    L.ToyJunkie.db.profile.boxes[colorPickerToyBoxId].toyColor.blue = newB
+    L.ToyJunkie.db.profile.boxes[colorPickerToyBoxId].toyColor.alpha = newA
+    L.AttachedFrame.ScrollFrame.listView:Refresh()
+end
+
+local function ShowColorPicker(r, g, b, a, changedCallBack)
+    ColorPickerFrame.hasOpacity, ColorPickerFrame.opacity = (a ~= nil), a
+    ColorPickerFrame.previousValues = {r,g,b,a}
+    ColorPickerFrame.func, ColorPickerFrame.opacityFunc, ColorPickerFrame.cancelFunc = changedCallBack, changedCallBack, changedCallBack
+    ColorPickerFrame:SetColorRGB(r,g,b)
+    ColorPickerFrame:Hide()
+    L.ToyJunkie.colorPickerOpened = true
+    ColorPickerFrame:ClearAllPoints()
+    ColorPickerFrame:SetPoint("TOPLEFT", L.AttachedFrame, "TOPRIGHT", 5, 0)
+    ColorPickerFrame:Show()
+end
 ---------------
 -- Backdrops --
 ---------------
@@ -144,6 +171,39 @@ function ListMixin:OnLoad()
     self.scrollBar:SetPoint("TOPLEFT", self.scrollBox, "TOPRIGHT", 8, 0)
     self.scrollBar:SetPoint("BOTTOMLEFT", self.scrollBox, "BOTTOMRIGHT", 8, 0)
 
+    self.searchBar = CreateFrame("EditBox", "$parent_SearchBar", self, "InputBoxTemplate")
+    self.searchBar:SetPoint("BOTTOMLEFT", 5, -38)
+    self.searchBar:SetSize(150,40)
+    self.searchBar:SetAutoFocus(false)
+    self.searchBar:SetScript("OnTextChanged", function(self)
+        if(self:GetText() == "") then
+            self.Placeholder:Show()
+        else
+            self.Placeholder:Hide()
+        end
+        searchText = self:GetText()
+        self:GetParent():Refresh()
+    end)
+    self.searchBar.Placeholder = self.searchBar:CreateFontString("SearchPlaceholder", "OVERLAY", "GameFontDisable")
+    self.searchBar.Placeholder:SetText("Search")
+    self.searchBar.Placeholder:SetPoint("LEFT", 0, 0)
+    self.searchBar.Placeholder:SetAlpha(.5)
+    self.searchBar.ClearButton = CreateFrame("Button", "$parent_ClearButton", self.searchBar)
+    self.searchBar.ClearButton:SetSize(14,14)
+    self.searchBar.ClearButton:SetNormalAtlas("Radial_Wheel_Icon_Close")
+    self.searchBar.ClearButton:SetPoint("RIGHT", -4, 0)
+    self.searchBar.ClearButton:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:AddLine("Clear search bar")
+        GameTooltip:Show()
+    end)
+    self.searchBar.ClearButton:SetScript("OnLeave", function(self)
+        GameTooltip:Hide()
+    end)
+    self.searchBar.ClearButton:SetScript("OnClick", function(self, button)
+        self:GetParent():SetText("")
+    end)
+
     ScrollUtil.InitScrollBoxWithScrollBar(self.scrollBox, self.scrollBar, self.scrollView)
 end
 
@@ -221,10 +281,12 @@ function ListMixin:OnElementClicked(element, button)
                     {
                         name = "headerContextMenu",
                         parent = element,
-                        title = "Header Options",
+                        title = "Toy box Options",
                         items = {
                             {
                                 text = "Rename",
+                                tooltipTitle="Rename",
+                                tooltipText="Rename the toy box",
                                 func = function()
                                     element.Text:Hide()
                                     element.RenameBox:SetText(data.name)
@@ -236,14 +298,20 @@ function ListMixin:OnElementClicked(element, button)
                             },
                             {
                                 text = "Change Icon",
+                                tooltipTitle = "Change Icon",
+                                tooltipText = "Change the toy box icon",
                                 func = function()
                                     --do stuff
                                 end
                             },
                             {
                                 text = "Change Toy Colors",
+                                tooltipTitle = "Change toy color",
+                                tooltipText = "Change the background color of the toys in this toy box",
                                 func = function()
-                                    --do stuff
+                                    local colors = L.ToyJunkie.db.profile.boxes[data.id].toyColor
+                                    colorPickerToyBoxId = data.id
+                                    ShowColorPicker(colors.red, colors.green, colors.blue, colors.alpha, toyColorCallback)
                                 end
                             },
                             {
@@ -255,7 +323,7 @@ function ListMixin:OnElementClicked(element, button)
                                 tooltipTitle = "Delete toy box",
                                 tooltipWarning = "Hold SHIFT to delete this toy box",
                                 func = function()
-                                    if(IsShiftKeyDown()) then
+                                    if (IsShiftKeyDown()) then
                                         table.remove(L.ToyJunkie.db.profile.boxes, data.id)
                                         self:Refresh()
                                     end
@@ -279,25 +347,32 @@ function ListMixin:OnElementClicked(element, button)
 end
 
 function ListMixin:Refresh()
-    temp = self
     if (L.ToyJunkie.db.profile.boxes ~= nil) then
         local data = CreateDataProvider()
         for id, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
-            data:InsertTable({
-                {
-                    id = id,
-                    name = toyBox.name,
-                    isHeader = true,
-                    isCollapsed = toyBox.isCollapsed,
-                    icon = toyBox.icon
-                }
-            })
-            if (not toyBox.isCollapsed) then
-                for _, toyId in pairs(toyBox.toys) do
-                    local _, toyName, toyIcon = C_ToyBox.GetToyInfo(toyId)
-                    data:InsertTable({
-                        { name = toyName, isHeader = false, icon = toyIcon, toyBoxId = id }
-                    })
+            local excludeToybox = false
+            if (searchText ~= "") then
+                if(not L:strContains(toyBox.name, searchText)) then
+                    excludeToybox = true
+                end
+            end
+            if (not excludeToybox) then
+                data:InsertTable({
+                    {
+                        id = id,
+                        name = toyBox.name,
+                        isHeader = true,
+                        isCollapsed = toyBox.isCollapsed,
+                        icon = toyBox.icon
+                    }
+                })
+                if (not toyBox.isCollapsed) then
+                    for _, toyId in pairs(toyBox.toys) do
+                        local _, toyName, toyIcon = C_ToyBox.GetToyInfo(toyId)
+                        data:InsertTable({
+                            { name = toyName, isHeader = false, icon = toyIcon, toyBoxId = id }
+                        })
+                    end
                 end
             end
         end

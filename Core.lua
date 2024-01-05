@@ -1,5 +1,7 @@
 local addonName, L = ...
 
+L.ToyJunkie.colorPickerOpened = false
+
 function L.ToyJunkie:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("ToyJunkieDB", L.defaults, true)
     L.ToyJunkie:ConfigurationInitialize(self)
@@ -62,6 +64,8 @@ function L.ToyJunkie:OnEnable()
     self:RegisterEvent("TOYS_UPDATED")
     --self:RegisterEvent("PLAYER_REGEN_DISABLED")
     --self:RegisterEvent("PLAYER_REGEN_ENABLED")
+    
+    L.ToyJunkie:SecureHookScript(ColorPickerFrame, "OnHide", "ColorPickerFrame_OnHide_Hook")
 end
 
 function L.ToyJunkie:TJCommand(msg)
@@ -96,4 +100,12 @@ function L.ToyJunkie:TOYS_UPDATED()
         L:ToyJunkieToyboxSelectedChange(L.ToyJunkie.db.profile.selectedToybox)
     end
     L:CheckCooldowns()]]
+end
+
+function L.ToyJunkie:ColorPickerFrame_OnHide_Hook()
+    if(L.ToyJunkie.colorPickerOpened) then
+        ColorPickerFrame:ClearAllPoints()
+        ColorPickerFrame:SetPoint("CENTER")
+        L.ToyJunkie.colorPickerOpened = false
+    end
 end

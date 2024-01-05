@@ -50,6 +50,14 @@
         "UIDropDownMenu_AddButton",
         "UIDropDownMenu_CreateInfo",
         "UIDropDownMenu_SetSelectedValue",
-        "ToggleDropDownMenu"
+        "ToggleDropDownMenu",
+        "CollectionsJournal",
+        "CollectionsJournal_OnHide",
+        "UISpecialFrames",
+        "BACKGROUND",
+        "UIDropDownMenu_AddSeparator",
+        "GetText",
+        "BACKDROP_TUTORIAL_16_16",
+        "GameFontDisable"
     ]
 }

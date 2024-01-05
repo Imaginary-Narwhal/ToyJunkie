@@ -1,6 +1,6 @@
 local addonName, L = ...
 
-L.ToyJunkie = LibStub("AceAddon-3.0"):NewAddon("ToyJunkie","AceConsole-3.0", "AceEvent-3.0")
+L.ToyJunkie = LibStub("AceAddon-3.0"):NewAddon("ToyJunkie","AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0")
 L.ToyJunkie.Icon = LibStub("LibDBIcon-1.0")
 
 local AC = LibStub("AceConfig-3.0")

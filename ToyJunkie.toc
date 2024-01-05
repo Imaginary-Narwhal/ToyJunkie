@@ -20,15 +20,18 @@ Libs\AceGUI-3.0\AceGUI-3.0.xml
 Libs\AceConfig-3.0\AceConfig-3.0.xml
 Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 Libs\LibDBIcon-1.0\lib.xml
+Libs\AceHook-3.0\AceHook-3.0.xml
 
 Config.lua
 Functions.lua
+Data\Icons.lua
 Core.lua
 
 ScrollTemplate\AttachedFrameScroll.lua
 ScrollTemplate\templates.xml
 
 Windows\CollectionAttachedWindow.lua
+#Windows\ToyboxEditWindow.lua
 #Windows\ToyboxWindow.lua
 
 #stuff.lua
