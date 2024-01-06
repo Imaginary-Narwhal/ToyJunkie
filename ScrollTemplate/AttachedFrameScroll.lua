@@ -1,8 +1,9 @@
 local addonName, L = ...
 
-local renamingToybox = false
 local searchText = ""
 local colorPickerToyBoxId = nil
+local iconToyBoxId = nil
+L.ToyJunkie.noInteraction = false
 
 local function ValidateName(newName, oldName)
     local changes = 0 -- 0 = invalid, 1 = duplicate, 2 = valid
@@ -58,6 +59,7 @@ local function ShowColorPicker(r, g, b, a, changedCallBack)
     ColorPickerFrame:SetColorRGB(r,g,b)
     ColorPickerFrame:Hide()
     L.ToyJunkie.colorPickerOpened = true
+    L.ToyJunkie.noInteraction = true
     ColorPickerFrame:ClearAllPoints()
     ColorPickerFrame:SetPoint("TOPLEFT", L.AttachedFrame, "TOPRIGHT", 5, 0)
     ColorPickerFrame:Show()
@@ -129,17 +131,14 @@ function ItemListMixin:Init(elementData)
     if (elementData.isHeader) then
         self.Text:SetText(elementData.name)
         self.icon:SetTexture(elementData.icon)
-    else
-        self.toyCard.Text:SetText(elementData.name)
-        self.icon.texture:SetTexture(elementData.icon)
-    end
-    if (elementData.isHeader) then
         if (elementData.isCollapsed) then
             self.expandIcon:SetTexture(130838)
         else
             self.expandIcon:SetTexture(130821)
         end
     else
+        self.toyCard.Text:SetText(elementData.name)
+        self.icon.texture:SetTexture(elementData.icon)
         self.toyCard:SetBackdrop(TJ_TOYLISTBACKDROP)
         self.toyCard:SetBackdropColor(L:GetBackdropColorByToyboxId(elementData.toyBoxId))
     end
@@ -229,7 +228,7 @@ end
 function ListMixin:OnEditCancelMouseDown(element)
     element:GetParent():Hide()
     element:GetParent():GetParent().Text:Show()
-    renamingToybox = false
+    L.ToyJunkie.noInteraction = false
     invalidFrame:ClearAllPoints()
     invalidFrame:Hide()
 end
@@ -238,7 +237,7 @@ function ListMixin:OnEditSubmitMouseDown(element)
     L.ToyJunkie.db.profile.boxes[element:GetParent():GetParent():GetData().id].name = element:GetParent():GetText()
     element:GetParent():Hide()
     element:GetParent():GetParent().Text:Show()
-    renamingToybox = false
+    L.ToyJunkie.noInteraction = false
     self:Refresh()
 end
 
@@ -262,7 +261,7 @@ function ListMixin:OnEditTextChanged(renameBox, human)
 end
 
 function ListMixin:OnElementClicked(element, button)
-    if (not renamingToybox) then
+    if (not L.ToyJunkie.noInteraction) then
         local data = element.GetData()
         if (data.isHeader) then
             if (button == "LeftButton") then
@@ -293,7 +292,7 @@ function ListMixin:OnElementClicked(element, button)
                                     element.RenameBox:Show()
                                     element.RenameBox:SetFocus()
                                     element.RenameBox.Submit:Disable()
-                                    renamingToybox = true
+                                    L.ToyJunkie.noInteraction = true
                                 end
                             },
                             {
@@ -301,7 +300,9 @@ function ListMixin:OnElementClicked(element, button)
                                 tooltipTitle = "Change Icon",
                                 tooltipText = "Change the toy box icon",
                                 func = function()
-                                    --do stuff
+                                    L.AttachedFrame.IconSelectionFrame:Show()
+                                    iconToyBoxId = data.id
+                                    L.ToyJunkie.noInteraction = true
                                 end
                             },
                             {
@@ -395,7 +396,7 @@ function AttachedScrollTemplateMixin:OnLoad()
 
     self.listView = Mixin(CreateFrame("Frame", nil, self), ListMixin)
     self.listView:OnLoad()
-    self.listView:SetDataProvider(self.dataProvider, true)
+    self.listView:SetDataProvider(self.dataProvider)
     self.listView:SetPoint("TOPLEFT")
     self.listView:SetPoint("BOTTOMRIGHT")
 end
@@ -442,4 +443,11 @@ function AttachedScrollTemplateMixin:AddToybox()
     end
     self.listView:Refresh()
     self.listView.scrollBox:ScrollToBegin()
+end
+
+function AttachedScrollTemplateMixin:UpdateIcon(newId)
+    if(iconToyBoxId ~= nil) then
+        L.ToyJunkie.db.profile.boxes[iconToyBoxId].icon = newId
+        L.AttachedFrame.ScrollFrame.listView:Refresh()
+    end
 end

@@ -1,5 +1,5 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-UI_shared.xsd">
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ UI_shared.xsd">
 
     <Button name="TJ_ToyBoxHeaderTemplate" virtual="true" inherits="BackdropTemplate">
         <Size y="30" />
@@ -8,24 +8,26 @@ UI_shared.xsd">
         </KeyValues>
         <Layers>
             <Layer level="ARTWORK">
-                <FontString parentKey="Text" inherits="GameFontWhite" justifyH="LEFT" wordwrap="false">
+                <FontString parentKey="Text" inherits="GameFontWhite" justifyH="LEFT"
+                    wordwrap="false">
                     <Anchors>
-                        <Anchor point="TOPLEFT" x="50" y="0"/>
-                        <Anchor point="BOTTOMRIGHT" x="-4" y="0"/>
+                        <Anchor point="TOPLEFT" x="50" y="0" />
+                        <Anchor point="BOTTOMRIGHT" x="-4" y="0" />
                     </Anchors>
                 </FontString>
             </Layer>
             <Layer level="BORDER">
                 <Texture parentKey="expandIcon" file="Interface/Buttons/UI-MinusButton-Up">
-                    <Size x="18" y="18"/>
+                    <Size x="18" y="18" />
                     <Anchors>
-                        <Anchor point="LEFT" x="7" y="0.5"/>
+                        <Anchor point="LEFT" x="7" y="0.5" />
                     </Anchors>
                 </Texture>
-                <Texture parentKey="icon" file="Interface/Icons/TRADE_ARCHAEOLOGY_CHESTOFTINYGLASSANIMALS">
-                    <Size x="20" y="20"/>
+                <Texture parentKey="icon"
+                    file="Interface/Icons/TRADE_ARCHAEOLOGY_CHESTOFTINYGLASSANIMALS">
+                    <Size x="20" y="20" />
                     <Anchors>
-                        <Anchor point="LEFT" x="25" y="0.5"/>
+                        <Anchor point="LEFT" x="25" y="0.5" />
                     </Anchors>
                 </Texture>
             </Layer>
@@ -33,8 +35,8 @@ UI_shared.xsd">
         <Frames>
             <EditBox parentKey="RenameBox" inherits="InputBoxTemplate" autoFocus="false">
                 <Anchors>
-                    <Anchor point="TOPLEFT" x="54" y="0"/>
-                    <Anchor point="BOTTOMRIGHT" x="-8" y="0"/>
+                    <Anchor point="TOPLEFT" x="54" y="0" />
+                    <Anchor point="BOTTOMRIGHT" x="-8" y="0" />
                 </Anchors>
                 <Scripts>
                     <OnLoad>
@@ -43,10 +45,10 @@ UI_shared.xsd">
                 </Scripts>
                 <Frames>
                     <Button parentKey="Cancel">
-                        <Size x="14" y="14"/>
-                        <NormalTexture atlas="Radial_Wheel_Icon_Close"/>
+                        <Size x="14" y="14" />
+                        <NormalTexture atlas="Radial_Wheel_Icon_Close" />
                         <Anchors>
-                            <Anchor Point="RIGHT" x="-4" y="0"/>
+                            <Anchor Point="RIGHT" x="-4" y="0" />
                         </Anchors>
                         <Scripts>
                             <OnEnter>
@@ -60,16 +62,16 @@ UI_shared.xsd">
                         </Scripts>
                     </Button>
                     <Button parentKey="Submit">
-                        <Size x="14" y="14"/>
+                        <Size x="14" y="14" />
                         <Layers>
                             <Layer level="ARTWORK">
                                 <Texture parentKey="Texture" atlas="orderhalltalents-done-checkmark">
-                                    <Size x="16" y="16"/>                                    
+                                    <Size x="16" y="16" />
                                 </Texture>
                             </Layer>
                         </Layers>
                         <Anchors>
-                            <Anchor Point="RIGHT" x="-22" y="0"/>
+                            <Anchor Point="RIGHT" x="-22" y="0" />
                         </Anchors>
                         <Scripts>
                             <OnEnter>
@@ -94,19 +96,19 @@ UI_shared.xsd">
     </Button>
 
     <Button name="TJ_ToyTemplate" virtual="true">
-        <Size y="42"/>
+        <Size y="42" />
         <Frames>
             <Frame parentKey="icon">
-                <Size x="35" y="35"/>
+                <Size x="35" y="35" />
                 <Anchors>
-                    <Anchor point="LEFT" x="0"/>
+                    <Anchor point="LEFT" x="0" />
                 </Anchors>
                 <Layers>
                     <Layer level="ARTWORK">
                         <Texture parentKey="texture">
-                            <Size x="32" y="32"/>
+                            <Size x="32" y="32" />
                             <Anchors>
-                                <Anchor point="LEFT" x="10" y="0.5"/>
+                                <Anchor point="LEFT" x="10" y="0.5" />
                             </Anchors>
                         </Texture>
                     </Layer>
@@ -114,15 +116,16 @@ UI_shared.xsd">
             </Frame>
             <Frame parentKey="toyCard" inherits="BackdropTemplate">
                 <Anchors>
-                    <Anchor point="TOPLEFT" x="21" y="0"/>
-                    <Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+                    <Anchor point="TOPLEFT" x="21" y="0" />
+                    <Anchor point="BOTTOMRIGHT" x="0" y="0" />
                 </Anchors>
                 <Layers>
                     <Layer level="ARTWORK">
-                        <FontString parentKey="Text" inherits="GameFontNormal" justifyH="CENTER" wordwrap="true">
+                        <FontString parentKey="Text" inherits="GameFontNormal" justifyH="CENTER"
+                            wordwrap="true">
                             <Anchors>
-                                <Anchor point="TOPLEFT" x="27" y="0"/>
-                                <Anchor point="BOTTOMRIGHT" x="-10" y="0"/>
+                                <Anchor point="TOPLEFT" x="27" y="0" />
+                                <Anchor point="BOTTOMRIGHT" x="-10" y="0" />
                             </Anchors>
                         </FontString>
                     </Layer>
@@ -132,6 +135,99 @@ UI_shared.xsd">
     </Button>
 
     <Button name="TJ_IconSelector" virtual="true">
-        
+        <Size y="36" />
+        <Frames>
+            <Button parentKey="icon1">
+                <Size x="32" y="32" />
+                <Anchors>
+                    <Anchor point="LEFT" x="0" />
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture parentKey="texture" setAllPoints="true">
+                            <Size x="32" y="32" />
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Button>
+            <Button parentKey="icon2">
+                <Size x="32" y="32" />
+                <Anchors>
+                    <Anchor point="LEFT" x="34" />
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture parentKey="texture" setAllPoints="true">
+                            <Size x="32" y="32" />
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Button>
+            <Button parentKey="icon3">
+                <Size x="32" y="32" />
+                <Anchors>
+                    <Anchor point="LEFT" x="68" />
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture parentKey="texture" setAllPoints="true">
+                            <Size x="32" y="32" />
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Button>
+            <Button parentKey="icon4">
+                <Size x="32" y="32" />
+                <Anchors>
+                    <Anchor point="LEFT" x="102" />
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture parentKey="texture" setAllPoints="true">
+                            <Size x="32" y="32" />
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Button>
+            <Button parentKey="icon5">
+                <Size x="32" y="32" />
+                <Anchors>
+                    <Anchor point="LEFT" x="136" />
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture parentKey="texture" setAllPoints="true">
+                            <Size x="32" y="32" />
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Button>
+            <Button parentKey="icon6">
+                <Size x="32" y="32" />
+                <Anchors>
+                    <Anchor point="LEFT" x="170" />
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture parentKey="texture" setAllPoints="true">
+                            <Size x="32" y="32" />
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Button>
+            <Button parentKey="icon7">
+                <Size x="32" y="32" />
+                <Anchors>
+                    <Anchor point="LEFT" x="204" />
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture parentKey="texture" setAllPoints="true">
+                            <Size x="32" y="32" />
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Button>
+        </Frames>
     </Button>
 </Ui>
