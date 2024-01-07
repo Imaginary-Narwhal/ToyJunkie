@@ -165,7 +165,6 @@ end
 function ListMixin:Refresh()
     local iconTable = {}
     local data = CreateDataProvider()
-print(searchText)
     if(searchText == "") then
         iconTable = L.Icons
     else

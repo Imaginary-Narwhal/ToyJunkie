@@ -453,7 +453,6 @@ function AttachedScrollTemplateMixin:UpdateIcon(newId)
 end
 
 function AttachedScrollTemplateMixin:GetIcon()
-    print(iconToyBoxId)
     if(iconToyBoxId ~= nil) then
         return L.ToyJunkie.db.profile.boxes[iconToyBoxId].icon
     end
