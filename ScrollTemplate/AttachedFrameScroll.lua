@@ -184,7 +184,7 @@ function ListMixin:OnLoad()
         self:GetParent():Refresh()
     end)
     self.searchBar.Placeholder = self.searchBar:CreateFontString("SearchPlaceholder", "OVERLAY", "GameFontDisable")
-    self.searchBar.Placeholder:SetText("Search")
+    self.searchBar.Placeholder:SetText("Search toy boxes")
     self.searchBar.Placeholder:SetPoint("LEFT", 0, 0)
     self.searchBar.Placeholder:SetAlpha(.5)
     self.searchBar.ClearButton = CreateFrame("Button", "$parent_ClearButton", self.searchBar)
@@ -300,8 +300,8 @@ function ListMixin:OnElementClicked(element, button)
                                 tooltipTitle = "Change Icon",
                                 tooltipText = "Change the toy box icon",
                                 func = function()
-                                    L.AttachedFrame.IconSelectionFrame:Show()
                                     iconToyBoxId = data.id
+                                    L.AttachedFrame.IconSelectionFrame:Show()
                                     L.ToyJunkie.noInteraction = true
                                 end
                             },
@@ -449,5 +449,12 @@ function AttachedScrollTemplateMixin:UpdateIcon(newId)
     if(iconToyBoxId ~= nil) then
         L.ToyJunkie.db.profile.boxes[iconToyBoxId].icon = newId
         L.AttachedFrame.ScrollFrame.listView:Refresh()
+    end
+end
+
+function AttachedScrollTemplateMixin:GetIcon()
+    print(iconToyBoxId)
+    if(iconToyBoxId ~= nil) then
+        return L.ToyJunkie.db.profile.boxes[iconToyBoxId].icon
     end
 end

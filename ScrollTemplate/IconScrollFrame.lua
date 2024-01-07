@@ -1,6 +1,7 @@
 local addonName, L = ...
 
-local selectedIcon = nil
+local previousIcon = nil
+local searchText = ""
 
 IconScrollTemplateMixin = {}
 
@@ -80,16 +81,65 @@ function ListMixin:OnLoad()
     self.scrollView:SetElementResetter(GenerateClosure(self.OnElementReset, self));
 
     self.scrollBox = CreateFrame("Frame", nil, self, "WowScrollBoxList")
-    self.scrollBox:SetPoint("TOPLEFT", 10, -30)
-    self.scrollBox:SetPoint("BOTTOMRIGHT", -24, 7)
+    self.scrollBox:SetPoint("TOPLEFT", 10, -50)
+    self.scrollBox:SetPoint("BOTTOMRIGHT", -24, 30)
 
     self.scrollBar = CreateFrame("EventFrame", nil, self, "MinimalScrollBar")
     self.scrollBar:SetPoint("TOPLEFT", self.scrollBox, "TOPRIGHT", 8, 0)
     self.scrollBar:SetPoint("BOTTOMLEFT", self.scrollBox, "BOTTOMRIGHT", 8, 0)
 
+    -- search bar
+    self.searchBar = CreateFrame("EditBox", "$parent_SearchBar", L.AttachedFrame.IconSelectionFrame, "InputBoxTemplate")
+    self.searchBar:SetPoint("TOPLEFT", 15, -17)
+    self.searchBar:SetSize(250,40)
+    self.searchBar:SetAutoFocus(false)
+    self.searchBar:SetScript("OnTextChanged", function(self)
+        if(self:GetText() == "") then
+            self.Placeholder:Show()
+        else
+            self.Placeholder:Hide()
+        end
+        searchText = self:GetText()
+        L.AttachedFrame.IconSelectionFrame.listView:Refresh()
+    end)
+    self.searchBar.Placeholder = self.searchBar:CreateFontString("SearchPlaceholder", "OVERLAY", "GameFontDisable")
+    self.searchBar.Placeholder:SetText("Search icons")
+    self.searchBar.Placeholder:SetPoint("LEFT", 0, 0)
+    self.searchBar.Placeholder:SetAlpha(.5)
+    self.searchBar.ClearButton = CreateFrame("Button", "$parent_ClearButton", self.searchBar)
+    self.searchBar.ClearButton:SetSize(14,14)
+    self.searchBar.ClearButton:SetNormalAtlas("Radial_Wheel_Icon_Close")
+    self.searchBar.ClearButton:SetPoint("RIGHT", -4, 0)
+    self.searchBar.ClearButton:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:AddLine("Clear search bar")
+        GameTooltip:Show()
+    end)
+    self.searchBar.ClearButton:SetScript("OnLeave", function(self)
+        GameTooltip:Hide()
+    end)
+    self.searchBar.ClearButton:SetScript("OnClick", function(self, button)
+        self:GetParent():SetText("")
+    end)
 
-    --Editbox here for searching icons
+    -- Okay and cancel buttons
+    self.SaveButton = CreateFrame("Button", "$parent_SaveButton", L.AttachedFrame.IconSelectionFrame, "UIPanelButtonTemplate")
+    self.SaveButton:SetText("Save")
+    self.SaveButton:SetPoint("BOTTOMLEFT", 12, 5)
+    self.SaveButton:SetWidth(100)
+    self.SaveButton:SetScript("OnClick", function(self)
+        L.AttachedFrame.IconSelectionFrame:Hide()
+    end)
 
+    self.CancelButton = CreateFrame("Button", "$parent_CancelButton", L.AttachedFrame.IconSelectionFrame, "UIPanelButtonTemplate")
+    self.CancelButton:SetText("Cancel")
+    self.CancelButton:SetPoint("BOTTOMRIGHT", -10, 5)
+    self.CancelButton:SetWidth(100)
+    self.CancelButton:SetScript("OnClick", function(self)
+        L.AttachedFrame.ScrollFrame:UpdateIcon(previousIcon)
+        L.AttachedFrame.IconSelectionFrame:Hide()
+    end)
+    
 
     ScrollUtil.InitScrollBoxListWithScrollBar(self.scrollBox, self.scrollBar, self.scrollView)
 end
@@ -113,14 +163,26 @@ function ListMixin:OnElementClicked(element, button)
 end
 
 function ListMixin:Refresh()
-    --add search filtering
+    local iconTable = {}
     local data = CreateDataProvider()
-    for i=1, math.ceil(#L.Icons / 7) do
+print(searchText)
+    if(searchText == "") then
+        iconTable = L.Icons
+    else
+        for k,v in pairs(L.Icons) do
+            if(L:strContains(v.file, searchText)) then
+                table.insert(iconTable, v)
+            end
+        end
+    end
+
+    for i=1, math.ceil(#iconTable / 7) do
         local start = ((i - 1) * 7) + 1
         local icons = {}
+
         for j=start, start + 6 do
-            if(L.Icons[j] ~= nil) then
-                table.insert(icons, L.Icons[j].id)
+            if(iconTable[j] ~= nil) then
+                table.insert(icons, iconTable[j].id)
             else
                 table.insert(icons, -1)
             end
@@ -151,6 +213,14 @@ function IconScrollTemplateMixin:OnLoad()
     self.listView:SetDataProvider(self.dataProvider)
     self.listView:SetPoint("TOPLEFT")
     self.listView:SetPoint("BOTTOMRIGHT")
+end
+
+function IconScrollTemplateMixin:OnShow()
+    if(not self.firstOpen) then
+        self.firstOpen = true
+        self:Refresh()
+    end
+    previousIcon = L.AttachedFrame.ScrollFrame:GetIcon()
 end
 
 IconScrollTemplateMixin.firstOpen = false
