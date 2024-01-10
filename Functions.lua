@@ -1,5 +1,23 @@
 local addonName, L = ...
 
+
+bobtable = {}
+function L:Test() --BETA
+    for i=1, math.ceil(#L.Icons / 7) do
+        start = ((i - 1) * 7) + 1
+        local icons = {}
+        for j=start, start + 6 do
+            if(L.Icons[j] ~= nil) then
+                table.insert(icons, L.Icons[j].id)
+            else
+                table.insert(icons, -1)
+            end
+        end
+        table.insert(bobtable, icons)
+    end
+end
+
+
 function L:GetBackdropColorByToyboxId(id)
     if(L.ToyJunkie.db.profile.boxes[id] ~= nil) then
         if(L.ToyJunkie.db.profile.boxes[id].toyColor ~= nil) then
@@ -52,6 +70,21 @@ function L:searchSplit(inputstr, sep)
        table.insert(t,string.lower(field))
        if s=="" then return t
        end
+    end
+ end
+
+ function L:AddToy(toyId, toyboxId, index)
+    for key, id in pairs(L.ToyJunkie.db.profile.boxes[toyboxId].toys) do
+        if(id == toyId) then
+            UIErrorsFrame:AddExternalErrorMessage("That toy is already on this list.")
+            return
+        end
+    end
+
+    if(index ~= nil) then
+        table.insert(L.ToyJunkie.db.profile.boxes[toyboxId].toys, index, toyId)
+    else
+        table.insert(L.ToyJunkie.db.profile.boxes[toyboxId].toys, toyId)
     end
  end
  

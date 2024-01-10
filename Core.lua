@@ -107,5 +107,6 @@ function L.ToyJunkie:ColorPickerFrame_OnHide_Hook()
         ColorPickerFrame:ClearAllPoints()
         ColorPickerFrame:SetPoint("CENTER")
         L.ToyJunkie.colorPickerOpened = false
+        L.ToyJunkie.noInteraction = false
     end
 end

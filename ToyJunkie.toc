@@ -28,6 +28,7 @@ Data\Icons.lua
 Core.lua
 
 ScrollTemplate\AttachedFrameScroll.lua
+ScrollTemplate\IconScrollFrame.lua
 ScrollTemplate\templates.xml
 
 Windows\CollectionAttachedWindow.lua

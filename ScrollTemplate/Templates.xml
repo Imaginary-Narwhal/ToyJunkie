@@ -93,6 +93,7 @@
                 </Frames>
             </EditBox>
         </Frames>
+        
     </Button>
 
     <Button name="TJ_ToyTemplate" virtual="true">

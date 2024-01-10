@@ -58,6 +58,7 @@
         "UIDropDownMenu_AddSeparator",
         "GetText",
         "BACKDROP_TUTORIAL_16_16",
-        "GameFontDisable"
+        "GameFontDisable",
+        "ADD"
     ]
 }

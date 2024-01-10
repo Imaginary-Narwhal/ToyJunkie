@@ -3,6 +3,8 @@ local addonName, L = ...
 local searchText = ""
 local colorPickerToyBoxId = nil
 local iconToyBoxId = nil
+local isMovingToy = nil
+local isMovingHeader = nil
 L.ToyJunkie.noInteraction = false
 
 local function ValidateName(newName, oldName)
@@ -40,7 +42,7 @@ invalidFrame:Hide()
 
 local function toyColorCallback(restore)
     local newR, newG, newB, newA
-    if(restore) then
+    if (restore) then
         newR, newG, newB, newA = unpack(restore)
     else
         newA, newR, newG, newB = OpacitySliderFrame:GetValue(), ColorPickerFrame:GetColorRGB()
@@ -54,9 +56,10 @@ end
 
 local function ShowColorPicker(r, g, b, a, changedCallBack)
     ColorPickerFrame.hasOpacity, ColorPickerFrame.opacity = (a ~= nil), a
-    ColorPickerFrame.previousValues = {r,g,b,a}
-    ColorPickerFrame.func, ColorPickerFrame.opacityFunc, ColorPickerFrame.cancelFunc = changedCallBack, changedCallBack, changedCallBack
-    ColorPickerFrame:SetColorRGB(r,g,b)
+    ColorPickerFrame.previousValues = { r, g, b, a }
+    ColorPickerFrame.func, ColorPickerFrame.opacityFunc, ColorPickerFrame.cancelFunc = changedCallBack, changedCallBack,
+        changedCallBack
+    ColorPickerFrame:SetColorRGB(r, g, b)
     ColorPickerFrame:Hide()
     L.ToyJunkie.colorPickerOpened = true
     L.ToyJunkie.noInteraction = true
@@ -84,16 +87,20 @@ AttachedScrollTemplateMixin = {}
 local ItemListMixin = CreateFromMixins(CallbackRegistryMixin)
 ItemListMixin:GenerateCallbackEvents(
     {
-        "OnMouseDown",
+        "OnMouseUp",
         "OnEditCancelMouseDown",
         "OnEditSubmitMouseDown",
-        "OnEditTextChanged"
+        "OnEditTextChanged",
+        "OnReceiveDrag",
+        "OnDragStart"
     }
 )
 
 function ItemListMixin:OnLoad()
     CallbackRegistryMixin.OnLoad(self)
-    self:SetScript("OnMouseDown", self.OnClick)
+    self:SetScript("OnMouseUp", self.OnClick)
+    self:SetScript("OnReceiveDrag", self.OnReceiveDrag)
+    self:SetScript("OnDragStart", self.OnDragStart)
     if (self.RenameBox ~= nil) then
         self.RenameBox.Cancel:SetScript("OnMouseDown", self.EditCancelOnClick)
         self.RenameBox.Submit:SetScript("OnMouseDown", self.EditSubmitOnClick)
@@ -104,7 +111,15 @@ function ItemListMixin:OnLoad()
 end
 
 function ItemListMixin:OnClick(button)
-    self:TriggerEvent("OnMouseDown", self, button)
+    self:TriggerEvent("OnMouseUp", self, button)
+end
+
+function ItemListMixin:OnReceiveDrag()
+    self:TriggerEvent("OnReceiveDrag", self)
+end
+
+function ItemListMixin:OnDragStart()
+    self:TriggerEvent("OnDragStart", self)
 end
 
 function ItemListMixin:EditCancelOnClick(button)
@@ -142,6 +157,7 @@ function ItemListMixin:Init(elementData)
         self.toyCard:SetBackdrop(TJ_TOYLISTBACKDROP)
         self.toyCard:SetBackdropColor(L:GetBackdropColorByToyboxId(elementData.toyBoxId))
     end
+    self:RegisterForDrag("LeftButton")
 end
 
 local ListMixin = {}
@@ -171,11 +187,12 @@ function ListMixin:OnLoad()
     self.scrollBar:SetPoint("BOTTOMLEFT", self.scrollBox, "BOTTOMRIGHT", 8, 0)
 
     self.searchBar = CreateFrame("EditBox", "$parent_SearchBar", self, "InputBoxTemplate")
-    self.searchBar:SetPoint("BOTTOMLEFT", 5, -38)
-    self.searchBar:SetSize(150,40)
+    sb = self.searchBar
+    self.searchBar:SetPoint("TOPLEFT", 60, 38)
+    self.searchBar:SetSize(150, 40)
     self.searchBar:SetAutoFocus(false)
     self.searchBar:SetScript("OnTextChanged", function(self)
-        if(self:GetText() == "") then
+        if (self:GetText() == "") then
             self.Placeholder:Show()
         else
             self.Placeholder:Hide()
@@ -188,7 +205,7 @@ function ListMixin:OnLoad()
     self.searchBar.Placeholder:SetPoint("LEFT", 0, 0)
     self.searchBar.Placeholder:SetAlpha(.5)
     self.searchBar.ClearButton = CreateFrame("Button", "$parent_ClearButton", self.searchBar)
-    self.searchBar.ClearButton:SetSize(14,14)
+    self.searchBar.ClearButton:SetSize(14, 14)
     self.searchBar.ClearButton:SetNormalAtlas("Radial_Wheel_Icon_Close")
     self.searchBar.ClearButton:SetPoint("RIGHT", -4, 0)
     self.searchBar.ClearButton:SetScript("OnEnter", function(self)
@@ -203,6 +220,33 @@ function ListMixin:OnLoad()
         self:GetParent():SetText("")
     end)
 
+    self.ExpandCollapseButton = CreateFrame("Button", "$parent_ExpandCollapseButton", self, "BackdropTemplate")
+    self.ExpandCollapseButton:SetSize(50, 22)
+    self.ExpandCollapseButton:SetBackdrop(BACKDROP_TOAST_12_12)
+    self.ExpandCollapseButton:SetPoint("TOPLEFT", 0, 29)
+    self.ExpandCollapseButton.icon = self.ExpandCollapseButton:CreateTexture(nil, "ARTWORK")
+    self.ExpandCollapseButton.icon:SetSize(20,20)
+    self.ExpandCollapseButton.icon:SetPoint("LEFT")
+    self.ExpandCollapseButton.text = self.ExpandCollapseButton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    self.ExpandCollapseButton.text:SetText("All")
+    self.ExpandCollapseButton.text:SetPoint("RIGHT", -10, 0)
+    self.ExpandCollapseButton:SetScript("OnClick", function(self)
+        L.AttachedFrame.ScrollFrame:ExpandCollapseAll()
+        GameTooltip:Hide()
+    end)
+    self.ExpandCollapseButton:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
+        if(L.AttachedFrame.ScrollFrame:AnyToyboxesExpanded()) then
+            GameTooltip:AddLine("Collapse all toy boxes")
+        else
+            GameTooltip:AddLine("Expand all toy boxes")
+        end
+        GameTooltip:Show()
+    end)
+    self.ExpandCollapseButton:SetScript("OnLeave", function(self)
+        GameTooltip:Hide()
+    end)
+
     ScrollUtil.InitScrollBoxWithScrollBar(self.scrollBox, self.scrollBar, self.scrollView)
 end
 
@@ -212,17 +256,21 @@ function ListMixin:OnElementInitialize(element, elementData)
         element:OnLoad()
     end
     element:Init(elementData)
-    element:RegisterCallback("OnMouseDown", self.OnElementClicked, self)
+    element:RegisterCallback("OnMouseUp", self.OnElementClicked, self)
     element:RegisterCallback("OnEditCancelMouseDown", self.OnEditCancelMouseDown, self)
     element:RegisterCallback("OnEditSubmitMouseDown", self.OnEditSubmitMouseDown, self)
     element:RegisterCallback("OnEditTextChanged", self.OnEditTextChanged, self)
+    element:RegisterCallback("OnReceiveDrag", self.OnReceiveDrag, self)
+    element:RegisterCallback("OnDragStart", self.OnDragStart, self)
 end
 
 function ListMixin:OnElementReset(element)
-    element:UnregisterCallback("OnMouseDown", self)
+    element:UnregisterCallback("OnMouseUp", self)
     element:UnregisterCallback("OnEditCancelMouseDown", self)
     element:UnregisterCallback("OnEditTextChanged", self)
     element:UnregisterCallback("OnEditSubmitMouseDown", self)
+    element:UnregisterCallback("OnReceiveDrag", self)
+    element:UnregisterCallback("OnDragStart", self)
 end
 
 function ListMixin:OnEditCancelMouseDown(element)
@@ -260,74 +308,141 @@ function ListMixin:OnEditTextChanged(renameBox, human)
     end
 end
 
-function ListMixin:OnElementClicked(element, button)
+function ListMixin:OnDragStart(element)
+    local data = element:GetData()
+    if (data.isHeader) then
+        print("header dragging")
+    else
+        print("toy draggin")
+    end
+end
+
+function ListMixin:OnReceiveDrag(element)
     if (not L.ToyJunkie.noInteraction) then
         local data = element.GetData()
         if (data.isHeader) then
-            if (button == "LeftButton") then
-                for key, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
-                    if (key == data.id) then
-                        L.ToyJunkie.db.profile.boxes[key].isCollapsed = not data.isCollapsed
-                    else
-                        if (not L.ToyJunkie.db.profile.allowMultipleBoxesOpen) then
-                            L.ToyJunkie.db.profile.boxes[key].isCollapsed = true
-                        end
-                    end
+            local itemType, toyId = GetCursorInfo()
+            if (itemType == "item") then
+                if (C_ToyBox.GetToyInfo(toyId) ~= nil) then
+                    L:AddToy(toyId, data.id)
+                    ClearCursor()
+                    self:Refresh()
                 end
-                self:Refresh()
-            elseif (button == "RightButton") then
-                local headerContext = L:CreateContextMenu(
-                    {
-                        name = "headerContextMenu",
+            end
+        else
+            local itemType, toyId = GetCursorInfo()
+            local elementId
+            for key, toy in pairs(L.ToyJunkie.db.profile.boxes[data.toyBoxId].toys) do
+                if (toy == data.toyId) then
+                    elementId = key
+                end
+            end
+            if (itemType == "item") then
+                if (C_ToyBox.GetToyInfo(toyId) ~= nil) then
+                    L:AddToy(toyId, data.toyBoxId, elementId or 1)
+                    ClearCursor()
+                    self:Refresh()
+                end
+            end
+        end
+    end
+end
+
+function ListMixin:OnElementClicked(element, button)
+    if (not L.ToyJunkie.noInteraction) then
+        local data = element.GetData()
+        if (GetCursorInfo() == nil) then
+            if (data.isHeader) then
+                if (button == "LeftButton") then
+                    L.ToyJunkie.db.profile.boxes[data.id].isCollapsed = not data.isCollapsed
+                    self:Refresh()
+                    L.AttachedFrame.ScrollFrame:SetExpandCollapseButton()
+                elseif (button == "RightButton") then
+                    local headerContext = L:CreateContextMenu(
+                        {
+                            name = "headerContextMenu",
+                            parent = element,
+                            title = "Toy box Options",
+                            items = {
+                                {
+                                    text = "Rename",
+                                    tooltipTitle = "Rename",
+                                    tooltipText = "Rename the toy box",
+                                    func = function()
+                                        element.Text:Hide()
+                                        element.RenameBox:SetText(data.name)
+                                        element.RenameBox:Show()
+                                        element.RenameBox:SetFocus()
+                                        element.RenameBox.Submit:Disable()
+                                        L.ToyJunkie.noInteraction = true
+                                    end
+                                },
+                                {
+                                    text = "Change Icon",
+                                    tooltipTitle = "Change Icon",
+                                    tooltipText = "Change the toy box icon",
+                                    func = function()
+                                        iconToyBoxId = data.id
+                                        L.AttachedFrame.IconSelectionFrame:Show()
+                                        L.ToyJunkie.noInteraction = true
+                                    end
+                                },
+                                {
+                                    text = "Change Toy Colors",
+                                    tooltipTitle = "Change toy color",
+                                    tooltipText = "Change the background color of the toys in this toy box",
+                                    func = function()
+                                        local colors = L.ToyJunkie.db.profile.boxes[data.id].toyColor
+                                        colorPickerToyBoxId = data.id
+                                        ShowColorPicker(colors.red, colors.green, colors.blue, colors.alpha,
+                                            toyColorCallback)
+                                    end
+                                },
+                                {
+                                    separator = true
+                                },
+                                {
+                                    text = "Delete Toy box",
+                                    color = "|cffff0000",
+                                    tooltipTitle = "Delete toy box",
+                                    tooltipWarning = "Hold SHIFT to delete this toy box",
+                                    func = function()
+                                        if (IsShiftKeyDown()) then
+                                            table.remove(L.ToyJunkie.db.profile.boxes, data.id)
+                                            self:Refresh()
+                                        end
+                                    end
+                                },
+                                {
+                                    separator = true
+                                },
+                                {
+                                    text = "Close"
+                                }
+                            }
+                        }
+                    )
+                    ToggleDropDownMenu(1, nil, headerContext, "cursor", 10, 5)
+                end
+            else
+                if (button == "RightButton") then
+                    local toyContext = L:CreateContextMenu({
+                        name = "toyContextMenu",
                         parent = element,
-                        title = "Toy box Options",
+                        title = "Toy Options",
                         items = {
                             {
-                                text = "Rename",
-                                tooltipTitle="Rename",
-                                tooltipText="Rename the toy box",
-                                func = function()
-                                    element.Text:Hide()
-                                    element.RenameBox:SetText(data.name)
-                                    element.RenameBox:Show()
-                                    element.RenameBox:SetFocus()
-                                    element.RenameBox.Submit:Disable()
-                                    L.ToyJunkie.noInteraction = true
-                                end
-                            },
-                            {
-                                text = "Change Icon",
-                                tooltipTitle = "Change Icon",
-                                tooltipText = "Change the toy box icon",
-                                func = function()
-                                    iconToyBoxId = data.id
-                                    L.AttachedFrame.IconSelectionFrame:Show()
-                                    L.ToyJunkie.noInteraction = true
-                                end
-                            },
-                            {
-                                text = "Change Toy Colors",
-                                tooltipTitle = "Change toy color",
-                                tooltipText = "Change the background color of the toys in this toy box",
-                                func = function()
-                                    local colors = L.ToyJunkie.db.profile.boxes[data.id].toyColor
-                                    colorPickerToyBoxId = data.id
-                                    ShowColorPicker(colors.red, colors.green, colors.blue, colors.alpha, toyColorCallback)
-                                end
-                            },
-                            {
-                                separator = true
-                            },
-                            {
-                                text = "Delete Toy box",
+                                text = "Remove Toy",
                                 color = "|cffff0000",
-                                tooltipTitle = "Delete toy box",
-                                tooltipWarning = "Hold SHIFT to delete this toy box",
+                                tooltipTitle = "Remove Toy",
+                                tooltipText = "Remove toy from this toy box",
                                 func = function()
-                                    if (IsShiftKeyDown()) then
-                                        table.remove(L.ToyJunkie.db.profile.boxes, data.id)
-                                        self:Refresh()
+                                    for key, toy in pairs(L.ToyJunkie.db.profile.boxes[data.toyBoxId].toys) do
+                                        if (toy == data.toyId) then
+                                            table.remove(L.ToyJunkie.db.profile.boxes[data.toyBoxId].toys, key)
+                                        end
                                     end
+                                    self:Refresh()
                                 end
                             },
                             {
@@ -337,12 +452,36 @@ function ListMixin:OnElementClicked(element, button)
                                 text = "Close"
                             }
                         }
-                    }
-                )
-                ToggleDropDownMenu(1, nil, headerContext, "cursor", 10, 5)
+                    })
+                    ToggleDropDownMenu(1, nil, toyContext, "cursor", 10, 5)
+                end
             end
         else
-
+            if (data.isHeader) then
+                local itemType, toyId = GetCursorInfo()
+                if (itemType == "item") then
+                    if (C_ToyBox.GetToyInfo(toyId) ~= nil) then
+                        L:AddToy(toyId, data.id)
+                        ClearCursor()
+                        self:Refresh()
+                    end
+                end
+            else
+                local itemType, toyId = GetCursorInfo()
+                local elementId
+                for key, toy in pairs(L.ToyJunkie.db.profile.boxes[data.toyBoxId].toys) do
+                    if (toy == data.toyId) then
+                        elementId = key
+                    end
+                end
+                if (itemType == "item") then
+                    if (C_ToyBox.GetToyInfo(toyId) ~= nil) then
+                        L:AddToy(toyId, data.toyBoxId, elementId or 1)
+                        ClearCursor()
+                        self:Refresh()
+                    end
+                end
+            end
         end
     end
 end
@@ -353,7 +492,7 @@ function ListMixin:Refresh()
         for id, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
             local excludeToybox = false
             if (searchText ~= "") then
-                if(not L:strContains(toyBox.name, searchText)) then
+                if (not L:strContains(toyBox.name, searchText)) then
                     excludeToybox = true
                 end
             end
@@ -371,7 +510,7 @@ function ListMixin:Refresh()
                     for _, toyId in pairs(toyBox.toys) do
                         local _, toyName, toyIcon = C_ToyBox.GetToyInfo(toyId)
                         data:InsertTable({
-                            { name = toyName, isHeader = false, icon = toyIcon, toyBoxId = id }
+                            { name = toyName, isHeader = false, icon = toyIcon, toyBoxId = id, toyId = toyId }
                         })
                     end
                 end
@@ -446,14 +585,40 @@ function AttachedScrollTemplateMixin:AddToybox()
 end
 
 function AttachedScrollTemplateMixin:UpdateIcon(newId)
-    if(iconToyBoxId ~= nil) then
+    if (iconToyBoxId ~= nil) then
         L.ToyJunkie.db.profile.boxes[iconToyBoxId].icon = newId
         L.AttachedFrame.ScrollFrame.listView:Refresh()
     end
 end
 
 function AttachedScrollTemplateMixin:GetIcon()
-    if(iconToyBoxId ~= nil) then
+    if (iconToyBoxId ~= nil) then
         return L.ToyJunkie.db.profile.boxes[iconToyBoxId].icon
+    end
+end
+
+function AttachedScrollTemplateMixin:AnyToyboxesExpanded()
+    local val = false
+    for k, v in pairs(self.listView:GetDataProvider().collection) do
+        if (not v.isCollapsed) then
+            val = true
+        end
+    end
+    return val
+end
+
+function AttachedScrollTemplateMixin:ExpandCollapseAll()
+    for id, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
+        toyBox.isCollapsed = self:AnyToyboxesExpanded()
+    end
+    self.listView:Refresh()
+    self:SetExpandCollapseButton()
+end
+
+function AttachedScrollTemplateMixin:SetExpandCollapseButton()
+    if(self:AnyToyboxesExpanded()) then
+        self.listView.ExpandCollapseButton.icon:SetTexture(130821)
+    else
+        self.listView.ExpandCollapseButton.icon:SetTexture(130838)
     end
 end

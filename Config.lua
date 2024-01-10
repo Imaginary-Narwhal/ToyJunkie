@@ -31,7 +31,6 @@ L.defaults = {
         boxes = {
             
         },
-        allowMultipleBoxesOpen = false,
     }
 }
 
