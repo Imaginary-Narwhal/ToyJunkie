@@ -81,6 +81,7 @@ function L.ToyJunkie:TJCommand(msg)
         --InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
         print("Open options frame")]]
     end
+    L.ToyJunkie.DragBackdrop:SetShown(not L.ToyJunkie.DragBackdrop:IsShown())
 end
 
 function L.ToyJunkie:TOYS_UPDATED()

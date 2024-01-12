@@ -27,7 +27,7 @@ L.AttachedFrame.ToggleButton:SetScript("OnClick", function(self)
 end)
 
 L.AttachedFrame:SetScript("OnShow", function(self)
-    L.AttachedFrame.ScrollFrame:SetExpandCollapseButton()
+    L.AttachedFrame.ScrollFrame.listView:SetExpandCollapseButton()
 end)
 
 -- Attached Main Frame Functions --

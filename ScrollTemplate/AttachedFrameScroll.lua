@@ -3,9 +3,12 @@ local addonName, L = ...
 local searchText = ""
 local colorPickerToyBoxId = nil
 local iconToyBoxId = nil
-local isMovingToy = nil
-local isMovingHeader = nil
+
 L.ToyJunkie.noInteraction = false
+local movingHeader = nil
+local movingToy = nil
+local firstMove = false
+
 
 local function ValidateName(newName, oldName)
     local changes = 0 -- 0 = invalid, 1 = duplicate, 2 = valid
@@ -157,12 +160,75 @@ function ItemListMixin:Init(elementData)
         self.toyCard:SetBackdrop(TJ_TOYLISTBACKDROP)
         self.toyCard:SetBackdropColor(L:GetBackdropColorByToyboxId(elementData.toyBoxId))
     end
+    if (elementData.pickedUp) then
+        self:SetAlpha(.25)
+        if (elementData.isHeader) then
+            self.expandIcon:Hide()
+        end
+    else
+        self:SetAlpha(1)
+        if (elementData.isHeader) then
+            self.expandIcon:Show()
+        end
+    end
+    self.isTJListFrame = true
     self:RegisterForDrag("LeftButton")
 end
 
 local ListMixin = {}
 function ListMixin:OnLoad()
     CallbackRegistryMixin:OnLoad(self)
+    self:SetScript("OnEvent", function(self, event, button)
+        if (event == "GLOBAL_MOUSE_UP") then
+            if (not firstMove) then
+                if (button == "RightButton") then
+                    if (movingHeader) then
+                        SetCursor(nil)
+                        ClearCursor()
+                        L.ToyJunkie.DragHeader:Hide()
+                        movingHeader = nil
+                        self:Refresh()
+                        L.ToyJunkie.DragBackdrop:Hide()
+                    end
+                elseif (button == "LeftButton") then
+                    if (movingHeader) then
+                        local element = GetMouseFocus()
+                        if (element.isTJListFrame) then
+                            local elementData = element:GetData()
+                            if (elementData.isHeader) then
+                                if (elementData.name == movingHeader.name) then
+                                    SetCursor(nil)
+                                    ClearCursor()
+                                    L.ToyJunkie.DragHeader:Hide()
+                                    movingHeader = nil
+                                    self:Refresh()
+                                    L.ToyJunkie.DragBackdrop:Hide()
+                                else
+                                    table.remove(L.ToyJunkie.db.profile.boxes, movingHeader.id)
+                                    table.insert(L.ToyJunkie.db.profile.boxes, elementData.id, movingHeader)
+                                    SetCursor(nil)
+                                    ClearCursor()
+                                    L.ToyJunkie.DragHeader:Hide()
+                                    movingHeader = nil
+                                    self:Refresh()
+                                    L.ToyJunkie.DragBackdrop:Hide()
+                                end
+                            end
+                        elseif (element == L.ToyJunkie.DragBackdrop) then
+                            SetCursor(nil)
+                            ClearCursor()
+                            L.ToyJunkie.DragHeader:Hide()
+                            movingHeader = nil
+                            self:Refresh()
+                            L.ToyJunkie.DragBackdrop:Hide()
+                        end
+                    end
+                end
+            else
+                firstMove = false
+            end
+        end
+    end)
 
     self.scrollView = CreateScrollBoxListLinearView()
     self.scrollView:SetElementFactory(function(factory, data)
@@ -225,18 +291,18 @@ function ListMixin:OnLoad()
     self.ExpandCollapseButton:SetBackdrop(BACKDROP_TOAST_12_12)
     self.ExpandCollapseButton:SetPoint("TOPLEFT", 0, 29)
     self.ExpandCollapseButton.icon = self.ExpandCollapseButton:CreateTexture(nil, "ARTWORK")
-    self.ExpandCollapseButton.icon:SetSize(20,20)
+    self.ExpandCollapseButton.icon:SetSize(20, 20)
     self.ExpandCollapseButton.icon:SetPoint("LEFT")
     self.ExpandCollapseButton.text = self.ExpandCollapseButton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     self.ExpandCollapseButton.text:SetText("All")
     self.ExpandCollapseButton.text:SetPoint("RIGHT", -10, 0)
     self.ExpandCollapseButton:SetScript("OnClick", function(self)
-        L.AttachedFrame.ScrollFrame:ExpandCollapseAll()
+        L.AttachedFrame.ScrollFrame.listView:ExpandCollapseAll()
         GameTooltip:Hide()
     end)
     self.ExpandCollapseButton:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
-        if(L.AttachedFrame.ScrollFrame:AnyToyboxesExpanded()) then
+        if (L.AttachedFrame.ScrollFrame.listView:AreAnyHeadersExpanded()) then
             GameTooltip:AddLine("Collapse all toy boxes")
         else
             GameTooltip:AddLine("Expand all toy boxes")
@@ -310,40 +376,61 @@ end
 
 function ListMixin:OnDragStart(element)
     local data = element:GetData()
-    if (data.isHeader) then
-        print("header dragging")
-    else
-        print("toy draggin")
+    if (movingHeader == nil and movingToy == nil and GetCursorInfo() == nil) then
+        if (data.isHeader) then
+            firstMove = true
+            movingHeader = data
+            self:CollapseHeaders()
+            L.ToyJunkie.DragBackdrop:Show()
+            SetCursor("ITEM_CURSOR")
+            L.ToyJunkie.DragHeader.Text:SetText(data.name)
+            L.ToyJunkie.DragHeader.Icon:SetTexture(data.icon)
+            L.ToyJunkie.DragHeader:Show()
+        else
+            print("toy draggin")
+        end
     end
 end
 
 function ListMixin:OnReceiveDrag(element)
     if (not L.ToyJunkie.noInteraction) then
         local data = element.GetData()
-        if (data.isHeader) then
-            local itemType, toyId = GetCursorInfo()
-            if (itemType == "item") then
-                if (C_ToyBox.GetToyInfo(toyId) ~= nil) then
-                    L:AddToy(toyId, data.id)
-                    ClearCursor()
+        if (GetCursorInfo() ~= nil) then
+            if (data.isHeader) then
+                local itemType, toyId = GetCursorInfo()
+                if (itemType == "item") then
+                    if (C_ToyBox.GetToyInfo(toyId) ~= nil) then
+                        L:AddToy(toyId, data.id)
+                        ClearCursor()
+                        self:Refresh()
+                    end
+                end
+            else
+                local itemType, toyId = GetCursorInfo()
+                local elementId
+                for key, toy in pairs(L.ToyJunkie.db.profile.boxes[data.toyBoxId].toys) do
+                    if (toy == data.toyId) then
+                        elementId = key
+                    end
+                end
+                if (itemType == "item") then
+                    if (C_ToyBox.GetToyInfo(toyId) ~= nil) then
+                        L:AddToy(toyId, data.toyBoxId, elementId or 1)
+                        ClearCursor()
+                        self:Refresh()
+                    end
+                end
+            end
+            --[[elseif (L.ToyJunkie.movingHeader ~= nil) then
+            if(data.isHeader) then
+                if(data.id == L.ToyJunkie.movingHeader) then
+                    L.ToyJunkie.movingHeader = nil
+                    L.ToyJunkie.DragBackdrop:Hide()
+                    SetCursor(nil)
+                    L.ToyJunkie.DragHeader:Hide()
                     self:Refresh()
                 end
-            end
-        else
-            local itemType, toyId = GetCursorInfo()
-            local elementId
-            for key, toy in pairs(L.ToyJunkie.db.profile.boxes[data.toyBoxId].toys) do
-                if (toy == data.toyId) then
-                    elementId = key
-                end
-            end
-            if (itemType == "item") then
-                if (C_ToyBox.GetToyInfo(toyId) ~= nil) then
-                    L:AddToy(toyId, data.toyBoxId, elementId or 1)
-                    ClearCursor()
-                    self:Refresh()
-                end
-            end
+            end]]
         end
     end
 end
@@ -351,12 +438,12 @@ end
 function ListMixin:OnElementClicked(element, button)
     if (not L.ToyJunkie.noInteraction) then
         local data = element.GetData()
-        if (GetCursorInfo() == nil) then
+        if (GetCursorInfo() == nil and movingHeader == nil and movingToy == nil) then
             if (data.isHeader) then
                 if (button == "LeftButton") then
                     L.ToyJunkie.db.profile.boxes[data.id].isCollapsed = not data.isCollapsed
                     self:Refresh()
-                    L.AttachedFrame.ScrollFrame:SetExpandCollapseButton()
+                    self:SetExpandCollapseButton()
                 elseif (button == "RightButton") then
                     local headerContext = L:CreateContextMenu(
                         {
@@ -457,30 +544,34 @@ function ListMixin:OnElementClicked(element, button)
                 end
             end
         else
-            if (data.isHeader) then
-                local itemType, toyId = GetCursorInfo()
-                if (itemType == "item") then
-                    if (C_ToyBox.GetToyInfo(toyId) ~= nil) then
-                        L:AddToy(toyId, data.id)
-                        ClearCursor()
-                        self:Refresh()
+            if (GetCursorInfo() ~= nil) then
+                if (data.isHeader) then
+                    local itemType, toyId = GetCursorInfo()
+                    if (itemType == "item") then
+                        if (C_ToyBox.GetToyInfo(toyId) ~= nil) then
+                            L:AddToy(toyId, data.id)
+                            ClearCursor()
+                            self:Refresh()
+                        end
+                    end
+                else
+                    local itemType, toyId = GetCursorInfo()
+                    local elementId
+                    for key, toy in pairs(L.ToyJunkie.db.profile.boxes[data.toyBoxId].toys) do
+                        if (toy == data.toyId) then
+                            elementId = key
+                        end
+                    end
+                    if (itemType == "item") then
+                        if (C_ToyBox.GetToyInfo(toyId) ~= nil) then
+                            L:AddToy(toyId, data.toyBoxId, elementId or 1)
+                            ClearCursor()
+                            self:Refresh()
+                        end
                     end
                 end
-            else
-                local itemType, toyId = GetCursorInfo()
-                local elementId
-                for key, toy in pairs(L.ToyJunkie.db.profile.boxes[data.toyBoxId].toys) do
-                    if (toy == data.toyId) then
-                        elementId = key
-                    end
-                end
-                if (itemType == "item") then
-                    if (C_ToyBox.GetToyInfo(toyId) ~= nil) then
-                        L:AddToy(toyId, data.toyBoxId, elementId or 1)
-                        ClearCursor()
-                        self:Refresh()
-                    end
-                end
+            elseif (L.ToyJunkie.movingHeader ~= nil) then
+
             end
         end
     end
@@ -503,14 +594,22 @@ function ListMixin:Refresh()
                         name = toyBox.name,
                         isHeader = true,
                         isCollapsed = toyBox.isCollapsed,
-                        icon = toyBox.icon
+                        icon = toyBox.icon,
+                        pickedUp = self:IsPickedUp(id, true)
                     }
                 })
                 if (not toyBox.isCollapsed) then
                     for _, toyId in pairs(toyBox.toys) do
                         local _, toyName, toyIcon = C_ToyBox.GetToyInfo(toyId)
                         data:InsertTable({
-                            { name = toyName, isHeader = false, icon = toyIcon, toyBoxId = id, toyId = toyId }
+                            {
+                                name = toyName,
+                                isHeader = false,
+                                icon = toyIcon,
+                                toyBoxId = id,
+                                toyId = toyId,
+                                pickedUp = self:IsPickedUp(toyId, false)
+                            }
                         })
                     end
                 end
@@ -518,6 +617,27 @@ function ListMixin:Refresh()
         end
         self.scrollView:SetDataProvider(data, ScrollBoxConstants.RetainScrollPosition)
     end
+end
+
+function ListMixin:IsPickedUp(id, isHeader)
+    if (isHeader) then
+        if (movingHeader) then
+            if (movingHeader.id == id) then
+                return true
+            else
+                return false
+            end
+        end
+    else
+        if (movingToy) then
+            if (L.ToyJunkie.movingToy.toyId == id) then
+                return true
+            else
+                return false
+            end
+        end
+    end
+    return false
 end
 
 function ListMixin:GetDataProvider()
@@ -528,6 +648,39 @@ end
 
 function ListMixin:SetDataProvider(dataProvider)
     self.scrollView:SetDataProvider(dataProvider)
+end
+
+function ListMixin:CollapseHeaders()
+    for id, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
+        toyBox.isCollapsed = true
+    end
+    self:Refresh()
+    self:SetExpandCollapseButton()
+end
+
+function ListMixin:AreAnyHeadersExpanded()
+    for k, v in pairs(self:GetDataProvider().collection) do
+        if (not v.isCollapsed) then
+            return true
+        end
+    end
+    return false
+end
+
+function ListMixin:SetExpandCollapseButton()
+    if (self:AreAnyHeadersExpanded()) then
+        self.ExpandCollapseButton.icon:SetTexture(130821)
+    else
+        self.ExpandCollapseButton.icon:SetTexture(130838)
+    end
+end
+
+function ListMixin:ExpandCollapseAll()
+    for id, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
+        toyBox.isCollapsed = self:AreAnyHeadersExpanded()
+    end
+    self:Refresh()
+    self:SetExpandCollapseButton()
 end
 
 function AttachedScrollTemplateMixin:OnLoad()
@@ -594,31 +747,5 @@ end
 function AttachedScrollTemplateMixin:GetIcon()
     if (iconToyBoxId ~= nil) then
         return L.ToyJunkie.db.profile.boxes[iconToyBoxId].icon
-    end
-end
-
-function AttachedScrollTemplateMixin:AnyToyboxesExpanded()
-    local val = false
-    for k, v in pairs(self.listView:GetDataProvider().collection) do
-        if (not v.isCollapsed) then
-            val = true
-        end
-    end
-    return val
-end
-
-function AttachedScrollTemplateMixin:ExpandCollapseAll()
-    for id, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
-        toyBox.isCollapsed = self:AnyToyboxesExpanded()
-    end
-    self.listView:Refresh()
-    self:SetExpandCollapseButton()
-end
-
-function AttachedScrollTemplateMixin:SetExpandCollapseButton()
-    if(self:AnyToyboxesExpanded()) then
-        self.listView.ExpandCollapseButton.icon:SetTexture(130821)
-    else
-        self.listView.ExpandCollapseButton.icon:SetTexture(130838)
     end
 end

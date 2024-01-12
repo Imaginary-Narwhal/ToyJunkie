@@ -26,6 +26,7 @@ Config.lua
 Functions.lua
 Data\Icons.lua
 Core.lua
+utils\DragFrame.lua
 
 ScrollTemplate\AttachedFrameScroll.lua
 ScrollTemplate\IconScrollFrame.lua
