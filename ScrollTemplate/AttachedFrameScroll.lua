@@ -180,53 +180,69 @@ function ListMixin:OnLoad()
     CallbackRegistryMixin:OnLoad(self)
     self:SetScript("OnEvent", function(self, event, button)
         if (event == "GLOBAL_MOUSE_UP") then
-            if (not firstMove) then
-                if (button == "RightButton") then
-                    if (movingHeader) then
-                        SetCursor(nil)
-                        ClearCursor()
-                        L.ToyJunkie.DragHeader:Hide()
-                        movingHeader = nil
-                        self:Refresh()
-                        L.ToyJunkie.DragBackdrop:Hide()
-                    end
-                elseif (button == "LeftButton") then
-                    if (movingHeader) then
-                        local element = GetMouseFocus()
-                        if (element.isTJListFrame) then
-                            local elementData = element:GetData()
-                            if (elementData.isHeader) then
-                                if (elementData.name == movingHeader.name) then
-                                    SetCursor(nil)
-                                    ClearCursor()
-                                    L.ToyJunkie.DragHeader:Hide()
-                                    movingHeader = nil
-                                    self:Refresh()
-                                    L.ToyJunkie.DragBackdrop:Hide()
-                                else
-                                    table.remove(L.ToyJunkie.db.profile.boxes, movingHeader.id)
-                                    table.insert(L.ToyJunkie.db.profile.boxes, elementData.id, movingHeader)
-                                    SetCursor(nil)
-                                    ClearCursor()
-                                    L.ToyJunkie.DragHeader:Hide()
-                                    movingHeader = nil
-                                    self:Refresh()
-                                    L.ToyJunkie.DragBackdrop:Hide()
+            --if (not firstMove) then
+            if (button == "RightButton") then
+                if (movingHeader) then
+                    SetCursor(nil)
+                    ClearCursor()
+                    L.ToyJunkie.DragHeader:Hide()
+                    movingHeader = nil
+                    self:Refresh()
+                    L.ToyJunkie.DragBackdrop:Hide()
+                end
+            elseif (button == "LeftButton") then
+                if (movingHeader) then
+                    local element = GetMouseFocus()
+                    if (element.isTJListFrame) then
+                        local elementData = element:GetData()
+                        if (elementData.isHeader) then
+                            if (elementData.name == movingHeader.name) then
+                                SetCursor(nil)
+                                ClearCursor()
+                                L.ToyJunkie.DragHeader:Hide()
+                                movingHeader = nil
+                                self:Refresh()
+                                L.ToyJunkie.DragBackdrop:Hide()
+                            else
+                                local _, y = GetCursorPosition()
+                                local scale = element:GetEffectiveScale()
+                                local _, cy = element:GetCenter()
+                                local box = L.ToyJunkie.db.profile.boxes[movingHeader.id]
+                                table.remove(L.ToyJunkie.db.profile.boxes, movingHeader.id)
+                                for id, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
+                                    if (toyBox.name == elementData.name) then
+                                        if (y / scale > cy) then
+                                            table.insert(L.ToyJunkie.db.profile.boxes, id, box)
+                                        else
+                                            table.insert(L.ToyJunkie.db.profile.boxes, id + 1, box)
+                                        end
+                                        break
+                                    end
                                 end
+
+                                --table.remove(L.ToyJunkie.db.profile.boxes, movingHeader.id)
+                                --table.insert(L.ToyJunkie.db.profile.boxes, elementData.id, movingHeader)
+                                SetCursor(nil)
+                                ClearCursor()
+                                L.ToyJunkie.DragHeader:Hide()
+                                movingHeader = nil
+                                self:Refresh()
+                                L.ToyJunkie.DragBackdrop:Hide()
                             end
-                        elseif (element == L.ToyJunkie.DragBackdrop) then
+                        end
+                        --[[elseif (element == L.ToyJunkie.DragBackdrop) then
                             SetCursor(nil)
                             ClearCursor()
                             L.ToyJunkie.DragHeader:Hide()
                             movingHeader = nil
                             self:Refresh()
-                            L.ToyJunkie.DragBackdrop:Hide()
-                        end
+                            L.ToyJunkie.DragBackdrop:Hide()]]
                     end
                 end
-            else
-                firstMove = false
             end
+            --[[else
+                firstMove = false
+            end]]
         end
     end)
 
@@ -314,6 +330,42 @@ function ListMixin:OnLoad()
     end)
 
     ScrollUtil.InitScrollBoxWithScrollBar(self.scrollBox, self.scrollBar, self.scrollView)
+
+    self:SetScript("OnUpdate", self.OnUpdate)
+end
+
+function ListMixin:OnUpdate(self, elapsed)
+    if (movingHeader) then
+        v = movingHeader
+        local element = GetMouseFocus()
+        if (element.isTJListFrame) then
+            local elementData = element.GetData()
+            if (elementData.isHeader) then
+                if (elementData.name ~= movingHeader.name) then
+                    L.ToyJunkie.DropLineFrame:ClearAllPoints()
+                    local _, y = GetCursorPosition()
+                    local scale = element:GetEffectiveScale()
+                    local _, cy = element:GetCenter()
+                    if (y / scale > cy) then
+                        L.ToyJunkie.DropLineFrame:ClearAllPoints()
+                        L.ToyJunkie.DropLineFrame:SetPoint("TOPLEFT", element, 20, 1)
+                    else
+                        L.ToyJunkie.DropLineFrame:SetPoint("BOTTOMLEFT", element, 20, 0)
+                    end
+                    L.ToyJunkie.DropLineFrame:SetWidth(element:GetWidth() - 40)
+                    L.ToyJunkie.DropLineFrame:Show()
+                else
+                    L.ToyJunkie.DropLineFrame:Hide()
+                end
+            else
+                L.ToyJunkie.DropLineFrame:Hide()
+            end
+        else
+            L.ToyJunkie.DropLineFrame:Hide()
+        end
+    else
+        L.ToyJunkie.DropLineFrame:Hide()
+    end
 end
 
 function ListMixin:OnElementInitialize(element, elementData)
@@ -599,18 +651,20 @@ function ListMixin:Refresh()
                     }
                 })
                 if (not toyBox.isCollapsed) then
-                    for _, toyId in pairs(toyBox.toys) do
-                        local _, toyName, toyIcon = C_ToyBox.GetToyInfo(toyId)
-                        data:InsertTable({
-                            {
-                                name = toyName,
-                                isHeader = false,
-                                icon = toyIcon,
-                                toyBoxId = id,
-                                toyId = toyId,
-                                pickedUp = self:IsPickedUp(toyId, false)
-                            }
-                        })
+                    if (toyBox.toys) then
+                        for _, toyId in pairs(toyBox.toys) do
+                            local _, toyName, toyIcon = C_ToyBox.GetToyInfo(toyId)
+                            data:InsertTable({
+                                {
+                                    name = toyName,
+                                    isHeader = false,
+                                    icon = toyIcon,
+                                    toyBoxId = id,
+                                    toyId = toyId,
+                                    pickedUp = self:IsPickedUp(toyId, false)
+                                }
+                            })
+                        end
                     end
                 end
             end
@@ -701,7 +755,7 @@ function AttachedScrollTemplateMixin:AddToybox()
         if (L:strStart(toyBox.name, "New Toy box")) then
             local num = toyBox.name:match("%((%d+)%)")
             if (num ~= nil) then
-                table.insert(numList, num)
+                table.insert(numList, tonumber(num))
             end
         end
     end
