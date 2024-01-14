@@ -7,7 +7,6 @@ local iconToyBoxId = nil
 L.ToyJunkie.noInteraction = false
 local movingHeader = nil
 local movingToy = nil
-local firstMove = false
 
 
 local function ValidateName(newName, oldName)
@@ -200,18 +199,19 @@ function ListMixin:OnLoad()
 
     CallbackRegistryMixin:OnLoad(self)
     self:SetScript("OnEvent", function(self, event, button)
-        if(event == "CURSOR_CHANGED" and L.AttachedFrame:IsShown()) then
-            if(L:CursorHasToy()) then
+        if (event == "CURSOR_CHANGED" and L.AttachedFrame:IsShown()) then
+            if (L:CursorHasToy()) then
                 L.ToyJunkie.DragBackdrop:Show()
             end
         end
         if (event == "GLOBAL_MOUSE_UP") then
             if (button == "RightButton") then
-                if (movingHeader) then
+                if (movingHeader or movingToy) then
                     SetCursor(nil)
                     ClearCursor()
                     L.ToyJunkie.DragHeader:Hide()
                     movingHeader = nil
+                    movingToy = nil
                     self:Refresh()
                     L.ToyJunkie.DragBackdrop:Hide()
                 end
@@ -250,20 +250,20 @@ function ListMixin:OnLoad()
                             end
                         end
                     end
-                elseif(L:CursorHasToy()) then -- Grabbed toy from Blizzard's Toy Box Collection Frame
+                elseif (L:CursorHasToy() and not movingToy) then -- Grabbed toy from TJ list or Blizzard Collection Frame
                     local element = GetMouseFocus()
-                    if(element.isTJListFrame) then
+                    if (element.isTJListFrame) then
                         local elementData = element:GetData()
                         local _, toyId = GetCursorInfo()
-                        if(elementData.isHeader) then
+                        if (elementData.isHeader) then
                             L:AddToy(toyId, elementData.id)
                             ClearCursor()
                             self:Refresh()
                             L.ToyJunkie.DragBackdrop:Hide()
                         else
                             for id, toy in pairs(L.ToyJunkie.db.profile.boxes[elementData.toyBoxId].toys) do
-                                if(toy == elementData.toyId) then
-                                    if(L:CursorOnTopHalf(element)) then
+                                if (toy == elementData.toyId) then
+                                    if (L:CursorOnTopHalf(element)) then
                                         L:AddToy(toyId, elementData.toyBoxId, id)
                                     else
                                         L:AddToy(toyId, elementData.toyBoxId, id + 1)
@@ -273,6 +273,25 @@ function ListMixin:OnLoad()
                             ClearCursor()
                             self:Refresh()
                             L.ToyJunkie.DragBackdrop:Hide()
+                        end
+                    end
+                elseif(movingToy) then
+                    local element = GetMouseFocus()
+                    if(element.isTJListFrame) then
+                        local elementData = element:GetData()
+                        local _, toyId = GetCursorInfo()
+                        if(elementData.isHeader) then -- move toy to same toy box that you pulled from
+                            if(movingToy.toyBoxId == L:GetToyboxId(elementData)) then
+                                ClearCursor()
+                                movingToy = nil
+                                self:Refresh()
+                                L.ToyJunkie.DragBackdrop:Hide()
+                            else
+                                -- move toy to new toybox if toy doesn't exist already
+                            end
+                        else -- move toy to different location in same toybox or different
+                            
+
                         end
                     end
                 end
@@ -382,12 +401,19 @@ function ListMixin:OnUpdate(self, elapsed)
             else
                 L.ToyJunkie.DropLineFrame:Hide()
             end
-        elseif (movingToy) then
-
+            --elseif (movingToy) then
         elseif (L:CursorHasToy()) then
             local elementData = element.GetData()
             if (not elementData.isHeader) then
-                L.ToyJunkie.DropLineFrame:Display(element)
+                if (movingToy) then
+                    if (elementData.toyId ~= movingToy.toyId) then
+                        L.ToyJunkie.DropLineFrame:Display(element)
+                    else
+                        L.ToyJunkie.DropLineFrame:Hide()
+                    end
+                else
+                    L.ToyJunkie.DropLineFrame:Display(element)
+                end
             else
                 L.ToyJunkie.DropLineFrame:Hide()
             end
@@ -489,7 +515,6 @@ function ListMixin:OnDragStart(element)
     local data = element:GetData()
     if (movingHeader == nil and movingToy == nil and GetCursorInfo() == nil) then
         if (data.isHeader) then
-            firstMove = true
             movingHeader = data
             self:CollapseHeaders()
             L.ToyJunkie.DragBackdrop:Show()
@@ -498,7 +523,9 @@ function ListMixin:OnDragStart(element)
             L.ToyJunkie.DragHeader.Icon:SetTexture(data.icon)
             L.ToyJunkie.DragHeader:Show()
         else
-            print("toy draggin")
+            movingToy = data
+            PickupItem(data.toyId)
+            self:Refresh()
         end
     end
 end
@@ -743,7 +770,7 @@ function ListMixin:IsPickedUp(id, isHeader)
         end
     else
         if (movingToy) then
-            if (L.ToyJunkie.movingToy.toyId == id) then
+            if (movingToy.toyId == id) then
                 return true
             else
                 return false

@@ -51,6 +51,15 @@ function L:IsToyboxNameDuplicate(name, checkCase, ignore)
     return false
 end
 
+function L:GetToyboxId(toybox) -- toybox can be from the profile boxes or from list element toy box
+    for k, v in pairs(L.ToyJunkie.db.profile.boxes) do
+        if(v.name == toybox.name) then
+            return k
+        end
+    end
+    return nil
+end
+
 function L:strStart(String, Start)
     return strsub(String, 1, string.len(Start)) == Start
 end
