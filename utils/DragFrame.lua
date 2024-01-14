@@ -61,3 +61,28 @@ L.ToyJunkie.DragHeader:SetScript("OnUpdate", function(self, elapsed)
 end)
 
 L.ToyJunkie.DragHeader:Hide()
+
+L.ToyJunkie.DropLineFrame = CreateFrame("Frame", "ToyJunkie_DropFrame", UIParent)
+L.ToyJunkie.DropLineFrame:SetFrameStrata("DIALOG")
+L.ToyJunkie.DropLineFrame:SetHeight(1)
+L.ToyJunkie.DropLineFrame:SetPoint("TOPLEFT", 10, -10)
+L.ToyJunkie.DropLineFrame.texture = L.ToyJunkie.DropLineFrame:CreateTexture()
+L.ToyJunkie.DropLineFrame.texture:SetTexture(130871)
+L.ToyJunkie.DropLineFrame.texture:SetAllPoints()
+L.ToyJunkie.DropLineFrame.texture:SetVertexColor(255, 215, 0, .65)
+L.ToyJunkie.DropLineFrame:Hide()
+
+function L.ToyJunkie.DropLineFrame:Display(element)
+    self:ClearAllPoints()
+    local _, y = GetCursorPosition()
+    local scale = element:GetEffectiveScale()
+    local _, cy = element:GetCenter()
+
+    if(y / scale > cy) then
+        self:SetPoint("TOPLEFT", element, 20, 1)
+    else
+        self:SetPoint("BOTTOMLEFT", element, 20, 0)
+    end
+    self:SetWidth(element:GetWidth() - 40)
+    self:Show()
+end

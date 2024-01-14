@@ -42,11 +42,13 @@ function L.AttachedFrame:SetFrame()
         tex:SetTexCoord(0, 0.5, 0, 1)
         self.ToggleButton:ClearAllPoints()
         self.ToggleButton:SetPoint("RIGHT", self, -2, 0)
+        self.AddToyboxButton:Hide()
     else
         self:SetPoint("LEFT", ToyBox, "RIGHT", -20, 0)
         tex:SetTexCoord(0.5, 1, 0, 1)
         self.ToggleButton:ClearAllPoints()
         self.ToggleButton:SetPoint("RIGHT", self, -3, 0)
+        self.AddToyboxButton:Show()
     end
     self.isAttached = true
     self:Show()
@@ -62,6 +64,7 @@ function L.AttachedFrame:Toggle()
         self.ToggleButton:ClearAllPoints()
         self.ToggleButton:SetPoint("RIGHT", self, -3, 0)
         PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+        self.AddToyboxButton:Show()
     else --opened, close it
         self:SetPoint("LEFT", ToyBox, "RIGHT", -(self:GetWidth() - 17), 0)
         L.ToyJunkie.db.profile.isAttachedWindowHidden = true
@@ -69,6 +72,7 @@ function L.AttachedFrame:Toggle()
         self.ToggleButton:ClearAllPoints()
         self.ToggleButton:SetPoint("RIGHT", self, -2, 0)
         PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+        self.AddToyboxButton:Hide()
     end
 end
 
@@ -97,7 +101,7 @@ L.AttachedFrame.IconSelectionFrame:SetPoint("TOPLEFT", L.AttachedFrame, "TOPRIGH
 L.AttachedFrame.IconSelectionFrame:SetSize(270, 500)
 L.AttachedFrame.IconSelectionFrame:OnLoad()
 L.AttachedFrame.IconSelectionFrame:SetScript("OnShow", function(self)
-    self:OnShow()
+    --self:OnShow()
     --[[if(not self.firstOpen) then
         self.firstOpen = true
         self:Refresh()

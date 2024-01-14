@@ -1,22 +1,25 @@
 local addonName, L = ...
 
-
-bobtable = {}
-function L:Test() --BETA
-    for i=1, math.ceil(#L.Icons / 7) do
-        start = ((i - 1) * 7) + 1
-        local icons = {}
-        for j=start, start + 6 do
-            if(L.Icons[j] ~= nil) then
-                table.insert(icons, L.Icons[j].id)
-            else
-                table.insert(icons, -1)
-            end
+function L:CursorHasToy()
+    if(GetCursorInfo()) then
+        local itemType, id = GetCursorInfo()
+        if(C_ToyBox.GetToyInfo(id)) then
+            return true
         end
-        table.insert(bobtable, icons)
     end
+    return false
 end
 
+function L:CursorOnTopHalf(element)
+    local _, y = GetCursorPosition()
+    local scale = element:GetEffectiveScale()
+    local _, cy = element:GetCenter()
+
+    if(y / scale > cy) then
+        return true
+    end
+    return false
+end
 
 function L:GetBackdropColorByToyboxId(id)
     if(L.ToyJunkie.db.profile.boxes[id] ~= nil) then
