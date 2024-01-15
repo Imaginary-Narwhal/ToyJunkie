@@ -30,6 +30,11 @@ L.AttachedFrame:SetScript("OnShow", function(self)
     L.AttachedFrame.ScrollFrame.listView:SetExpandCollapseButton()
 end)
 
+L.AttachedFrame:SetScript("OnHide", function(self)
+    L.ToyJunkie.DragBackdrop:Hide()
+    L.ToyJunkie.DropLineFrame:Hide()
+end)
+
 -- Attached Main Frame Functions --
 
 function L.AttachedFrame:SetFrame()

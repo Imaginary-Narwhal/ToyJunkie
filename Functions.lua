@@ -60,6 +60,14 @@ function L:GetToyboxId(toybox) -- toybox can be from the profile boxes or from l
     return nil
 end
 
+function L:GetToyIndex(toyId, toyboxId)
+    for k,v in pairs(L.ToyJunkie.db.profile.boxes[toyboxId].toys) do
+        if(v == toyId) then
+            return k
+        end
+    end
+end
+
 function L:strStart(String, Start)
     return strsub(String, 1, string.len(Start)) == Start
 end
@@ -88,7 +96,7 @@ function L:searchSplit(inputstr, sep)
  function L:AddToy(toyId, toyboxId, index)
     for key, id in pairs(L.ToyJunkie.db.profile.boxes[toyboxId].toys) do
         if(id == toyId) then
-            UIErrorsFrame:AddExternalErrorMessage("That toy is already on this list.")
+            UIErrorsFrame:AddExternalErrorMessage("That toy is already in this toy box.")
             return
         end
     end
@@ -99,6 +107,41 @@ function L:searchSplit(inputstr, sep)
         table.insert(L.ToyJunkie.db.profile.boxes[toyboxId].toys, toyId)
     end
  end
+
+function L:CheckIfToyExistsInToybox(toyId, toyboxId)
+    for key, id in pairs(L.ToyJunkie.db.profile.boxes[toyboxId].toys) do
+        if(id == toyId) then
+            UIErrorsFrame:AddExternalErrorMessage("That toy is already in the target toy box.")
+            return true
+        end
+    end
+    return false
+end
+
+ --[[function L:MoveToy(toyId, currToyboxId, newToyboxId, index)
+    for key, id in pairs(L.ToyJunkie.db.profile.boxes[newToyboxId].toys) do
+        if(id == toyId) then
+            UIErrorsFrame:AddExternalErrorMessage("That toy is already in the target toy box.")
+            return
+        end
+    end
+    for key, id in pairs(L.ToyJunkie.db.profile.boxes[currToyboxId].toys) do
+        if(id == toyId) then
+            table.remove(L.ToyJunkie.db.profile.boxes[currToyboxId].toys, key)
+            break
+        end
+    end
+    if(index ~= nil) then
+        for id, toy in pairs(L.ToyJunkie.db.profile.boxes[newToyboxId].toys) do
+            if(toy == toyId) then
+                
+            end
+        end
+        table.insert(L.ToyJunkie.db.profile.boxes[newToyboxId].toys, index, toyId)
+    else
+        table.insert(L.ToyJunkie.db.profile.boxes[newToyboxId].toys, toyId)
+    end
+ end]]
  
 ---------------------------
 -- Reusable Context Menu --

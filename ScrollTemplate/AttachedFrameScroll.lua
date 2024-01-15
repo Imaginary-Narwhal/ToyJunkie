@@ -250,7 +250,7 @@ function ListMixin:OnLoad()
                             end
                         end
                     end
-                elseif (L:CursorHasToy() and not movingToy) then -- Grabbed toy from TJ list or Blizzard Collection Frame
+                elseif (L:CursorHasToy() and not movingToy) then -- Grabbed toy from Blizzard Collection Frame
                     local element = GetMouseFocus()
                     if (element.isTJListFrame) then
                         local elementData = element:GetData()
@@ -275,23 +275,82 @@ function ListMixin:OnLoad()
                             L.ToyJunkie.DragBackdrop:Hide()
                         end
                     end
-                elseif(movingToy) then
+                elseif (movingToy) then
                     local element = GetMouseFocus()
-                    if(element.isTJListFrame) then
+                    if (element.isTJListFrame) then
                         local elementData = element:GetData()
                         local _, toyId = GetCursorInfo()
-                        if(elementData.isHeader) then -- move toy to same toy box that you pulled from
-                            if(movingToy.toyBoxId == L:GetToyboxId(elementData)) then
+                        if (elementData.isHeader) then
+                            if (movingToy.toyBoxId == L:GetToyboxId(elementData)) then -- move toy to same toy box that you pulled from
                                 ClearCursor()
+                                SetCursor(nil)
                                 movingToy = nil
                                 self:Refresh()
                                 L.ToyJunkie.DragBackdrop:Hide()
-                            else
-                                -- move toy to new toybox if toy doesn't exist already
+                            else -- Different toy box (drop on toy box name)
+                                if (not L:CheckIfToyExistsInToybox(toyId, elementData.id)) then
+                                    for key, id in pairs(L.ToyJunkie.db.profile.boxes[movingToy.toyBoxId].toys) do
+                                        if (id == toyId) then
+                                            table.remove(L.ToyJunkie.db.profile.boxes[movingToy.toyBoxId].toys, key)
+                                            break
+                                        end
+                                    end
+                                    L:AddToy(toyId, elementData.id)
+                                end
+                                ClearCursor()
+                                SetCursor(nil)
+                                movingToy = nil
+                                self:Refresh()
+                                L.ToyJunkie.DragBackdrop:Hide()
                             end
-                        else -- move toy to different location in same toybox or different
-                            
-
+                        else                                                     -- move toy to different location in same or different toybox
+                            if (elementData.toyBoxId == movingToy.toyBoxId) then -- same toybox
+                                if (elementData.toyId == movingToy.toyId) then   --same toy
+                                    ClearCursor()
+                                    SetCursor(nil)
+                                    movingToy = nil
+                                    self:Refresh()
+                                    L.ToyJunkie.DragBackdrop:Hide()
+                                else
+                                    local elementIndex = L:GetToyIndex(elementData.toyId, elementData.toyBoxId)
+                                    for key, id in pairs(L.ToyJunkie.db.profile.boxes[movingToy.toyBoxId].toys) do
+                                        if (id == toyId) then
+                                            table.remove(L.ToyJunkie.db.profile.boxes[movingToy.toyBoxId].toys, key)
+                                            break
+                                        end
+                                    end
+                                    if (L:CursorOnTopHalf(element)) then
+                                        L:AddToy(toyId, elementData.toyBoxId, elementIndex)
+                                    else
+                                        L:AddToy(toyId, elementData.toyBoxId, elementIndex + 1)
+                                    end
+                                    ClearCursor()
+                                    SetCursor(nil)
+                                    movingToy = nil
+                                    self:Refresh()
+                                    L.ToyJunkie.DragBackdrop:Hide()
+                                end
+                            else -- different toyboxes
+                                local elementIndex = L:GetToyIndex(elementData.toyId, elementData.toyBoxId)
+                                if (not L:CheckIfToyExistsInToybox(toyId, elementData.toyBoxId)) then
+                                    for key, id in pairs(L.ToyJunkie.db.profile.boxes[movingToy.toyBoxId].toys) do
+                                        if (id == toyId) then
+                                            table.remove(L.ToyJunkie.db.profile.boxes[movingToy.toyBoxId].toys, key)
+                                            break
+                                        end
+                                    end
+                                    if (L:CursorOnTopHalf(element)) then
+                                        L:AddToy(toyId, elementData.toyBoxId, elementIndex)
+                                    else
+                                        L:AddToy(toyId, elementData.toyBoxId, elementIndex + 1)
+                                    end
+                                end
+                                ClearCursor()
+                                SetCursor(nil)
+                                movingToy = nil
+                                self:Refresh()
+                                L.ToyJunkie.DragBackdrop:Hide()
+                            end
                         end
                     end
                 end
@@ -401,15 +460,14 @@ function ListMixin:OnUpdate(self, elapsed)
             else
                 L.ToyJunkie.DropLineFrame:Hide()
             end
-            --elseif (movingToy) then
         elseif (L:CursorHasToy()) then
             local elementData = element.GetData()
             if (not elementData.isHeader) then
                 if (movingToy) then
-                    if (elementData.toyId ~= movingToy.toyId) then
-                        L.ToyJunkie.DropLineFrame:Display(element)
-                    else
+                    if(elementData.toyId == movingToy.toyId and elementData.toyBoxId == movingToy.toyBoxId) then
                         L.ToyJunkie.DropLineFrame:Hide()
+                    else
+                        L.ToyJunkie.DropLineFrame:Display(element)
                     end
                 else
                     L.ToyJunkie.DropLineFrame:Display(element)
@@ -747,7 +805,7 @@ function ListMixin:Refresh()
                                     icon = toyIcon,
                                     toyBoxId = id,
                                     toyId = toyId,
-                                    pickedUp = self:IsPickedUp(toyId, false)
+                                    pickedUp = self:IsPickedUp(toyId, false, id)
                                 }
                             })
                         end
@@ -759,7 +817,7 @@ function ListMixin:Refresh()
     end
 end
 
-function ListMixin:IsPickedUp(id, isHeader)
+function ListMixin:IsPickedUp(id, isHeader, toyBoxId)
     if (isHeader) then
         if (movingHeader) then
             if (movingHeader.id == id) then
@@ -770,7 +828,7 @@ function ListMixin:IsPickedUp(id, isHeader)
         end
     else
         if (movingToy) then
-            if (movingToy.toyId == id) then
+            if (movingToy.toyId == id and movingToy.toyBoxId == toyBoxId) then
                 return true
             else
                 return false
