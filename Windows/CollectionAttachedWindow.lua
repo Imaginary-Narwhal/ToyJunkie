@@ -6,12 +6,10 @@ local addonName, L = ...
 
 L.AttachedFrame = CreateFrame("Frame", "ToyJunkie_CollectionAttachedFrame", UIParent, "ButtonFrameTemplate")
 ButtonFrameTemplate_HidePortrait(L.AttachedFrame)
---ButtonFrameTemplate_HideAttic(L.AttachedFrame)
 
 L.AttachedFrame.CloseButton:Hide()
 L.AttachedFrame:SetTitle("ToyJunkie")
 L.AttachedFrame:SetSize(300, 500)
---L.AttachedFrame.Inset:ClearAllPoints()
 L.AttachedFrame.Inset:SetPoint("TOPLEFT", 4, -47)
 L.AttachedFrame.Inset:SetPoint("BOTTOMRIGHT", -18, 27)
 L.AttachedFrame:Hide()
@@ -106,11 +104,7 @@ L.AttachedFrame.IconSelectionFrame:SetPoint("TOPLEFT", L.AttachedFrame, "TOPRIGH
 L.AttachedFrame.IconSelectionFrame:SetSize(270, 500)
 L.AttachedFrame.IconSelectionFrame:OnLoad()
 L.AttachedFrame.IconSelectionFrame:SetScript("OnShow", function(self)
-    --self:OnShow()
-    --[[if(not self.firstOpen) then
-        self.firstOpen = true
-        self:Refresh()
-    end]]
+    L.ToyJunkie.noInteraction = true
 end)
 L.AttachedFrame.IconSelectionFrame:SetScript("OnHide", function(self)
     L.ToyJunkie.noInteraction = false
