@@ -18,21 +18,6 @@ L.ToyJunkie.DragBackdrop:SetScript("OnHide", function(self)
     L.AttachedFrame.ScrollFrame.listView:UnregisterEvent("GLOBAL_MOUSE_UP")
 end)
 
---[[L.ToyJunkie.DragBackdrop:SetScript("OnEvent",function(self, event, button)
-    if(event == "GLOBAL_MOUSE_UP") then
-        if(button == "RightButton") then
-            SetCursor(nil)
-            ClearCursor()
-            if(L.ToyJunkie.movingHeader ~= nil) then
-                L.ToyJunkie.DragHeader:Hide()
-                L.ToyJunkie.movingHeader = nil
-                L.AttachedFrame.ScrollFrame.listView:Refresh()
-                self:Hide()
-            end
-        end
-    end
-end)]]
-
 L.ToyJunkie.DragHeader = CreateFrame("Frame", "ToyJunkie_DragHeaderFrame", L.ToyJunkie.DragBackdrop, "BackdropTemplate")
 L.ToyJunkie.DragHeader:SetPoint("CENTER")
 L.ToyJunkie.DragHeader:SetFrameStrata("TOOLTIP")

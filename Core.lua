@@ -18,15 +18,9 @@ function L.ToyJunkie:OnInitialize()
         label = "Toy Junkie",
         OnClick = function(obj, button)
             if(button == "LeftButton") then
-                --[[if(L.ToyboxFrame:IsShown()) then
-                    L.ToyboxFrame:Hide()
-                else
-                    if(not L.isInCombat) then
-                        L.ToyboxFrame:Show()
-                    end
-                end
+                L.ToyboxFrame:Toggle()
             elseif (button == "RightButton") then
-                InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)]]
+               InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
             end
         end
     })
@@ -66,20 +60,18 @@ function L.ToyJunkie:OnEnable()
     --self:RegisterEvent("PLAYER_REGEN_ENABLED")
     
     L.ToyJunkie:SecureHookScript(ColorPickerFrame, "OnHide", "ColorPickerFrame_OnHide_Hook")
+    if(#L.ToyJunkie.db.profile.boxes < 1) then
+        L.ToyJunkie.db.profile.selectedToybox = nil
+        L.ToyJunkie.db.profile.toyboxShown = false
+    end
 end
 
 function L.ToyJunkie:TJCommand(msg)
     if(not msg or msg:trim() == "") then
-        --[[if(L.ToyboxFrame:IsShown()) then
-            L.ToyboxFrame:Hide()
-        else
-            if(not L.isInCombat) then
-                L.ToyboxFrame:Show()
-            end
-        end
-    elseif(string.lower(msg) == "config" or string.lower(msg) == "options") then
+        L.ToyboxFrame:Toggle()
+    --elseif(string.lower(msg) == "config" or string.lower(msg) == "options") then
         --InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
-        print("Open options frame")]]
+        --print("Open options frame")
     end
     L.ToyJunkie.DragBackdrop:SetShown(not L.ToyJunkie.DragBackdrop:IsShown())
 end
@@ -91,6 +83,11 @@ function L.ToyJunkie:TOYS_UPDATED()
         end
     end
     L.AttachedFrame.ScrollFrame.listView:Refresh()
+    if(L.ToyJunkie.db.profile.toyboxShown) then
+        L.ToyboxFrame:Toggle(true, "OPEN")
+    end
+    
+    --L.ToyboxFrame:UpdateToyboxDisplay()
     --[[if(L.ToyJunkie.db.profile.selectedToybox == nil) then
         if(#L.ToyJunkie.db.profile.boxes > 0) then
             L:ToyJunkieToyboxSelectedChange(1)

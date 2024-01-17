@@ -105,10 +105,8 @@ function ItemListMixin:OnLoad()
     self:SetScript("OnMouseUp", self.OnClick)
     self:SetScript("OnReceiveDrag", self.OnReceiveDrag)
     self:SetScript("OnDragStart", self.OnDragStart)
-    --if(self.isHeader) then
     self:SetScript("OnEnter", self.OnEnter)
     self:SetScript("OnLeave", self.OnLeave)
-    --end
     if (self.RenameBox ~= nil) then
         self.RenameBox.Cancel:SetScript("OnMouseDown", self.EditCancelOnClick)
         self.RenameBox.Submit:SetScript("OnMouseDown", self.EditSubmitOnClick)
@@ -251,6 +249,7 @@ function ListMixin:OnLoad()
                         end
                     end
                 elseif (L:CursorHasToy() and not movingToy) then -- Grabbed toy from Blizzard Collection Frame
+                    print("not movingtoy")
                     local element = GetMouseFocus()
                     if (element.isTJListFrame) then
                         local elementData = element:GetData()
@@ -265,8 +264,10 @@ function ListMixin:OnLoad()
                                 if (toy == elementData.toyId) then
                                     if (L:CursorOnTopHalf(element)) then
                                         L:AddToy(toyId, elementData.toyBoxId, id)
+                                        break
                                     else
                                         L:AddToy(toyId, elementData.toyBoxId, id + 1)
+                                        break
                                     end
                                 end
                             end
@@ -276,6 +277,7 @@ function ListMixin:OnLoad()
                         end
                     end
                 elseif (movingToy) then
+                    print("movingToy")
                     local element = GetMouseFocus()
                     if (element.isTJListFrame) then
                         local elementData = element:GetData()
@@ -464,7 +466,7 @@ function ListMixin:OnUpdate(self, elapsed)
             local elementData = element.GetData()
             if (not elementData.isHeader) then
                 if (movingToy) then
-                    if(elementData.toyId == movingToy.toyId and elementData.toyBoxId == movingToy.toyBoxId) then
+                    if (elementData.toyId == movingToy.toyId and elementData.toyBoxId == movingToy.toyBoxId) then
                         L.ToyJunkie.DropLineFrame:Hide()
                     else
                         L.ToyJunkie.DropLineFrame:Display(element)
@@ -497,7 +499,6 @@ function ListMixin:OnElementInitialize(element, elementData)
     element:RegisterCallback("OnEditCancelMouseDown", self.OnEditCancelMouseDown, self)
     element:RegisterCallback("OnEditSubmitMouseDown", self.OnEditSubmitMouseDown, self)
     element:RegisterCallback("OnEditTextChanged", self.OnEditTextChanged, self)
-    --element:RegisterCallback("OnReceiveDrag", self.OnReceiveDrag, self)
     element:RegisterCallback("OnDragStart", self.OnDragStart, self)
     element:RegisterCallback("OnEnter", self.OnEnter, self)
     element:RegisterCallback("OnLeave", self.OnLeave, self)
@@ -508,7 +509,6 @@ function ListMixin:OnElementReset(element)
     element:UnregisterCallback("OnEditCancelMouseDown", self)
     element:UnregisterCallback("OnEditTextChanged", self)
     element:UnregisterCallback("OnEditSubmitMouseDown", self)
-    --element:UnregisterCallback("OnReceiveDrag", self)
     element:UnregisterCallback("OnDragStart", self)
     element:UnregisterCallback("OnEnter", self)
     element:UnregisterCallback("OnLeave", self)
@@ -543,7 +543,16 @@ function ListMixin:OnEditCancelMouseDown(element)
 end
 
 function ListMixin:OnEditSubmitMouseDown(element)
-    L.ToyJunkie.db.profile.boxes[element:GetParent():GetParent():GetData().id].name = element:GetParent():GetText()
+    if(L.ToyJunkie.db.profile.selectedToybox == L.ToyJunkie.db.profile.boxes[element:GetParent():GetParent():GetData().id].name) then
+        L.ToyJunkie.db.profile.selectedToybox = element:GetParent():GetText()
+        L.ToyJunkie.db.profile.boxes[element:GetParent():GetParent():GetData().id].name = element:GetParent():GetText()
+        if(L.ToyboxFrame:IsShown()) then
+            L.ToyboxFrame:UpdateAll()
+        end
+    else
+        L.ToyJunkie.db.profile.boxes[element:GetParent():GetParent():GetData().id].name = element:GetParent():GetText()
+    end
+    
     element:GetParent():Hide()
     element:GetParent():GetParent().Text:Show()
     L.ToyJunkie.noInteraction = false
@@ -588,49 +597,6 @@ function ListMixin:OnDragStart(element)
     end
 end
 
---[[function ListMixin:OnReceiveDrag(element)
-    if (not L.ToyJunkie.noInteraction) then
-        local data = element.GetData()
-        if (GetCursorInfo() ~= nil) then
-            if (data.isHeader) then
-                local itemType, toyId = GetCursorInfo()
-                if (itemType == "item") then
-                    if (C_ToyBox.GetToyInfo(toyId) ~= nil) then
-                        L:AddToy(toyId, data.id)
-                        ClearCursor()
-                        self:Refresh()
-                    end
-                end
-            else
-                local itemType, toyId = GetCursorInfo()
-                local elementId
-                for key, toy in pairs(L.ToyJunkie.db.profile.boxes[data.toyBoxId].toys) do
-                    if (toy == data.toyId) then
-                        elementId = key
-                    end
-                end
-                if (itemType == "item") then
-                    if (C_ToyBox.GetToyInfo(toyId) ~= nil) then
-                        L:AddToy(toyId, data.toyBoxId, elementId or 1)
-                        ClearCursor()
-                        self:Refresh()
-                    end
-                end
-            end
-            elseif (L.ToyJunkie.movingHeader ~= nil) then
-            if(data.isHeader) then
-                if(data.id == L.ToyJunkie.movingHeader) then
-                    L.ToyJunkie.movingHeader = nil
-                    L.ToyJunkie.DragBackdrop:Hide()
-                    SetCursor(nil)
-                    L.ToyJunkie.DragHeader:Hide()
-                    self:Refresh()
-                end
-            end
-        end
-    end
-end]]
-
 function ListMixin:OnElementClicked(element, button)
     if (not L.ToyJunkie.noInteraction) then
         local data = element.GetData()
@@ -647,6 +613,14 @@ function ListMixin:OnElementClicked(element, button)
                             parent = element,
                             title = "Toy box Options",
                             items = {
+                                {
+                                    text = "Open This Toy Box",
+                                    tooltipTitle = "Open This Toy Box",
+                                    tooltipText = "Open/set the main window to this toy box",
+                                    func = function()
+                                        --open this shit!
+                                    end
+                                },
                                 {
                                     text = "Rename",
                                     tooltipTitle = "Rename",
@@ -692,6 +666,15 @@ function ListMixin:OnElementClicked(element, button)
                                     func = function()
                                         if (IsShiftKeyDown()) then
                                             table.remove(L.ToyJunkie.db.profile.boxes, data.id)
+                                            if(#L.ToyJunkie.db.profile.boxes > 0) then
+                                                if(L.ToyJunkie.db.profile.selectedToybox == data.name) then
+                                                    L.ToyJunkie.db.profile.selectedToybox = L.ToyJunkie.db.profile.boxes[1].name
+                                                    L.ToyboxFrame:UpdateAll()
+                                                end
+                                            else
+                                                L.ToyJunkie.db.profile.selectedToybox = nil
+                                                L.ToyboxFrame:Toggle(true, "CLOSE")
+                                            end
                                             self:Refresh()
                                         end
                                     end
@@ -723,6 +706,7 @@ function ListMixin:OnElementClicked(element, button)
                                     for key, toy in pairs(L.ToyJunkie.db.profile.boxes[data.toyBoxId].toys) do
                                         if (toy == data.toyId) then
                                             table.remove(L.ToyJunkie.db.profile.boxes[data.toyBoxId].toys, key)
+                                            L.ToyboxFrame:UpdateToyButtons(L.ToyJunkie.db.profile.toyboxListSelectedPage)
                                         end
                                     end
                                     self:Refresh()
@@ -739,36 +723,6 @@ function ListMixin:OnElementClicked(element, button)
                     ToggleDropDownMenu(1, nil, toyContext, "cursor", 10, 5)
                 end
             end
-            --[[else
-            if (GetCursorInfo() ~= nil) then
-                if (data.isHeader) then
-                    local itemType, toyId = GetCursorInfo()
-                    if (itemType == "item") then
-                        if (C_ToyBox.GetToyInfo(toyId) ~= nil) then
-                            L:AddToy(toyId, data.id)
-                            ClearCursor()
-                            self:Refresh()
-                        end
-                    end
-                else
-                    local itemType, toyId = GetCursorInfo()
-                    local elementId
-                    for key, toy in pairs(L.ToyJunkie.db.profile.boxes[data.toyBoxId].toys) do
-                        if (toy == data.toyId) then
-                            elementId = key
-                        end
-                    end
-                    if (itemType == "item") then
-                        if (C_ToyBox.GetToyInfo(toyId) ~= nil) then
-                            L:AddToy(toyId, data.toyBoxId, elementId or 1)
-                            ClearCursor()
-                            self:Refresh()
-                        end
-                    end
-                end
-            elseif (L.ToyJunkie.movingHeader ~= nil) then
-
-            end]]
         end
     end
 end
@@ -894,7 +848,10 @@ function AttachedScrollTemplateMixin:OnLoad()
 end
 
 function AttachedScrollTemplateMixin:AddToybox()
-    local newName = ""
+    if(#L.ToyJunkie.db.profile.boxes < 1) then
+        L.ToyJunkie.db.profile.selectedToybox = "New Toy box (1)"
+    end
+
     local numList = {}
     for id, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
         toyBox.isCollapsed = true

@@ -1,4 +1,4 @@
-## Interface: 100200
+## Interface: 100205
 
 ## Title: ToyJunkie
 ## Notes: Shows a small window with you favorite toys
@@ -34,6 +34,6 @@ ScrollTemplate\templates.xml
 
 Windows\CollectionAttachedWindow.lua
 #Windows\ToyboxEditWindow.lua
-#Windows\ToyboxWindow.lua
+Windows\ToyboxWindow.lua
 
 #stuff.lua

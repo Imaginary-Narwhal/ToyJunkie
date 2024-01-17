@@ -59,6 +59,7 @@
         "GetText",
         "BACKDROP_TUTORIAL_16_16",
         "GameFontDisable",
-        "ADD"
+        "ADD",
+        "PANEL_BACKGROUND_COLOR"
     ]
 }
