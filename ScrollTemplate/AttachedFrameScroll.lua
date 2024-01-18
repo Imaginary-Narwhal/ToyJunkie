@@ -249,7 +249,6 @@ function ListMixin:OnLoad()
                         end
                     end
                 elseif (L:CursorHasToy() and not movingToy) then -- Grabbed toy from Blizzard Collection Frame
-                    print("not movingtoy")
                     local element = GetMouseFocus()
                     if (element.isTJListFrame) then
                         local elementData = element:GetData()
@@ -277,7 +276,6 @@ function ListMixin:OnLoad()
                         end
                     end
                 elseif (movingToy) then
-                    print("movingToy")
                     local element = GetMouseFocus()
                     if (element.isTJListFrame) then
                         local elementData = element:GetData()
@@ -383,7 +381,6 @@ function ListMixin:OnLoad()
     self.scrollBar:SetPoint("BOTTOMLEFT", self.scrollBox, "BOTTOMRIGHT", 8, 0)
 
     self.searchBar = CreateFrame("EditBox", "$parent_SearchBar", self, "InputBoxTemplate")
-    sb = self.searchBar
     self.searchBar:SetPoint("TOPLEFT", 60, 38)
     self.searchBar:SetSize(150, 40)
     self.searchBar:SetAutoFocus(false)
@@ -618,7 +615,10 @@ function ListMixin:OnElementClicked(element, button)
                                     tooltipTitle = "Open This Toy Box",
                                     tooltipText = "Open/set the main window to this toy box",
                                     func = function()
-                                        --open this shit!
+                                        L.ToyJunkie.db.profile.selectedToybox = data.name
+                                        L.ToyboxFrame:UpdateToyboxDisplay()
+                                        L.ToyboxFrame:UpdateToyButtons()
+                                        L.ToyboxFrame:Show()
                                     end
                                 },
                                 {

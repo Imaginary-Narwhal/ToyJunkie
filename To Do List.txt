@@ -1,5 +1,5 @@
 To Do:
-Dropdown to select different toy boxes
+
 Settings frame and button
 Random toy button and slash command
 Compact window option

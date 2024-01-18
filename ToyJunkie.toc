@@ -30,6 +30,7 @@ utils\DragFrame.lua
 
 ScrollTemplate\AttachedFrameScroll.lua
 ScrollTemplate\IconScrollFrame.lua
+ScrollTemplate\ToyboxScrollFrame.lua
 ScrollTemplate\templates.xml
 
 Windows\CollectionAttachedWindow.lua
