@@ -19,7 +19,7 @@ L.isInCombat = false
 L.defaults = {
     profile = {
         isAttachedWindowHidden = true,
-        displaySize = 2,
+        compactDisplay = false,
         selectedToybox = nil,
         toyboxShown = false,
         toyboxLastSelectedPage = 1,
@@ -41,3 +41,16 @@ function L.ToyJunkie:ConfigurationInitialize(self)
     AC:RegisterOptionsTable("ToyJunkie_Profiles", profiles)
     ACD:AddToBlizOptions("ToyJunkie_Profiles", "ToyJunkie Profiles")
 end
+
+--[[ 
+    settings: 
+        displaySize = 1-Compact, 2-Normal, 3-Special?
+        showTooltips = true/false
+            (Possible option to hold shift to show tooltips)
+        minimap button = hide - true/false, lock - true/false
+            (Message to mention about LDB addon)
+        addonCompartment = true/false
+        profiles = button to open profiles in addonsettings
+
+        134400 130724
+]]

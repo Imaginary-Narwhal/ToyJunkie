@@ -1,5 +1,4 @@
 To Do:
 
-Settings frame and button
 Random toy button and slash command
 Compact window option

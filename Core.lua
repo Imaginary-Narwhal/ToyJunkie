@@ -20,7 +20,7 @@ function L.ToyJunkie:OnInitialize()
             if(button == "LeftButton") then
                 L.ToyboxFrame:Toggle()
             elseif (button == "RightButton") then
-               InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
+               L:SettingsMenuDropdown()
             end
         end
     })
@@ -56,24 +56,24 @@ function L.ToyJunkie:OnEnable()
 
 
     self:RegisterEvent("TOYS_UPDATED")
-    --self:RegisterEvent("PLAYER_REGEN_DISABLED")
-    --self:RegisterEvent("PLAYER_REGEN_ENABLED")
+    self:RegisterEvent("PLAYER_REGEN_DISABLED")
+    self:RegisterEvent("PLAYER_REGEN_ENABLED")
     
     L.ToyJunkie:SecureHookScript(ColorPickerFrame, "OnHide", "ColorPickerFrame_OnHide_Hook")
     if(#L.ToyJunkie.db.profile.boxes < 1) then
         L.ToyJunkie.db.profile.selectedToybox = nil
         L.ToyJunkie.db.profile.toyboxShown = false
     end
+
+    if(L.ToyJunkie.db.profile.addonCompartment) then
+        L.ToyJunkie.Icon:AddButtonToCompartment(addonName)
+    end
 end
 
 function L.ToyJunkie:TJCommand(msg)
     if(not msg or msg:trim() == "") then
         L.ToyboxFrame:Toggle()
-    --elseif(string.lower(msg) == "config" or string.lower(msg) == "options") then
-        --InterfaceOptionsFrame_OpenToCategory(self.optionsFrame)
-        --print("Open options frame")
     end
-    L.ToyJunkie.DragBackdrop:SetShown(not L.ToyJunkie.DragBackdrop:IsShown())
 end
 
 function L.ToyJunkie:TOYS_UPDATED()
@@ -86,18 +86,6 @@ function L.ToyJunkie:TOYS_UPDATED()
     if(L.ToyJunkie.db.profile.toyboxShown) then
         L.ToyboxFrame:Toggle(true, "OPEN")
     end
-    
-    --L.ToyboxFrame:UpdateToyboxDisplay()
-    --[[if(L.ToyJunkie.db.profile.selectedToybox == nil) then
-        if(#L.ToyJunkie.db.profile.boxes > 0) then
-            L:ToyJunkieToyboxSelectedChange(1)
-        else
-            L.ToyboxFrame:Hide()
-        end
-    else
-        L:ToyJunkieToyboxSelectedChange(L.ToyJunkie.db.profile.selectedToybox)
-    end
-    L:CheckCooldowns()]]
 end
 
 function L.ToyJunkie:ColorPickerFrame_OnHide_Hook()
@@ -106,5 +94,17 @@ function L.ToyJunkie:ColorPickerFrame_OnHide_Hook()
         ColorPickerFrame:SetPoint("CENTER")
         L.ToyJunkie.colorPickerOpened = false
         L.ToyJunkie.noInteraction = false
+    end
+end
+
+function L.ToyJunkie:PLAYER_REGEN_DISABLED()
+    L.isInCombat = true
+    L.ToyboxFrame:Toggle(true, "CLOSE")
+end
+
+function L.ToyJunkie:PLAYER_REGEN_ENABLED()
+    L.isInCombat = false
+    if(L.ToyJunkie.db.profile.toyboxShown) then
+        L.ToyboxFrame:Toggle(true, "OPEN")
     end
 end

@@ -57,6 +57,22 @@ L.ToyboxFrame.CloseButton:SetScript("OnClick", function(self, button)
     end
 end)
 
+L.ToyboxFrame.SettingsButton = CreateFrame("Button", "$parent_SettingsButton", L.ToyboxFrame)
+L.ToyboxFrame.SettingsButton:SetSize(18, 18)
+L.ToyboxFrame.SettingsButton.Texture = L.ToyboxFrame.SettingsButton:CreateTexture()
+
+L.ToyboxFrame.SettingsButton.Texture:SetTexture(311226)
+L.ToyboxFrame.SettingsButton.Texture:SetAllPoints()
+L.ToyboxFrame.SettingsButton:SetHighlightTexture("Interface/Buttons/UI-Common-MouseHilight", "ADD")
+L.ToyboxFrame.SettingsButton:SetPoint("BOTTOMRIGHT", 3, -3)
+L.ToyboxFrame.SettingsButton:SetScript("OnClick", function(self, button)
+    if(button == "LeftButton") then
+        L:SettingsMenuDropdown(self)
+    end
+end)
+
+
+
 L.ToyboxFrame.DropdownButton = CreateFrame("Button", "$parent_DropdownButton", L.ToyboxFrame)
 L.ToyboxFrame.DropdownButton:SetNormalAtlas("hud-MainMenuBar-arrowdown-up")
 L.ToyboxFrame.DropdownButton:SetPushedAtlas("hud-MainMenuBar-arrowdown-down")
@@ -77,8 +93,7 @@ end)
 
 L.ToyboxFrame.TitleBar = CreateFrame("Button", "$parent_TitleBar", L.ToyboxFrame)
 L.ToyboxFrame.TitleBar:SetPoint("TOPLEFT", L.ToyboxFrame, "TOPLEFT", 27, -8)
-L.ToyboxFrame.TitleBar:SetPoint("BOTTOMRIGHT",L.ToyboxFrame,"TOPRIGHT", -40, -24)
---L.ToyboxFrame.TitleBar:SetAllPoints()
+L.ToyboxFrame.TitleBar:SetPoint("BOTTOMRIGHT", L.ToyboxFrame, "TOPRIGHT", -40, -24)
 L.ToyboxFrame.TitleBar:SetScript("OnClick", function(self, button)
     L.ToyboxFrame.ToyboxSelectionFrame:SetShown(not L.ToyboxFrame.ToyboxSelectionFrame:IsShown())
 end)
@@ -95,16 +110,29 @@ L.ToyboxFrame.TitleBar.Icon:SetPoint("TOPLEFT", 0, 0)
 L.ToyboxFrame.TitleBar.Icon:SetTexture(454046)
 
 L.ToyboxFrame.TitleBar.Title = L.ToyboxFrame.TitleBar:CreateFontString(nil, "OVERLAY", "GameTooltipText")
-L.ToyboxFrame.TitleBar.Title:SetPoint("TOPLEFT", 20,-1)
-L.ToyboxFrame.TitleBar.Title:SetPoint("TOPRIGHT",0,-21)
+L.ToyboxFrame.TitleBar.Title:SetPoint("TOPLEFT", 20, -1)
+L.ToyboxFrame.TitleBar.Title:SetPoint("TOPRIGHT", 0, -21)
 L.ToyboxFrame.TitleBar.Title:SetWordWrap(false)
 L.ToyboxFrame.TitleBar.Title:SetText("Teh Title")
+L.ToyboxFrame.TitleBar:RegisterForDrag("LeftButton")
+
+L.ToyboxFrame.TitleBar:SetScript("OnDragStart", function(self, button)
+    if (not isMoving) then
+        L.ToyboxFrame:StartMoving()
+        isMoving = true
+    end
+end)
+L.ToyboxFrame.TitleBar:SetScript("OnDragStop", function(self, button)
+    if (isMoving) then
+        L.ToyboxFrame:StopMovingOrSizing()
+        isMoving = false
+    end
+end)
 
 L.ToyboxFrame.ToyButtonHolderFrame = CreateFrame("Frame", "$parent_ToyButtonHolderFrame", L.ToyboxFrame)
 L.ToyboxFrame.ToyButtonHolderFrame:SetScale(1)
 L.ToyboxFrame.ToyButtonHolderFrame:SetPoint("TOPLEFT", 15, -30)
 L.ToyboxFrame.ToyButtonHolderFrame:SetSize(164, 164)
-
 
 --------------------
 -- Page Interface --
@@ -129,7 +157,7 @@ L.ToyboxFrame.PageInterface:SetPoint("BOTTOM", 0, -22)
 L.ToyboxFrame.PageInterface.PrevPageButton = CreateFrame("Button", "$parent_PrevToyButton", L.ToyboxFrame.PageInterface)
 L.ToyboxFrame.PageInterface.PrevPageButton:SetPoint("BOTTOMLEFT", -3, -4)
 L.ToyboxFrame.PageInterface.PrevPageButton.Bg = L.ToyboxFrame.PageInterface.PrevPageButton:CreateTexture(nil,
-    "BACKGROUND")                                                                                                           --Button is transparent, added black background to create solid
+    "BACKGROUND") --Button is transparent, added black background to create solid
 L.ToyboxFrame.PageInterface.PrevPageButton.Bg:SetPoint("TOPLEFT", 4, -5)
 L.ToyboxFrame.PageInterface.PrevPageButton.Bg:SetPoint("BOTTOMRIGHT", -4, 5)
 L.ToyboxFrame.PageInterface.PrevPageButton.Bg:SetColorTexture(0, 0, 0, 1)
@@ -146,7 +174,7 @@ end)
 L.ToyboxFrame.PageInterface.NextPageButton = CreateFrame("Button", "$parent_NextPageButton", L.ToyboxFrame.PageInterface)
 L.ToyboxFrame.PageInterface.NextPageButton:SetPoint("BOTTOMRIGHT", 3, -4)
 L.ToyboxFrame.PageInterface.NextPageButton.Bg = L.ToyboxFrame.PageInterface.NextPageButton:CreateTexture(nil,
-    "BACKGROUND")                                                                                                           --Button is transparent, added black background to create solid
+    "BACKGROUND") --Button is transparent, added black background to create solid
 L.ToyboxFrame.PageInterface.NextPageButton.Bg:SetPoint("TOPLEFT", 4, -5)
 L.ToyboxFrame.PageInterface.NextPageButton.Bg:SetPoint("BOTTOMRIGHT", -4, 5)
 L.ToyboxFrame.PageInterface.NextPageButton.Bg:SetColorTexture(0, 0, 0, 1)
@@ -186,7 +214,8 @@ function L.ToyboxFrame.PageInterface:UpdatePageButtons(currentPage, maxPage)
     end
 end
 
-L.ToyboxFrame.ToyboxSelectionFrame = Mixin(CreateFrame("Frame", "$parent_ToyboxSelectionFrame", L.ToyboxFrame, "BackdropTemplate"), L.ToyboxSelectionTemplateMixin)
+L.ToyboxFrame.ToyboxSelectionFrame = Mixin(
+CreateFrame("Frame", "$parent_ToyboxSelectionFrame", L.ToyboxFrame, "BackdropTemplate"), L.ToyboxSelectionTemplateMixin)
 L.ToyboxFrame.ToyboxSelectionFrame:SetFrameStrata("DIALOG")
 L.ToyboxFrame.ToyboxSelectionFrame:SetPoint("TOPLEFT", 5, -23)
 L.ToyboxFrame.ToyboxSelectionFrame:SetPoint("BOTTOMRIGHT", -5, 10)
@@ -196,7 +225,7 @@ L.ToyboxFrame.ToyboxSelectionFrame:SetBackdrop({
     edgeSize = 16,
     insets = { left = 3, right = 3, top = 3, bottom = 3 }
 })
-L.ToyboxFrame.ToyboxSelectionFrame:SetBackdropBorderColor(.5,.5,.5,1)
+L.ToyboxFrame.ToyboxSelectionFrame:SetBackdropBorderColor(.5, .5, .5, 1)
 L.ToyboxFrame.ToyboxSelectionFrame:EnableMouse(true)
 L.ToyboxFrame.ToyboxSelectionFrame:OnLoad()
 L.ToyboxFrame.ToyboxSelectionFrame:HookScript("OnShow", function(self)
@@ -207,15 +236,15 @@ L.ToyboxFrame.ToyboxSelectionFrame:HookScript("OnShow", function(self)
     L.ToyboxFrame.ToyboxSelectionFrame:RegisterEvent("GLOBAL_MOUSE_UP")
 end)
 L.ToyboxFrame.ToyboxSelectionFrame:HookScript("OnHide", function(self)
-    if(L.ToyJunkie.db ~= nil) then
+    if (L.ToyJunkie.db ~= nil) then
         L.ToyboxFrame:UpdateToyButtons(L.ToyJunkie.db.profile.toyboxLastSelectedPage)
     end
     L.ToyboxFrame.ToyboxSelectionFrame:UnregisterEvent("GLOBAL_MOUSE_UP")
 end)
 
 L.ToyboxFrame.ToyboxSelectionFrame:SetScript("OnEvent", function(self, event)
-    if(event == "GLOBAL_MOUSE_UP") then
-        if(not self:IsMouseOver() and not frameOpening) then
+    if (event == "GLOBAL_MOUSE_UP") then
+        if (not self:IsMouseOver() and not frameOpening) then
             self:Hide()
         end
         frameOpening = false
@@ -306,7 +335,7 @@ function L.ToyboxFrame:CreateToyButtons()
                 break
             end
         end
-        --button:Hide()
+        button:Hide()
         table.insert(holder.Buttons, button)
     end
 end
@@ -360,15 +389,16 @@ function L.ToyboxFrame:UpdateToyButtons(page)
             local button = L:GetToyButton(i + 1)
             if (toyId) then
                 local _, _, toyIcon = C_ToyBox.GetToyInfo(toyId)
-                if (toyIcon ~= nil) then
-                    button.id = toyId
-                    button:SetNormalTexture(toyIcon)
-                    button:SetAttribute("type1", "toy")
-                    button:SetAttribute("toy1", toyId)
-                    button:RegisterEvent("SPELL_UPDATE_COOLDOWN")
-                    button:Show()
-                    L.ToyboxFrame:CheckCooldowns(i + 1)
+                if (toyIcon == nil) then
+                    toyIcon = 134400
                 end
+                button.id = toyId
+                button:SetNormalTexture(toyIcon)
+                button:SetAttribute("type1", "toy")
+                button:SetAttribute("toy1", toyId)
+                button:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+                button:Show()
+                L.ToyboxFrame:CheckCooldowns(i + 1)
             else
                 button:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
                 button.id = nil
@@ -406,9 +436,11 @@ function L.ToyboxFrame:Toggle(auto, force)
         if (force == "CLOSE") then
             self:Hide()
         else
-            self:UpdateToyboxDisplay()
-            self:UpdateToyButtons(L.ToyJunkie.db.profile.toyboxLastSelectedPage)
-            self:Show()
+            if(not L.isInCombat) then
+                self:UpdateToyboxDisplay()
+                self:UpdateToyButtons(L.ToyJunkie.db.profile.toyboxLastSelectedPage)
+                self:Show()
+            end
         end
     else
         if (force == "CLOSE") then

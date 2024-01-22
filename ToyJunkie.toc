@@ -34,7 +34,6 @@ ScrollTemplate\ToyboxScrollFrame.lua
 ScrollTemplate\templates.xml
 
 Windows\CollectionAttachedWindow.lua
-#Windows\ToyboxEditWindow.lua
 Windows\ToyboxWindow.lua
 
 #stuff.lua
