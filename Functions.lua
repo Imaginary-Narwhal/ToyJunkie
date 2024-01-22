@@ -62,7 +62,7 @@ end
 
 function L:GetToyBoxIdByName(name)
     for k, v in pairs(L.ToyJunkie.db.profile.boxes) do
-        if (v.name == name) then
+        if (string.lower(v.name) == string.lower(name)) then
             return k
         end
     end
@@ -227,12 +227,21 @@ function L:SettingsMenuDropdown(parent)
             info.menuList = "minimap"
             info.notCheckable = true
             UIDropDownMenu_AddButton(info)
+
+            UIDropDownMenu_AddSeparator()
+
+            info = UIDropDownMenu_CreateInfo()
+            info.text = "Profiles"
+            info.notCheckable = true
+            info.func = function()
+                InterfaceOptionsFrame_OpenToCategory(L.ToyJunkie.profiles)
+            end
+            UIDropDownMenu_AddButton(info)
         elseif (menuList == "minimap") then
             info = UIDropDownMenu_CreateInfo()
             info.text = "Hide Minimap Button"
             info.checked = L.ToyJunkie.db.profile.minimap.hide
             info.func = function()
-                --L.ToyJunkie.db.profile.minimap.hide = not L.ToyJunkie.db.profile.minimap.hide
                 if(L.ToyJunkie.db.profile.minimap.hide) then
                     L.ToyJunkie.db.profile.minimap.hide = false
                     L.ToyJunkie.Icon:Show(addonName)

@@ -1,4 +1,0 @@
-To Do:
-
-Random toy button and slash command
-Compact window option

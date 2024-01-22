@@ -39,7 +39,7 @@ function L.ToyJunkie:ConfigurationInitialize(self)
     local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
 
     AC:RegisterOptionsTable("ToyJunkie_Profiles", profiles)
-    ACD:AddToBlizOptions("ToyJunkie_Profiles", "ToyJunkie Profiles")
+    self.profiles = ACD:AddToBlizOptions("ToyJunkie_Profiles", "ToyJunkie Profiles")
 end
 
 --[[ 

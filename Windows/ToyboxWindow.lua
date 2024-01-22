@@ -10,16 +10,14 @@ local tipTimer
 
 L.ToyboxFrame = CreateFrame("Frame", "ToyJunkie_ToyboxFrame", UIParent, "BackdropTemplate")
 L.ToyboxFrame:SetFrameLevel(5)
-L.ToyboxFrame.Bg = L.ToyboxFrame:CreateTexture()
-L.ToyboxFrame.Bg:SetDrawLayer("BACKGROUND")
-L.ToyboxFrame.Bg:SetPoint("TOPLEFT", 2, -2)
-L.ToyboxFrame.Bg:SetPoint("BOTTOMRIGHT", -2, 2)
-L.ToyboxFrame.Bg:SetColorTexture(PANEL_BACKGROUND_COLOR.r, PANEL_BACKGROUND_COLOR.g, PANEL_BACKGROUND_COLOR.b, 1)
 L.ToyboxFrame:SetBackdrop({
+
+    bgFile = "Interface/Buttons/WHITE8X8",
     edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
     edgeSize = 16,
-    insets = { left = 3, right = 3, top = 3, bottom = 3 }
+    insets = { left = 3.2, right = 3.2, top = 3.2, bottom = 3.2 }
 })
+L.ToyboxFrame:SetBackdropColor(PANEL_BACKGROUND_COLOR.r, PANEL_BACKGROUND_COLOR.g, PANEL_BACKGROUND_COLOR.b, 1)
 L.ToyboxFrame:SetBackdropBorderColor(.5, .5, .5, 1)
 L.ToyboxFrame:SetSize(194, 204)
 L.ToyboxFrame:SetPoint("TOPLEFT", 20, -20)
@@ -50,7 +48,7 @@ end)
 
 L.ToyboxFrame.CloseButton = CreateFrame("Button", "$parent_CloseButton", L.ToyboxFrame, "UIPanelCloseButton")
 L.ToyboxFrame.CloseButton:SetSize(18, 18)
-L.ToyboxFrame.CloseButton:SetPoint("TOPRIGHT", 0, 0)
+L.ToyboxFrame.CloseButton:SetPoint("TOPRIGHT", 2, 2)
 L.ToyboxFrame.CloseButton:SetScript("OnClick", function(self, button)
     if (button == "LeftButton") then
         L.ToyboxFrame:Toggle()
@@ -66,7 +64,7 @@ L.ToyboxFrame.SettingsButton.Texture:SetAllPoints()
 L.ToyboxFrame.SettingsButton:SetHighlightTexture("Interface/Buttons/UI-Common-MouseHilight", "ADD")
 L.ToyboxFrame.SettingsButton:SetPoint("BOTTOMRIGHT", 3, -3)
 L.ToyboxFrame.SettingsButton:SetScript("OnClick", function(self, button)
-    if(button == "LeftButton") then
+    if (button == "LeftButton") then
         L:SettingsMenuDropdown(self)
     end
 end)
@@ -133,6 +131,42 @@ L.ToyboxFrame.ToyButtonHolderFrame = CreateFrame("Frame", "$parent_ToyButtonHold
 L.ToyboxFrame.ToyButtonHolderFrame:SetScale(1)
 L.ToyboxFrame.ToyButtonHolderFrame:SetPoint("TOPLEFT", 15, -30)
 L.ToyboxFrame.ToyButtonHolderFrame:SetSize(164, 164)
+
+-------------------
+-- Random button --
+-------------------
+
+L.ToyboxFrame.RandomToyButton = CreateFrame("Button", "$parent_RandomToyButton", L.ToyboxFrame,
+    "SecureActionButtonTemplate")
+L.ToyboxFrame.RandomToyButton:SetNormalTexture(130772)
+L.ToyboxFrame.RandomToyButton:SetHighlightTexture(130771)
+L.ToyboxFrame.RandomToyButton:SetPushedTexture(130770)
+L.ToyboxFrame.RandomToyButton:SetSize(18, 18)
+L.ToyboxFrame.RandomToyButton:SetPoint("BOTTOMLEFT", -4, -3)
+L.ToyboxFrame.RandomToyButton:RegisterForClicks("AnyUp", "AnyDown")
+L.ToyboxFrame.RandomToyButton:SetAttribute("type1", "toy")
+function L.ToyboxFrame.RandomToyButton:SetToy()
+    local toyList = {}
+    local toy = 0
+    for id, iToy in pairs(L.ToyJunkie.db.profile.boxes[L:GetToyBoxIdByName(L.ToyJunkie.db.profile.selectedToybox)].toys) do
+        local _, dur = GetItemCooldown(iToy)
+        if (dur == 0) then
+            table.insert(toyList, iToy)
+        end
+    end
+    if (#toyList > 0) then
+        self:SetAttribute("toy1", toyList[random(#toyList)])
+    else
+        self:SetAttribute("toy1", "0")
+        UIErrorsFrame:AddExternalErrorMessage("No toys that are ready to be used.")
+    end
+end
+
+L.ToyboxFrame.RandomToyButton:HookScript("OnClick", function(self, button)
+    if(button == "LeftButton") then
+        self:SetToy()
+    end
+end)
 
 --------------------
 -- Page Interface --
@@ -215,10 +249,11 @@ function L.ToyboxFrame.PageInterface:UpdatePageButtons(currentPage, maxPage)
 end
 
 L.ToyboxFrame.ToyboxSelectionFrame = Mixin(
-CreateFrame("Frame", "$parent_ToyboxSelectionFrame", L.ToyboxFrame, "BackdropTemplate"), L.ToyboxSelectionTemplateMixin)
+    CreateFrame("Frame", "$parent_ToyboxSelectionFrame", L.ToyboxFrame, "BackdropTemplate"),
+    L.ToyboxSelectionTemplateMixin)
 L.ToyboxFrame.ToyboxSelectionFrame:SetFrameStrata("DIALOG")
 L.ToyboxFrame.ToyboxSelectionFrame:SetPoint("TOPLEFT", 5, -23)
-L.ToyboxFrame.ToyboxSelectionFrame:SetPoint("BOTTOMRIGHT", -5, 10)
+L.ToyboxFrame.ToyboxSelectionFrame:SetSize(200, 200)
 L.ToyboxFrame.ToyboxSelectionFrame:SetBackdrop({
     bgFile = "Interface/FrameGeneral/UI-Background-Marble",
     edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
@@ -257,6 +292,22 @@ L.ToyboxFrame.ToyboxSelectionFrame:Hide()
 ----------------------
 -- Toybox Functions --
 ----------------------
+function L.ToyboxFrame:ChangeFrame()
+    if (L.ToyJunkie.db.profile.compactDisplay) then
+        L.ToyboxFrame.ToyButtonHolderFrame:SetScale(.5)
+        L.ToyboxFrame:SetSize(112, 123)
+        L.ToyboxFrame.TitleBar.Title:Hide()
+        L.ToyboxFrame.PageInterface:SetScale(.75)
+    else
+        L.ToyboxFrame.ToyButtonHolderFrame:SetScale(1)
+        L.ToyboxFrame:SetSize(194, 204)
+        L.ToyboxFrame.TitleBar.Title:Show()
+        L.ToyboxFrame.PageInterface:SetScale(1)
+    end
+    L.ToyboxFrame.ToyButtonHolderFrame:SetPoint("TOPLEFT", 15 / L.ToyboxFrame.ToyButtonHolderFrame:GetScale(),
+        -30 / L.ToyboxFrame.ToyButtonHolderFrame:GetScale())
+end
+
 function L.ToyboxFrame:UpdateAll()
     self:UpdateToyboxDisplay()
     self:UpdateToyButtons(L.ToyJunkie.db.profile.toyboxLastSelectedPage)
@@ -436,7 +487,7 @@ function L.ToyboxFrame:Toggle(auto, force)
         if (force == "CLOSE") then
             self:Hide()
         else
-            if(not L.isInCombat) then
+            if (not L.isInCombat) then
                 self:UpdateToyboxDisplay()
                 self:UpdateToyButtons(L.ToyJunkie.db.profile.toyboxLastSelectedPage)
                 self:Show()
