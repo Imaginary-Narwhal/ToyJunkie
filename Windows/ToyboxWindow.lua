@@ -57,12 +57,15 @@ end)
 
 L.ToyboxFrame.SettingsButton = CreateFrame("Button", "$parent_SettingsButton", L.ToyboxFrame)
 L.ToyboxFrame.SettingsButton:SetSize(18, 18)
-L.ToyboxFrame.SettingsButton.Texture = L.ToyboxFrame.SettingsButton:CreateTexture()
 
-L.ToyboxFrame.SettingsButton.Texture:SetTexture(311226)
-L.ToyboxFrame.SettingsButton.Texture:SetAllPoints()
+L.ToyboxFrame.SettingsButton:SetNormalTexture("Interface/Addons/ToyJunkie/images/settings-buttons.png")
+L.ToyboxFrame.SettingsButton:GetNormalTexture():SetTexCoord(0.21875, 0.765625, 0.023438, 0.3125)
+
+L.ToyboxFrame.SettingsButton:SetPushedTexture("Interface/Addons/ToyJunkie/images/settings-buttons.png")
+L.ToyboxFrame.SettingsButton:GetPushedTexture():SetTexCoord(0.21875, 0.765625, 0.335938, 0.625)
+
 L.ToyboxFrame.SettingsButton:SetHighlightTexture("Interface/Buttons/UI-Common-MouseHilight", "ADD")
-L.ToyboxFrame.SettingsButton:SetPoint("BOTTOMRIGHT", 3, -3)
+L.ToyboxFrame.SettingsButton:SetPoint("TOPRIGHT", -18, 2)
 L.ToyboxFrame.SettingsButton:SetScript("OnClick", function(self, button)
     if (button == "LeftButton") then
         L:SettingsMenuDropdown(self)
@@ -136,13 +139,12 @@ L.ToyboxFrame.ToyButtonHolderFrame:SetSize(164, 164)
 -- Random button --
 -------------------
 
-L.ToyboxFrame.RandomToyButton = CreateFrame("Button", "$parent_RandomToyButton", L.ToyboxFrame,
-    "SecureActionButtonTemplate")
+L.ToyboxFrame.RandomToyButton = CreateFrame("Button", "$parent_RandomToyButton", L.ToyboxFrame, "SecureActionButtonTemplate")
 L.ToyboxFrame.RandomToyButton:SetNormalTexture(130772)
 L.ToyboxFrame.RandomToyButton:SetHighlightTexture(130771)
 L.ToyboxFrame.RandomToyButton:SetPushedTexture(130770)
 L.ToyboxFrame.RandomToyButton:SetSize(18, 18)
-L.ToyboxFrame.RandomToyButton:SetPoint("BOTTOMLEFT", -4, -3)
+L.ToyboxFrame.RandomToyButton:SetPoint("BOTTOMRIGHT", 4, -3)
 L.ToyboxFrame.RandomToyButton:RegisterForClicks("AnyUp", "AnyDown")
 L.ToyboxFrame.RandomToyButton:SetAttribute("type1", "toy")
 function L.ToyboxFrame.RandomToyButton:SetToy()
