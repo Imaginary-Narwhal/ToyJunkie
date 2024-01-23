@@ -6,10 +6,6 @@ function L.ToyJunkie:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("ToyJunkieDB", L.defaults, true)
     L.ToyJunkie:ConfigurationInitialize(self)
 
-    tjdb = L.ToyJunkie.db.profile --DELETE THIS LINE (BETA)
-    tj = L                        --DELETE ME TOO (BETA)
-    self:Print("REMOVE ALL BETA CODE (Search for (BETA) in your code)")
-
     local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
     ---@diagnostic disable-next-line: missing-fields
     local dataObj = ldb:NewDataObject(addonName, {
