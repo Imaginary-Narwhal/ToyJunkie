@@ -28,7 +28,7 @@ L.ToyboxFrame:SetMovable(true)
 L.ToyboxFrame:EnableMouse(true)
 
 L.ToyboxFrame:SetScript("OnDragStart", function(self, button)
-    if (not isMoving) then
+    if (not isMoving and not L.ToyJunkie.db.profile.lockToyboxFrame) then
         L.ToyboxFrame:StartMoving()
         isMoving = true
     end
@@ -139,7 +139,8 @@ L.ToyboxFrame.ToyButtonHolderFrame:SetSize(164, 164)
 -- Random button --
 -------------------
 
-L.ToyboxFrame.RandomToyButton = CreateFrame("Button", "$parent_RandomToyButton", L.ToyboxFrame, "SecureActionButtonTemplate")
+L.ToyboxFrame.RandomToyButton = CreateFrame("Button", "$parent_RandomToyButton", L.ToyboxFrame,
+    "SecureActionButtonTemplate")
 L.ToyboxFrame.RandomToyButton:SetNormalTexture(130772)
 L.ToyboxFrame.RandomToyButton:SetHighlightTexture(130771)
 L.ToyboxFrame.RandomToyButton:SetPushedTexture(130770)
@@ -148,24 +149,26 @@ L.ToyboxFrame.RandomToyButton:SetPoint("BOTTOMRIGHT", 4, -3)
 L.ToyboxFrame.RandomToyButton:RegisterForClicks("AnyUp", "AnyDown")
 L.ToyboxFrame.RandomToyButton:SetAttribute("type1", "toy")
 function L.ToyboxFrame.RandomToyButton:SetToy()
-    local toyList = {}
-    local toy = 0
-    for id, iToy in pairs(L.ToyJunkie.db.profile.boxes[L:GetToyBoxIdByName(L.ToyJunkie.db.profile.selectedToybox)].toys) do
-        local _, dur = GetItemCooldown(iToy)
-        if (dur == 0) then
-            table.insert(toyList, iToy)
+    if (L.ToyJunkie.db.profile.selectedToybox) then
+        local toyList = {}
+        local toy = 0
+        for id, iToy in pairs(L.ToyJunkie.db.profile.boxes[L:GetToyBoxIdByName(L.ToyJunkie.db.profile.selectedToybox)].toys) do
+            local _, dur = GetItemCooldown(iToy)
+            if (dur == 0) then
+                table.insert(toyList, iToy)
+            end
         end
-    end
-    if (#toyList > 0) then
-        self:SetAttribute("toy1", toyList[random(#toyList)])
-    else
-        self:SetAttribute("toy1", "0")
-        UIErrorsFrame:AddExternalErrorMessage("No toys that are ready to be used.")
+        if (#toyList > 0) then
+            self:SetAttribute("toy1", toyList[random(#toyList)])
+        else
+            self:SetAttribute("toy1", "0")
+            UIErrorsFrame:AddExternalErrorMessage("No toys that are ready to be used.")
+        end
     end
 end
 
 L.ToyboxFrame.RandomToyButton:HookScript("OnClick", function(self, button)
-    if(button == "LeftButton") then
+    if (button == "LeftButton") then
         self:SetToy()
     end
 end)

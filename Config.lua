@@ -28,6 +28,7 @@ L.defaults = {
             hide = false,
             lock = false
         },
+        lockToyboxFrame = false,
         addonCompartment = true,
         boxes = {
             

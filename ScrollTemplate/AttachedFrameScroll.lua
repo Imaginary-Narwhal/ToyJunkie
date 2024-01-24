@@ -42,33 +42,6 @@ invalidFrame.Text:SetText("That toy box name already exists")
 invalidFrame.Text:SetTextColor(1, 0, 0, 1)
 invalidFrame:Hide()
 
-local function toyColorCallback(restore)
-    local newR, newG, newB, newA
-    if (restore) then
-        newR, newG, newB, newA = unpack(restore)
-    else
-        newA, newR, newG, newB = OpacitySliderFrame:GetValue(), ColorPickerFrame:GetColorRGB()
-    end
-    L.ToyJunkie.db.profile.boxes[colorPickerToyBoxId].toyColor.red = newR
-    L.ToyJunkie.db.profile.boxes[colorPickerToyBoxId].toyColor.green = newG
-    L.ToyJunkie.db.profile.boxes[colorPickerToyBoxId].toyColor.blue = newB
-    L.ToyJunkie.db.profile.boxes[colorPickerToyBoxId].toyColor.alpha = newA
-    L.AttachedFrame.ScrollFrame.listView:Refresh()
-end
-
-local function ShowColorPicker(r, g, b, a, changedCallBack)
-    ColorPickerFrame.hasOpacity, ColorPickerFrame.opacity = (a ~= nil), a
-    ColorPickerFrame.previousValues = { r, g, b, a }
-    ColorPickerFrame.func, ColorPickerFrame.opacityFunc, ColorPickerFrame.cancelFunc = changedCallBack, changedCallBack,
-        changedCallBack
-    ColorPickerFrame:SetColorRGB(r, g, b)
-    ColorPickerFrame:Hide()
-    L.ToyJunkie.colorPickerOpened = true
-    L.ToyJunkie.noInteraction = true
-    ColorPickerFrame:ClearAllPoints()
-    ColorPickerFrame:SetPoint("TOPLEFT", L.AttachedFrame, "TOPRIGHT", 5, 0)
-    ColorPickerFrame:Show()
-end
 ---------------
 -- Backdrops --
 ---------------
@@ -540,16 +513,16 @@ function ListMixin:OnEditCancelMouseDown(element)
 end
 
 function ListMixin:OnEditSubmitMouseDown(element)
-    if(L.ToyJunkie.db.profile.selectedToybox == L.ToyJunkie.db.profile.boxes[element:GetParent():GetParent():GetData().id].name) then
+    if (L.ToyJunkie.db.profile.selectedToybox == L.ToyJunkie.db.profile.boxes[element:GetParent():GetParent():GetData().id].name) then
         L.ToyJunkie.db.profile.selectedToybox = element:GetParent():GetText()
         L.ToyJunkie.db.profile.boxes[element:GetParent():GetParent():GetData().id].name = element:GetParent():GetText()
-        if(L.ToyboxFrame:IsShown()) then
+        if (L.ToyboxFrame:IsShown()) then
             L.ToyboxFrame:UpdateAll()
         end
     else
         L.ToyJunkie.db.profile.boxes[element:GetParent():GetParent():GetData().id].name = element:GetParent():GetText()
     end
-    
+
     element:GetParent():Hide()
     element:GetParent():GetParent().Text:Show()
     L.ToyJunkie.noInteraction = false
@@ -650,9 +623,25 @@ function ListMixin:OnElementClicked(element, button)
                                     tooltipText = "Change the background color of the toys in this toy box",
                                     func = function()
                                         local colors = L.ToyJunkie.db.profile.boxes[data.id].toyColor
-                                        colorPickerToyBoxId = data.id
-                                        ShowColorPicker(colors.red, colors.green, colors.blue, colors.alpha,
-                                            toyColorCallback)
+
+                                        ColorPickerFrame:SetupColorPickerAndShow({
+                                            r = colors.red,
+                                            g = colors.green,
+                                            b = colors.blue,
+                                            opacity = colors.alpha,
+                                            hasOpacity = true,
+                                            swatchFunc = function()
+                                                colors.red, colors.green, colors.blue = ColorPickerFrame:GetColorRGB()
+                                                colors.alpha = ColorPickerFrame:GetColorAlpha()
+                                                L.AttachedFrame.ScrollFrame.listView:Refresh()
+                                            end,
+                                            cancelFunc = function()
+                                                colors.red, colors.green, colors.blue, colors.alpha =
+                                                    ColorPickerFrame.previousValues.r, ColorPickerFrame.previousValues.g,
+                                                    ColorPickerFrame.previousValues.b, ColorPickerFrame.previousValues.a
+                                                L.AttachedFrame.ScrollFrame.listView:Refresh()
+                                            end
+                                        })
                                     end
                                 },
                                 {
@@ -666,9 +655,10 @@ function ListMixin:OnElementClicked(element, button)
                                     func = function()
                                         if (IsShiftKeyDown()) then
                                             table.remove(L.ToyJunkie.db.profile.boxes, data.id)
-                                            if(#L.ToyJunkie.db.profile.boxes > 0) then
-                                                if(L.ToyJunkie.db.profile.selectedToybox == data.name) then
-                                                    L.ToyJunkie.db.profile.selectedToybox = L.ToyJunkie.db.profile.boxes[1].name
+                                            if (#L.ToyJunkie.db.profile.boxes > 0) then
+                                                if (L.ToyJunkie.db.profile.selectedToybox == data.name) then
+                                                    L.ToyJunkie.db.profile.selectedToybox = L.ToyJunkie.db.profile.boxes
+                                                        [1].name
                                                     L.ToyboxFrame:UpdateAll()
                                                 end
                                             else
@@ -848,7 +838,7 @@ function AttachedScrollTemplateMixin:OnLoad()
 end
 
 function AttachedScrollTemplateMixin:AddToybox()
-    if(#L.ToyJunkie.db.profile.boxes < 1) then
+    if (#L.ToyJunkie.db.profile.boxes < 1) then
         L.ToyJunkie.db.profile.selectedToybox = "New Toy box (1)"
     end
 

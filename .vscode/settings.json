@@ -60,6 +60,19 @@
         "BACKDROP_TUTORIAL_16_16",
         "GameFontDisable",
         "ADD",
-        "PANEL_BACKGROUND_COLOR"
+        "PANEL_BACKGROUND_COLOR",
+        "UIParent",
+        "CreateFrame",
+        "Mixin",
+        "PlaySound",
+        "GameTooltip",
+        "pairs",
+        "table",
+        "GetItemCooldown",
+        "SOUNDKIT",
+        "random",
+        "math",
+        "C_ToyBox",
+        "C_Timer"
     ]
 }

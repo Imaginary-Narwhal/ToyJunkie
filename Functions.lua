@@ -222,6 +222,19 @@ function L:SettingsMenuDropdown(parent)
 
             info = UIDropDownMenu_CreateInfo()
 
+            info.text = "Lock Toy Box"
+            info.checked = L.ToyJunkie.db.profile.lockToyboxFrame
+            info.func = function()
+                L.ToyJunkie.db.profile.lockToyboxFrame = not L.ToyJunkie.db.profile.lockToyboxFrame
+            end
+            info.isNotRadio = true
+            info.tooltipTitle = "Show Tooltips"
+            info.tooltipText = "Show tooltips on toys in toy box.\nWhen shown, tooltips are delayed."
+            info.tooltipOnButton = true
+            UIDropDownMenu_AddButton(info)
+
+            info = UIDropDownMenu_CreateInfo()
+
             info.text = "Minimap Options"
             info.hasArrow = true
             info.menuList = "minimap"
