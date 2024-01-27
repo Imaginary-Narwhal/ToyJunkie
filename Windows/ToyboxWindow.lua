@@ -118,7 +118,7 @@ L.ToyboxFrame.TitleBar.Title:SetText("Teh Title")
 L.ToyboxFrame.TitleBar:RegisterForDrag("LeftButton")
 
 L.ToyboxFrame.TitleBar:SetScript("OnDragStart", function(self, button)
-    if (not isMoving) then
+    if (not isMoving and not L.ToyJunkie.db.profile.lockToyboxFrame) then
         L.ToyboxFrame:StartMoving()
         isMoving = true
     end
