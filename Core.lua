@@ -1,8 +1,5 @@
 local addonName, L = ...
 
-tjdb = L
-
-
 function L.ToyJunkie:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("ToyJunkieDB", L.defaults, true)
     L.ToyJunkie:ConfigurationInitialize(self)
