@@ -34,7 +34,7 @@ end
 
 local ListMixin = {}
 function ListMixin:OnLoad()
-    CallbackRegistryMixin:OnLoad(self)
+    CallbackRegistryMixin.OnLoad(self)
     self.scrollView = CreateScrollBoxListLinearView()
     self.scrollView:SetElementInitializer("TJ_ToyboxSelectorTemplate", GenerateClosure(self.OnElementInitialize, self))
     self.scrollView:SetElementResetter(GenerateClosure(self.OnElementReset, self))

@@ -168,7 +168,7 @@ local ListMixin = {}
 function ListMixin:OnLoad()
     self:RegisterEvent("CURSOR_CHANGED")
 
-    CallbackRegistryMixin:OnLoad(self)
+    CallbackRegistryMixin.OnLoad(self)
     self:SetScript("OnEvent", function(self, event, button)
         if (event == "CURSOR_CHANGED" and L.AttachedFrame:IsShown()) then
             if (L:CursorHasToy()) then

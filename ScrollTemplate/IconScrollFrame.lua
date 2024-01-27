@@ -75,7 +75,7 @@ end
 
 local ListMixin = {}
 function ListMixin:OnLoad()
-    CallbackRegistryMixin:OnLoad(self)
+    CallbackRegistryMixin.OnLoad(self)
     self.scrollView = CreateScrollBoxListLinearView()
     self.scrollView:SetElementInitializer("TJ_IconSelector", GenerateClosure(self.OnElementInitialize, self))
     self.scrollView:SetElementResetter(GenerateClosure(self.OnElementReset, self));
