@@ -3,8 +3,10 @@ local addonName, L = ...
 function L:CursorHasToy()
     if (GetCursorInfo()) then
         local itemType, id = GetCursorInfo()
-        if (C_ToyBox.GetToyInfo(id)) then
-            return true
+        if(id) then
+            if (C_ToyBox.GetToyInfo(id)) then
+                return true
+            end
         end
     end
     return false
