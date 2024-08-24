@@ -1,0 +1,12 @@
+tag f0e5b00d75d518dc5ec3add28ce1d272f22c7312 v1.053-release
+Author:	Imaginary-Narwhal <82555340+Imaginary-Narwhal@users.noreply.github.com>
+Date:	Mon Mar 25 23:22:57 2024 -0400
+
+v1.053-release
+
+commit ef565ad9a3f4f65fb9358edcf39a54841cd7e8e5
+Author: Imaginary-Narwhal <82555340+Imaginary-Narwhal@users.noreply.github.com>
+Date:   Mon Mar 25 23:22:44 2024 -0400
+
+    Updated TOC version
+

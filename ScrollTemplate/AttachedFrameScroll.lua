@@ -188,7 +188,7 @@ function ListMixin:OnLoad()
                 end
             elseif (button == "LeftButton") then
                 if (movingHeader) then -- Grabbed Header from ToyJunkie Frame
-                    local element = GetMouseFocus()
+                    local element = GetMouseFoci()[1]
                     if (element.isTJListFrame) then
                         local elementData = element:GetData()
                         if (elementData.isHeader) then
@@ -222,7 +222,7 @@ function ListMixin:OnLoad()
                         end
                     end
                 elseif (L:CursorHasToy() and not movingToy) then -- Grabbed toy from Blizzard Collection Frame
-                    local element = GetMouseFocus()
+                    local element = GetMouseFoci()[1]
                     if (element.isTJListFrame) then
                         local elementData = element:GetData()
                         local _, toyId = GetCursorInfo()
@@ -249,7 +249,7 @@ function ListMixin:OnLoad()
                         end
                     end
                 elseif (movingToy) then
-                    local element = GetMouseFocus()
+                    local element = GetMouseFoci()[1]
                     if (element.isTJListFrame) then
                         local elementData = element:GetData()
                         local _, toyId = GetCursorInfo()
@@ -419,7 +419,7 @@ function ListMixin:OnLoad()
 end
 
 function ListMixin:OnUpdate(self, elapsed)
-    local element = GetMouseFocus()
+    local element = GetMouseFoci()[1]
     if (element and element.isTJListFrame) then
         if (movingHeader) then
             local elementData = element.GetData()
