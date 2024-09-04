@@ -1,5 +1,13 @@
 local addonName, L = ...
 
+function L:CountTable(table)
+    count = 0
+    for i,v in pairs(table) do
+        count = count + 1
+    end
+    return count
+end
+
 function L:CursorHasToy()
     if (GetCursorInfo()) then
         local itemType, id = GetCursorInfo()

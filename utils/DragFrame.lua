@@ -12,7 +12,11 @@ L.ToyJunkie.DragBackdrop:SetFrameLevel(0)
 L.ToyJunkie.DragBackdrop:SetAllPoints()
 L.ToyJunkie.DragBackdrop:Hide()
 L.ToyJunkie.DragBackdrop:SetScript("OnShow", function(self)
-    L.AttachedFrame.ScrollFrame.listView:RegisterEvent("GLOBAL_MOUSE_UP")
+    if(ToyBox:IsShown()) then
+        L.AttachedFrame.ScrollFrame.listView:RegisterEvent("GLOBAL_MOUSE_UP")
+    else
+        L.ToyJunkie.DragBackdrop:Hide()
+    end
 end)
 L.ToyJunkie.DragBackdrop:SetScript("OnHide", function(self)
     L.AttachedFrame.ScrollFrame.listView:UnregisterEvent("GLOBAL_MOUSE_UP")

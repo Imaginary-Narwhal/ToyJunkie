@@ -1,0 +1,22 @@
+lightweight tag 190d497cf430871bccd29d36e1ef07d64de1002e v1.054-release
+Author:	DragonFlyy <dragonflyysoftware@gmail.com>
+Date:	Sat Aug 24 12:00:27 2024 -0400
+
+commit 190d497cf430871bccd29d36e1ef07d64de1002e
+Author: DragonFlyy <dragonflyysoftware@gmail.com>
+Date:   Sat Aug 24 12:00:27 2024 -0400
+
+    Updated to 11.0.2 of WoW and fixed issue with GetMouseFocus() being removed
+
+commit 6c5c87d70ce3ac38ff8c99cfcd87a587b5044732
+Author: Tom <tflo@users.noreply.github.com>
+Date:   Wed May 15 22:10:23 2024 +0200
+
+    Show DragBackdrop frame only when the attached list is actually on screen (`IsVisible`)
+
+commit 6c5c87d70ce3ac38ff8c99cfcd87a587b5044732
+Author: Tom <tflo@users.noreply.github.com>
+Date:   Wed May 15 22:10:23 2024 +0200
+
+    Show DragBackdrop frame only when the attached list is actually on screen (`IsVisible`)
+

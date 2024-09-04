@@ -105,6 +105,22 @@ L.ToyboxFrame.TitleBar:SetScript("OnLeave", function(self)
     L.ToyboxFrame.DropdownButton:UnlockHighlight()
 end)
 
+L.ToyboxFrame.TitleBar:SetScript("OnMouseWheel", function(self, delta)
+    local boxId = L:GetToyBoxIdByName(L.ToyJunkie.db.profile.selectedToybox)
+    boxId = boxId + delta
+    if(boxId < 1) then
+        boxId = L:CountTable(L.ToyJunkie.db.profile.boxes)
+    end
+
+    if(boxId > L:CountTable(L.ToyJunkie.db.profile.boxes)) then
+        boxId = 1
+    end
+
+    L.ToyJunkie.db.profile.selectedToybox = L.ToyJunkie.db.profile.boxes[boxId].name
+    L.ToyboxFrame:UpdateToyboxDisplay()
+        L.ToyboxFrame:UpdateToyButtons()
+end)
+
 L.ToyboxFrame.TitleBar.Icon = L.ToyboxFrame.TitleBar:CreateTexture()
 L.ToyboxFrame.TitleBar.Icon:SetSize(16, 16)
 L.ToyboxFrame.TitleBar.Icon:SetPoint("TOPLEFT", 0, 0)
@@ -167,7 +183,9 @@ function L.ToyboxFrame.RandomToyButton:SetToy()
     end
 end
 
+
 L.ToyboxFrame.RandomToyButton:HookScript("OnClick", function(self, button)
+    L.ToyJunkie:Print("Random clicked")
     if (button == "LeftButton") then
         self:SetToy()
     end

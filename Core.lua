@@ -69,7 +69,56 @@ end
 function L.ToyJunkie:TJCommand(msg)
     if (not msg or msg:trim() == "") then
         L.ToyboxFrame:Toggle()
+    else
+        local cmd = {}
+        for word in msg:gmatch("%S+") do table.insert(cmd, word) end
+        if(cmd[1]:lower() == "random") then
+            self:Print("random")
+        elseif(cmd[1]:lower() == "box") then
+            local search = table.concat(cmd, " ", 2)
+            if(not search or search:trim() == "") then
+                self:Print("Command 'box' requires a parameter to search for a toybox.")
+                self:Print("Example: /tj box Hearthstones")
+            else
+                local box = L:GetToyBoxIdByName(search)
+                if(box ~= nil) then
+                    L.ToyJunkie.db.profile.selectedToybox = L.ToyJunkie.db.profile.boxes[box].name
+                    L.ToyboxFrame:UpdateToyboxDisplay()
+                    L.ToyboxFrame:UpdateToyButtons()
+                    if(not L.ToyboxFrame:IsShown()) then
+                        L.ToyboxFrame:Toggle()
+                    end
+                else
+                    self:Print("Toybox '" .. search .."' not found.")
+                end
+            end
+        else
+            self:Print("Command '" .. cmd[1] .. "' not found.")
+            self:Print("/tj without a parameter will toggle the toy box window")
+            self:Print("/tj box _name_ will open the toybox to the toybox with the matching name")
+            self:Print("/tj random _name_ will use a random toy from the matching named toybox")
+        end
     end
+end
+
+function L.ToyJunkie:TJBoxCommand(msg)
+    self:Print(L.ToyJunkie.db.profile.selectedToybox)
+
+    local found = L:GetToyBoxIdByName(msg)
+    if(found ~= nil) then
+        L.ToyJunkie.db.profile.selectedToybox = msg
+        L.ToyboxFrame:UpdateToyboxDisplay()
+        L.ToyboxFrame:UpdateToyButtons()
+        if(not L.ToyboxFrame:IsShown()) then
+            L.ToyboxFrame:Toggle()
+        end
+    else
+        self:Print("No toybox found by that name.")
+    end
+end
+
+function L.ToyJunkie:TJRandomCommand(msg)
+
 end
 
 function L.ToyJunkie:TOYS_UPDATED()
@@ -95,3 +144,10 @@ function L.ToyJunkie:PLAYER_REGEN_ENABLED()
         L.ToyboxFrame:Toggle(true, "OPEN")
     end
 end
+
+
+CollectionsJournal:HookScript("OnHide", function()
+    if(L.ToyJunkie_DragBackdrop ~= nil) then
+        L.ToyJunkie_DragBackdrop:Hide()
+    end
+end)
