@@ -8,6 +8,8 @@ function L:CountTable(table)
     return count
 end
 
+
+--check if item on cursor is a toy
 function L:CursorHasToy()
     if (GetCursorInfo()) then
         local itemType, id = GetCursorInfo()
