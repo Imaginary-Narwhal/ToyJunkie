@@ -45,6 +45,17 @@ L.ToyboxFrame:SetScript("OnHide", function(self)
         isMoving = false
     end
 end)
+L.ToyboxFrame:SetScript("OnMouseWheel", function(self, delta)
+    if(delta == 1) then
+        if(L.ToyboxFrame.PageInterface.PrevPageButton:IsEnabled()) then
+            L.ToyboxFrame:UpdateToyButtons(L.ToyJunkie.db.profile.toyboxLastSelectedPage - 1)
+        end
+    else
+        if(L.ToyboxFrame.PageInterface.NextPageButton:IsEnabled()) then
+            L.ToyboxFrame:UpdateToyButtons(L.ToyJunkie.db.profile.toyboxLastSelectedPage + 1)
+        end
+    end
+end)
 
 L.ToyboxFrame.CloseButton = CreateFrame("Button", "$parent_CloseButton", L.ToyboxFrame, "UIPanelCloseButton")
 L.ToyboxFrame.CloseButton:SetSize(18, 18)
@@ -118,7 +129,7 @@ L.ToyboxFrame.TitleBar:SetScript("OnMouseWheel", function(self, delta)
 
     L.ToyJunkie.db.profile.selectedToybox = L.ToyJunkie.db.profile.boxes[boxId].name
     L.ToyboxFrame:UpdateToyboxDisplay()
-        L.ToyboxFrame:UpdateToyButtons()
+    L.ToyboxFrame:UpdateToyButtons()
 end)
 
 L.ToyboxFrame.TitleBar.Icon = L.ToyboxFrame.TitleBar:CreateTexture()
@@ -211,6 +222,18 @@ L.ToyboxFrame.PageInterface:SetBackdropBorderColor(.5, .5, .5, 1)
 L.ToyboxFrame.PageInterface:SetSize(95, 30)
 L.ToyboxFrame.PageInterface:SetPoint("BOTTOM", 0, -22)
 
+L.ToyboxFrame.PageInterface:SetScript("OnMouseWheel", function(self, delta)
+    if(delta == 1) then
+        if(L.ToyboxFrame.PageInterface.PrevPageButton:IsEnabled()) then
+            L.ToyboxFrame:UpdateToyButtons(L.ToyJunkie.db.profile.toyboxLastSelectedPage - 1)
+        end
+    else
+        if(L.ToyboxFrame.PageInterface.NextPageButton:IsEnabled()) then
+            L.ToyboxFrame:UpdateToyButtons(L.ToyJunkie.db.profile.toyboxLastSelectedPage + 1)
+        end
+    end
+end)
+
 L.ToyboxFrame.PageInterface.PrevPageButton = CreateFrame("Button", "$parent_PrevToyButton", L.ToyboxFrame.PageInterface)
 L.ToyboxFrame.PageInterface.PrevPageButton:SetPoint("BOTTOMLEFT", -3, -4)
 L.ToyboxFrame.PageInterface.PrevPageButton.Bg = L.ToyboxFrame.PageInterface.PrevPageButton:CreateTexture(nil,
@@ -228,7 +251,7 @@ L.ToyboxFrame.PageInterface.PrevPageButton:SetScript("OnClick", function(self)
     L.ToyboxFrame:UpdateToyButtons(L.ToyJunkie.db.profile.toyboxLastSelectedPage - 1)
 end)
 
-L.ToyboxFrame.PageInterface.NextPageButton = CreateFrame("Button", "$parent_NextPageButton", L.ToyboxFrame.PageInterface)
+L.ToyboxFrame.PageInterface.NextPageButton = CreateFrame("Button", "$parent_NextToyButton", L.ToyboxFrame.PageInterface)
 L.ToyboxFrame.PageInterface.NextPageButton:SetPoint("BOTTOMRIGHT", 3, -4)
 L.ToyboxFrame.PageInterface.NextPageButton.Bg = L.ToyboxFrame.PageInterface.NextPageButton:CreateTexture(nil,
     "BACKGROUND") --Button is transparent, added black background to create solid

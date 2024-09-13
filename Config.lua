@@ -24,6 +24,7 @@ L.defaults = {
         toyboxShown = false,
         toyboxLastSelectedPage = 1,
         showTooltips = true,
+        favoriteToybox = nil,
         minimap = {
             hide = false,
             lock = false
@@ -40,7 +41,7 @@ function L.ToyJunkie:ConfigurationInitialize(self)
     local profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
 
     AC:RegisterOptionsTable("ToyJunkie_Profiles", profiles)
-    self.profiles = ACD:AddToBlizOptions("ToyJunkie_Profiles", "ToyJunkie Profiles")
+    self.profiles, L.catID = ACD:AddToBlizOptions("ToyJunkie_Profiles", "ToyJunkie Profiles")
 end
 
 --[[ 

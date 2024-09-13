@@ -4,6 +4,8 @@ function L.ToyJunkie:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("ToyJunkieDB", L.defaults, true)
     L.ToyJunkie:ConfigurationInitialize(self)
 
+    V = L
+
     local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
     ---@diagnostic disable-next-line: missing-fields
     local dataObj = ldb:NewDataObject(addonName, {

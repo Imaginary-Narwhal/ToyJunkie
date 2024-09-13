@@ -11,9 +11,11 @@ end
 function L:CursorHasToy()
     if (GetCursorInfo()) then
         local itemType, id = GetCursorInfo()
-        if(id) then
-            if (C_ToyBox.GetToyInfo(id)) then
-                return true
+        if(itemType == "item") then
+            if(id) then
+                if (C_ToyBox.GetToyInfo(id)) then
+                    return true
+                end
             end
         end
     end
@@ -251,13 +253,28 @@ function L:SettingsMenuDropdown(parent)
             info.notCheckable = true
             UIDropDownMenu_AddButton(info)
 
+
+            info = UIDropDownMenu_CreateInfo()
+
+            if(L.ToyJunkie.db.profile.favoriteToybox == nil) then
+                info.text = "Favorite Toybox"
+            else
+                info.text = "Favorite Toybox: " .. L.ToyJunkie.db.profile.favoriteToybox
+            end
+            info.notCheckable = true
+            info.func = function()
+                print("click me")
+            end
+            UIDropDownMenu_AddButton(info)
+
             UIDropDownMenu_AddSeparator()
 
             info = UIDropDownMenu_CreateInfo()
             info.text = "Profiles"
             info.notCheckable = true
             info.func = function()
-                InterfaceOptionsFrame_OpenToCategory(L.ToyJunkie.profiles)
+                --InterfaceOptionsFrame_OpenToCategory(L.ToyJunkie.profiles)
+                Settings.OpenToCategory(L.catID)
             end
             UIDropDownMenu_AddButton(info)
         elseif (menuList == "minimap") then
