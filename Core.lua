@@ -74,9 +74,7 @@ function L.ToyJunkie:TJCommand(msg)
     else
         local cmd = {}
         for word in msg:gmatch("%S+") do table.insert(cmd, word) end
-        if(cmd[1]:lower() == "random") then
-            self:Print("random")
-        elseif(cmd[1]:lower() == "box") then
+        if(cmd[1]:lower() == "box") then
             local search = table.concat(cmd, " ", 2)
             if(not search or search:trim() == "") then
                 self:Print("Command 'box' requires a parameter to search for a toybox.")
@@ -94,11 +92,13 @@ function L.ToyJunkie:TJCommand(msg)
                     self:Print("Toybox '" .. search .."' not found.")
                 end
             end
+        elseif(cmd[1]:lower() == "help") then
+            self:Print("/tj without a parameter will toggle the toy box window")
+            self:Print("/tj box _name_ will open the toybox to the toybox with the matching name")
         else
             self:Print("Command '" .. cmd[1] .. "' not found.")
             self:Print("/tj without a parameter will toggle the toy box window")
             self:Print("/tj box _name_ will open the toybox to the toybox with the matching name")
-            self:Print("/tj random _name_ will use a random toy from the matching named toybox")
         end
     end
 end
@@ -117,10 +117,6 @@ function L.ToyJunkie:TJBoxCommand(msg)
     else
         self:Print("No toybox found by that name.")
     end
-end
-
-function L.ToyJunkie:TJRandomCommand(msg)
-
 end
 
 function L.ToyJunkie:TOYS_UPDATED()

@@ -170,9 +170,11 @@ function ListMixin:OnLoad()
 
     CallbackRegistryMixin.OnLoad(self)
     self:SetScript("OnEvent", function(self, event, button)
-        if (event == "CURSOR_CHANGED" and L.AttachedFrame:IsShown()) then
+        if (event == "CURSOR_CHANGED" and L.AttachedFrame:IsVisible()) then
             if (L:CursorHasToy()) then
                 L.ToyJunkie.DragBackdrop:Show()
+            else
+                L.ToyJunkie.DragBackdrop:Hide()
             end
         end
         if (event == "GLOBAL_MOUSE_UP") then
