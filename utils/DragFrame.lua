@@ -7,23 +7,23 @@ local addonName, L = ...
 --the stuff off the cursor.)
 
 --Remove comment next line for DEBUGGING
---L.ToyJunkie.DragBackdrop = CreateFrame("Button", "ToyJunkie_DragBackdrop", UIParent, "BackdropTemplate")
+L.ToyJunkie.DragBackdrop = CreateFrame("Button", "ToyJunkie_DragBackdrop", UIParent, "BackdropTemplate")
 
 --Add comment next line for DEBUGGING
-L.ToyJunkie.DragBackdrop = CreateFrame("Button", "ToyJunkie_DragBackdrop", UIParent)
+--L.ToyJunkie.DragBackdrop = CreateFrame("Button", "ToyJunkie_DragBackdrop", UIParent)
 L.ToyJunkie.DragBackdrop:SetFrameStrata("LOW")
 L.ToyJunkie.DragBackdrop:SetFrameLevel(0)
 L.ToyJunkie.DragBackdrop:SetAllPoints()
 
 
 --Debug DragBackdrop
---[[L.ToyJunkie.DragBackdrop:SetBackdrop({
+L.ToyJunkie.DragBackdrop:SetBackdrop({
 
     bgFile = "Interface/Buttons/WHITE8X8",
     edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
     edgeSize = 16,
     insets = { left = 3.2, right = 3.2, top = 3.2, bottom = 3.2 }
-})]]
+})
 
 
 

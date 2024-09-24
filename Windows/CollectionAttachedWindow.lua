@@ -14,6 +14,7 @@ L.AttachedFrame.Inset:SetPoint("TOPLEFT", 4, -47)
 L.AttachedFrame.Inset:SetPoint("BOTTOMRIGHT", -18, 27)
 L.AttachedFrame:Hide()
 L.AttachedFrame.isAttached = false
+L.AttachedFrame:EnableMouse(true)
 
 L.AttachedFrame.ToggleButton = CreateFrame("Button", "$parent_ToggleButton", L.AttachedFrame)
 L.AttachedFrame.ToggleButton:SetNormalTexture("Interface\\RaidFrame\\RaidPanel-Toggle")
@@ -83,7 +84,7 @@ end
 -- Toy box and toys scroll frame --
 -----------------------------------
 
-L.AttachedFrame.ScrollFrame = Mixin(CreateFrame("Frame", "$parent_ScrollFrame", L.AttachedFrame), AttachedScrollTemplateMixin)
+L.AttachedFrame.ScrollFrame = Mixin(CreateFrame("Frame", "$parent_ScrollFrame", L.AttachedFrame), L.AttachedScrollTemplateMixin)
 L.AttachedFrame.ScrollFrame:SetPoint("TOPLEFT", L.AttachedFrame.Inset, "TOPLEFT", 18, -7)
 L.AttachedFrame.ScrollFrame:SetPoint("BOTTOMRIGHT", L.AttachedFrame.Inset, "BOTTOMRIGHT", 0, 5)
 L.AttachedFrame.ScrollFrame:OnLoad()

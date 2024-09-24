@@ -56,23 +56,28 @@
         "UISpecialFrames",
         "BACKGROUND",
         "UIDropDownMenu_AddSeparator",
-        "GetText",
         "BACKDROP_TUTORIAL_16_16",
         "GameFontDisable",
         "ADD",
         "PANEL_BACKGROUND_COLOR",
         "UIParent",
-        "CreateFrame",
         "Mixin",
-        "PlaySound",
         "GameTooltip",
-        "pairs",
-        "table",
-        "GetItemCooldown",
-        "SOUNDKIT",
-        "random",
-        "math",
-        "C_ToyBox",
-        "C_Timer"
+        "SOUNDKIT"
+    ],
+    "Lua.runtime.version": "Lua 5.1",
+    "Lua.runtime.builtin": {
+        "basic": "disable",
+        "debug": "disable",
+        "io": "disable",
+        "math": "disable",
+        "os": "disable",
+        "package": "disable",
+        "string": "disable",
+        "table": "disable",
+        "utf8": "disable"
+    },
+    "Lua.workspace.library": [
+        "~\\.vscode\\extensions\\ketho.wow-api-0.17.6\\Annotations"
     ]
 }

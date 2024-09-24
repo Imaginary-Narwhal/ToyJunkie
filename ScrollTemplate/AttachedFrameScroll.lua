@@ -57,7 +57,7 @@ TJ_TOYLISTBACKDROP = {
 };
 
 
-AttachedScrollTemplateMixin = {}
+L.AttachedScrollTemplateMixin = {}
 
 local ItemListMixin = CreateFromMixins(CallbackRegistryMixin)
 ItemListMixin:GenerateCallbackEvents(
@@ -171,7 +171,7 @@ function ListMixin:OnLoad()
     CallbackRegistryMixin.OnLoad(self)
     self:SetScript("OnEvent", function(self, event, button)
         if (event == "CURSOR_CHANGED" and L.AttachedFrame:IsVisible()) then
-            if (L:CursorHasToy()) then
+            if (L:CursorHasToy() or movingHeader) then
                 L.ToyJunkie.DragBackdrop:Show()
             else
                 L.ToyJunkie.DragBackdrop:Hide()
@@ -829,7 +829,7 @@ function ListMixin:ExpandCollapseAll()
     end
 end
 
-function AttachedScrollTemplateMixin:OnLoad()
+function L.AttachedScrollTemplateMixin:OnLoad()
     self.dataProvider = CreateDataProvider()
 
     self.listView = Mixin(CreateFrame("Frame", nil, self), ListMixin)
@@ -839,7 +839,7 @@ function AttachedScrollTemplateMixin:OnLoad()
     self.listView:SetPoint("BOTTOMRIGHT")
 end
 
-function AttachedScrollTemplateMixin:AddToybox()
+function L.AttachedScrollTemplateMixin:AddToybox()
     if (#L.ToyJunkie.db.profile.boxes < 1) then
         L.ToyJunkie.db.profile.selectedToybox = "New Toy box (1)"
     end
@@ -886,14 +886,14 @@ function AttachedScrollTemplateMixin:AddToybox()
     self.listView.scrollBox:ScrollToBegin()
 end
 
-function AttachedScrollTemplateMixin:UpdateIcon(newId)
+function L.AttachedScrollTemplateMixin:UpdateIcon(newId)
     if (iconToyBoxId ~= nil) then
         L.ToyJunkie.db.profile.boxes[iconToyBoxId].icon = newId
         L.AttachedFrame.ScrollFrame.listView:Refresh()
     end
 end
 
-function AttachedScrollTemplateMixin:GetIcon()
+function L.AttachedScrollTemplateMixin:GetIcon()
     if (iconToyBoxId ~= nil) then
         return L.ToyJunkie.db.profile.boxes[iconToyBoxId].icon
     end
