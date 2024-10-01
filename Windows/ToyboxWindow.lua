@@ -196,7 +196,6 @@ end
 
 
 L.ToyboxFrame.RandomToyButton:HookScript("OnClick", function(self, button)
-    L.ToyJunkie:Print("Random clicked")
     if (button == "LeftButton") then
         self:SetToy()
     end
