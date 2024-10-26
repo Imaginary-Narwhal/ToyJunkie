@@ -63,7 +63,11 @@
         "UIParent",
         "Mixin",
         "GameTooltip",
-        "SOUNDKIT"
+        "SOUNDKIT",
+        "CreateScrollBoxLinearView",
+        "StaticPopup_Hide",
+        "OrderHallCommandBar",
+        "TooltipDataProcessor"
     ],
     "Lua.runtime.version": "Lua 5.1",
     "Lua.runtime.builtin": {

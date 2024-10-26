@@ -256,16 +256,16 @@
     </Button>
 
     <Button name="TJ_ToyboxSelectorTemplate" virtual="true" inherits="BackdropTemplate">
-        <Size y="30" />
+        <Size y="20" />
         <KeyValues>
             <KeyValue key="backdropInfo" value="BACKDROP_TOAST_12_12" type="global" />
         </KeyValues>
         <Layers>
             <Layer level="ARTWORK">
-                <FontString parentKey="Text" inherits="GameFontWhite" justifyH="LEFT"
+                <FontString parentKey="Text" inherits="GameFontNormalSmall" justifyH="LEFT"
                     wordwrap="false">
                     <Anchors>
-                        <Anchor point="TOPLEFT" x="33" y="0" />
+                        <Anchor point="TOPLEFT" x="8" y="1" />
                         <Anchor point="BOTTOMRIGHT" x="-4" y="0" />
                     </Anchors>
                 </FontString>
@@ -273,15 +273,15 @@
             <Layer level="BORDER">
                 <Texture parentKey="Icon"
                     file="Interface/Icons/TRADE_ARCHAEOLOGY_CHESTOFTINYGLASSANIMALS">
-                    <Size x="20" y="20" />
+                    <Size x="10" y="10" />
                     <Anchors>
-                        <Anchor point="LEFT" x="10" y="0.5" />
+                        <Anchor point="LEFT" x="7" y="0.5" />
                     </Anchors>
                 </Texture>
             </Layer>
             <Layer level="HIGH">
                 <Texture parentKey="highlightLeft" file="Interface/Buttons/WHITE8X8">
-                    <Size y="27" />
+                    <Size y="17" />
                     <Anchors>
                         <Anchor point="LEFT" />
                     </Anchors>
@@ -293,7 +293,7 @@
             </Layer>
             <Layer level="HIGH">
                 <Texture parentKey="highlightRight" file="Interface/Buttons/WHITE8X8">
-                    <Size y="27" />
+                    <Size y="17" />
                     <Anchors>
                         <Anchor point="RIGHT" />
                     </Anchors>
@@ -306,6 +306,8 @@
         </Layers>
         <Scripts>
             <OnShow>
+                self.Icon:Hide()
+
                 self.highlightLeft:SetWidth(self:GetWidth() / 2)
                 self.highlightRight:SetWidth(self:GetWidth() / 2)
                 self.highlightLeft:Hide()
@@ -316,12 +318,16 @@
                     self.highlightLeft:Show()
                     self.highlightRight:Show()
                 end
+                GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+                GameTooltip:AddLine(self.Text:GetText())
+                GameTooltip:Show()
             </OnEnter>
             <OnLeave>
                 if(not self.disabled) then
                     self.highlightLeft:Hide()
                     self.highlightRight:Hide()
                 end
+                GameTooltip:Hide()
             </OnLeave>
         </Scripts>
     </Button>

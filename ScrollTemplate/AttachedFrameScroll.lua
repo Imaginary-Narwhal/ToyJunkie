@@ -200,6 +200,7 @@ function ListMixin:OnLoad()
                                 L.ToyJunkie.DragHeader:Hide()
                                 movingHeader = nil
                                 self:Refresh()
+                                L.ToyboxFrame:RefreshToyBoxes()
                                 L.ToyJunkie.DragBackdrop:Hide()
                             else
                                 local box = L.ToyJunkie.db.profile.boxes[movingHeader.id]
@@ -219,6 +220,7 @@ function ListMixin:OnLoad()
                                 L.ToyJunkie.DragHeader:Hide()
                                 movingHeader = nil
                                 self:Refresh()
+                                L.ToyboxFrame:RefreshToyBoxes()
                                 L.ToyJunkie.DragBackdrop:Hide()
                             end
                         end
@@ -287,17 +289,23 @@ function ListMixin:OnLoad()
                                     self:Refresh()
                                     L.ToyJunkie.DragBackdrop:Hide()
                                 else
-                                    local elementIndex = L:GetToyIndex(elementData.toyId, elementData.toyBoxId)
                                     for key, id in pairs(L.ToyJunkie.db.profile.boxes[movingToy.toyBoxId].toys) do
                                         if (id == toyId) then
                                             table.remove(L.ToyJunkie.db.profile.boxes[movingToy.toyBoxId].toys, key)
                                             break
                                         end
                                     end
-                                    if (L:CursorOnTopHalf(element)) then
-                                        L:AddToy(toyId, elementData.toyBoxId, elementIndex)
-                                    else
-                                        L:AddToy(toyId, elementData.toyBoxId, elementIndex + 1)
+                                    local elementIndex = L:GetToyIndex(elementData.toyId, elementData.toyBoxId)
+                                    for id, toy in pairs(L.ToyJunkie.db.profile.boxes[elementData.toyBoxId].toys) do
+                                        if(toy == elementData.toyId) then
+                                            if(L:CursorOnTopHalf(element)) then
+                                                L:AddToy(toyId, elementData.toyBoxId, elementIndex)
+                                                break
+                                            else
+                                                L:AddToy(toyId, elementData.toyBoxId, elementIndex + 1)
+                                                break
+                                            end
+                                        end
                                     end
                                     ClearCursor()
                                     SetCursor(nil)
@@ -515,20 +523,21 @@ function ListMixin:OnEditCancelMouseDown(element)
 end
 
 function ListMixin:OnEditSubmitMouseDown(element)
-    if (L.ToyJunkie.db.profile.selectedToybox == L.ToyJunkie.db.profile.boxes[element:GetParent():GetParent():GetData().id].name) then
-        L.ToyJunkie.db.profile.selectedToybox = element:GetParent():GetText()
-        L.ToyJunkie.db.profile.boxes[element:GetParent():GetParent():GetData().id].name = element:GetParent():GetText()
-        if (L.ToyboxFrame:IsShown()) then
-            L.ToyboxFrame:UpdateAll()
+    local validate = ValidateName(element:GetParent():GetText(), element:GetParent():GetParent().Text:GetText())
+    if(validate == 2) then
+        if (L.ToyJunkie.db.profile.selectedToybox == L.ToyJunkie.db.profile.boxes[element:GetParent():GetParent():GetData().id].name) then
+            L.ToyJunkie.db.profile.selectedToybox = element:GetParent():GetText()
+            L.ToyJunkie.db.profile.boxes[element:GetParent():GetParent():GetData().id].name = element:GetParent():GetText()
+        else
+            L.ToyJunkie.db.profile.boxes[element:GetParent():GetParent():GetData().id].name = element:GetParent():GetText()
         end
-    else
-        L.ToyJunkie.db.profile.boxes[element:GetParent():GetParent():GetData().id].name = element:GetParent():GetText()
-    end
 
-    element:GetParent():Hide()
-    element:GetParent():GetParent().Text:Show()
-    L.ToyJunkie.noInteraction = false
-    self:Refresh()
+        element:GetParent():Hide()
+        element:GetParent():GetParent().Text:Show()
+        L.ToyJunkie.noInteraction = false
+        self:Refresh()
+        L.ToyboxFrame:RefreshToyBoxes()
+    end
 end
 
 function ListMixin:OnEditTextChanged(renameBox, human)
@@ -563,7 +572,7 @@ function ListMixin:OnDragStart(element)
             L.ToyJunkie.DragHeader:Show()
         else
             movingToy = data
-            PickupItem(data.toyId)
+            C_Item.PickupItem(data.toyId)
             self:Refresh()
         end
     end
@@ -593,6 +602,7 @@ function ListMixin:OnElementClicked(element, button)
                                         L.ToyJunkie.db.profile.selectedToybox = data.name
                                         L.ToyboxFrame:UpdateToyboxDisplay()
                                         L.ToyboxFrame:UpdateToyButtons()
+                                        L.ToyboxFrame:SelectNewRandomToy()
                                         L.ToyboxFrame:Show()
                                     end
                                 },
@@ -616,6 +626,7 @@ function ListMixin:OnElementClicked(element, button)
                                     func = function()
                                         iconToyBoxId = data.id
                                         L.AttachedFrame.IconSelectionFrame:Show()
+                                        L.AttachedFrame.IconSelectionFrame:OnShow()
                                         L.ToyJunkie.noInteraction = true
                                     end
                                 },
@@ -668,6 +679,7 @@ function ListMixin:OnElementClicked(element, button)
                                                 L.ToyboxFrame:Toggle(true, "CLOSE")
                                             end
                                             self:Refresh()
+                                            L.ToyboxFrame:RefreshToyBoxes()
                                         end
                                     end
                                 },
@@ -698,7 +710,8 @@ function ListMixin:OnElementClicked(element, button)
                                     for key, toy in pairs(L.ToyJunkie.db.profile.boxes[data.toyBoxId].toys) do
                                         if (toy == data.toyId) then
                                             table.remove(L.ToyJunkie.db.profile.boxes[data.toyBoxId].toys, key)
-                                            L.ToyboxFrame:UpdateToyButtons(L.ToyJunkie.db.profile.toyboxListSelectedPage)
+                                            L.ToyboxFrame:UpdateToyButtons()
+                                            L.ToyboxFrame:SelectNewRandomToy()
                                         end
                                     end
                                     self:Refresh()
@@ -884,6 +897,7 @@ function L.AttachedScrollTemplateMixin:AddToybox()
     end
     self.listView:Refresh()
     self.listView.scrollBox:ScrollToBegin()
+    L.ToyboxFrame:RefreshToyBoxes()
 end
 
 function L.AttachedScrollTemplateMixin:UpdateIcon(newId)

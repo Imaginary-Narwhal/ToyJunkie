@@ -1,13 +1,21 @@
 local addonName, L = ...
 
+-- Icon size enumeration
+function L:GetIconSize()
+    return L.ToyJunkie.db.profile.toyBoxFrame.iconSize, L.ToyJunkie.db.profile.toyBoxFrame.iconSize
+end
+
+function L:GetIconMargin()
+    return L.ToyJunkie.db.profile.toyBoxFrame.iconSize / 6
+end
+
 function L:CountTable(table)
-    count = 0
+    local count = 0
     for i,v in pairs(table) do
         count = count + 1
     end
     return count
 end
-
 
 --check if item on cursor is a toy
 function L:CursorHasToy()
@@ -33,6 +41,17 @@ function L:CursorOnTopHalf(element)
         return true
     end
     return false
+end
+
+function L:GetUsableHearthstones()
+    local hearthstones = {}
+    for k, hsID in pairs(L.HearthstoneIds) do
+        if(PlayerHasToy(hsID) and C_ToyBox.IsToyUsable(hsID)) then
+            table.insert(hearthstones, hsID)
+        end
+    end
+
+    return hearthstones
 end
 
 function L:GetBackdropColorByToyboxId(id)
@@ -124,7 +143,6 @@ function L:AddToy(toyId, toyboxId, index)
             return
         end
     end
-
     if (index ~= nil) then
         table.insert(L.ToyJunkie.db.profile.boxes[toyboxId].toys, index, toyId)
     else
@@ -132,7 +150,8 @@ function L:AddToy(toyId, toyboxId, index)
     end
 
     if (L.ToyboxFrame:IsShown()) then
-        L.ToyboxFrame:UpdateToyButtons(L.ToyJunkie.db.profile.toyboxLastSelectedPage)
+        L.ToyboxFrame:UpdateToyButtons()
+        L.ToyboxFrame:SelectNewRandomToy()
     end
 end
 
@@ -196,143 +215,99 @@ function L:CreateContextMenu(menu)
     return dropdown
 end
 
-function L:SettingsMenuDropdown(parent)
-    local dropdown = CreateFrame("Frame", "$parent_settingsmenu_dropdown", parent, "UIDropDownMenuTemplate")
-    UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
-        local info = UIDropDownMenu_CreateInfo()
-
-        if (level == 1) then
-            info.text = "ToyJunkie Settings"
-            info.isTitle = true
-            info.notCheckable = true
-            UIDropDownMenu_AddButton(info)
-
-            info = UIDropDownMenu_CreateInfo()
-
-            info.text = "Compact Display"
-            info.checked = L.ToyJunkie.db.profile.compactDisplay
-            info.func = function()
-                L.ToyJunkie.db.profile.compactDisplay = not L.ToyJunkie.db.profile.compactDisplay
-                L.ToyboxFrame:ChangeFrame()
-            end
-            info.isNotRadio = true
-            info.tooltipTitle = "Compact Display"
-            info.tooltipText = "Enable compact toy box display"
-            info.tooltipOnButton = true
-            UIDropDownMenu_AddButton(info)
-
-            info = UIDropDownMenu_CreateInfo()
-
-            info.text = "Show Tooltips"
-            info.checked = L.ToyJunkie.db.profile.showTooltips
-            info.func = function()
-                L.ToyJunkie.db.profile.showTooltips = not L.ToyJunkie.db.profile.showTooltips
-            end
-            info.isNotRadio = true
-            info.tooltipTitle = "Show Tooltips"
-            info.tooltipText = "Show tooltips on toys in toy box.\nWhen shown, tooltips are delayed."
-            info.tooltipOnButton = true
-            UIDropDownMenu_AddButton(info)
-
-            info = UIDropDownMenu_CreateInfo()
-
-            info.text = "Lock Toy Box"
-            info.checked = L.ToyJunkie.db.profile.lockToyboxFrame
-            info.func = function()
-                L.ToyJunkie.db.profile.lockToyboxFrame = not L.ToyJunkie.db.profile.lockToyboxFrame
-            end
-            info.isNotRadio = true
-            info.tooltipTitle = "Show Tooltips"
-            info.tooltipText = "Show tooltips on toys in toy box.\nWhen shown, tooltips are delayed."
-            info.tooltipOnButton = true
-            UIDropDownMenu_AddButton(info)
-
-            info = UIDropDownMenu_CreateInfo()
-
-            info.text = "Minimap Options"
-            info.hasArrow = true
-            info.menuList = "minimap"
-            info.notCheckable = true
-            UIDropDownMenu_AddButton(info)
-
-
-            info = UIDropDownMenu_CreateInfo()
-
-            if(L.ToyJunkie.db.profile.favoriteToybox == nil) then
-                info.text = "Favorite Toybox"
-            else
-                info.text = "Favorite Toybox: " .. L.ToyJunkie.db.profile.favoriteToybox
-            end
-            info.notCheckable = true
-            info.func = function()
-                print("click me")
-            end
-            UIDropDownMenu_AddButton(info)
-
-            UIDropDownMenu_AddSeparator()
-
-            info = UIDropDownMenu_CreateInfo()
-            info.text = "Profiles"
-            info.notCheckable = true
-            info.func = function()
-                --InterfaceOptionsFrame_OpenToCategory(L.ToyJunkie.profiles)
-                Settings.OpenToCategory(L.catID)
-            end
-            UIDropDownMenu_AddButton(info)
-        elseif (menuList == "minimap") then
-            info = UIDropDownMenu_CreateInfo()
-            info.text = "Hide Minimap Button"
-            info.checked = L.ToyJunkie.db.profile.minimap.hide
-            info.func = function()
-                if(L.ToyJunkie.db.profile.minimap.hide) then
-                    L.ToyJunkie.db.profile.minimap.hide = false
-                    L.ToyJunkie.Icon:Show(addonName)
-                else
-                    L.ToyJunkie.db.profile.minimap.hide = true
-                    L.ToyJunkie.Icon:Hide(addonName)
+-------------------------
+-- Toy button template --
+-------------------------
+function L:CreateToyButton()
+    local button = CreateFrame("Button", nil, L.ToyboxFrame.ToyButtonHolderFrame.ScrollChild, "SecureActionButtonTemplate")
+    button:SetSize(L:GetIconSize())
+    button:RegisterForClicks("AnyUp", "AnyDown")
+    button:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square")
+    button.Cooldown = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
+    button.Cooldown:SetAllPoints()
+    button.Cooldown:Hide()
+    button:SetScript("OnEvent", function(self, event)
+        if(event == "SPELL_UPDATE_COOLDOWN") then
+            if(self.id ~= nil) then
+                local start, duration, enable = C_Item.GetItemCooldown(self.id)
+                if(start > 0) then
+                    CooldownFrame_Set(self.Cooldown, start, duration, enable)
                 end
-                dropdown:Hide()
             end
-            info.isNotRadio = true
-            UIDropDownMenu_AddButton(info, level)
-
-            info = UIDropDownMenu_CreateInfo()
-            info.text = "Lock Minimap Button"
-            info.checked = L.ToyJunkie.db.profile.minimap.lock
-            info.func = function()
-                if(L.ToyJunkie.db.profile.minimap.lock) then
-                    L.ToyJunkie.db.profile.minimap.lock = false
-                    L.ToyJunkie.Icon:Unlock(addonName)
-                else
-                    L.ToyJunkie.db.profile.minimap.lock = true
-                    L.ToyJunkie.Icon:Lock(addonName)
-                end
-                dropdown:Hide()
-            end
-            info.isNotRadio = true
-            UIDropDownMenu_AddButton(info, level)
-
-            info = UIDropDownMenu_CreateInfo()
-            info.text = "ToyJunkie in Addon Compartment"
-            info.checked = L.ToyJunkie.db.profile.addonCompartment
-            info.func = function()
-                if(L.ToyJunkie.db.profile.addonCompartment) then
-                    L.ToyJunkie.db.profile.addonCompartment = false
-                    L.ToyJunkie.Icon:RemoveButtonFromCompartment(addonName)
-                else
-                    L.ToyJunkie.db.profile.addonCompartment = true
-                    L.ToyJunkie.Icon:AddButtonToCompartment(addonName)
-                end
-                dropdown:Hide()
-            end
-            info.isNotRadio = true
-            UIDropDownMenu_AddButton(info, level)
         end
-    end, "MENU")
+    end)
 
-    if(parent == L.ToyboxFrame.SettingsButton) then
-        ToggleDropDownMenu(1, nil, dropdown, L.ToyboxFrame, L.ToyboxFrame:GetWidth() + 10, L.ToyboxFrame:GetHeight())
-    else
-        ToggleDropDownMenu(1, nil, dropdown, "cursor")
+    button:HookScript("OnEnter", function(self)
+        if(self.id ~= nil) then
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            local _, toyName = C_ToyBox.GetToyInfo(self.id)
+            GameTooltip:AddLine(toyName)
+            GameTooltip:Show()
+        end
+    end)
+    button:HookScript("OnLeave", function(self)
+        if(self.id ~= nil) then
+            GameTooltip:Hide()
+        end
+    end)
+    button.id = nil
+    button:Hide()
+
+    function button:UpdateButton(toyId)
+        if(toyId) then
+            local _, _, toyIcon = C_ToyBox.GetToyInfo(toyId)
+            if(toyIcon == nil) then
+                toyIcon = 134400
+            end
+
+            button.id = toyId
+            button:SetNormalTexture(toyIcon)
+            button:SetAttribute("type1", "toy")
+            button:SetAttribute("toy1", toyId)
+            button:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+            button:CheckCooldown()
+            button:SetSize(L:GetIconSize())
+        end
     end
+
+    function button:RemoveButton()
+        button.id = nil
+        button:Hide()
+    end
+
+    function button:CheckCooldown()
+        if(button.id ~= nil and button:IsShown()) then
+            local start, duration, enable = C_Item.GetItemCooldown(button.id)
+            if (start > 0) then
+                CooldownFrame_Set(button.Cooldown, start, duration, enable)
+            else
+                button.Cooldown:Hide()
+            end
+        end
+    end
+
+    return button
+end
+
+function L:CheckAllCooldowns()
+    if(L.ToyboxFrame.ToyButtons ~= nil) then
+        for k, v in pairs(L.ToyboxFrame.ToyButtons) do
+            if(v.id  ~= nil) then
+                v:CheckCooldown()
+            end
+        end
+    end
+end
+
+function L:GetNumOfActiveButtons()
+    if(L.ToyboxFrame.ToyButtons == nil) then
+        return 0
+    end
+    local count = 0
+    for k, v in pairs(L.ToyboxFrame.ToyButtons) do
+        if(v.id ~= nil) then
+            count = count + 1
+        end
+    end
+    return count
 end

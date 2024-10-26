@@ -129,6 +129,8 @@ function ListMixin:OnLoad()
     self.SaveButton:SetWidth(100)
     self.SaveButton:SetScript("OnClick", function(self)
         L.AttachedFrame.IconSelectionFrame:Hide()
+        self:GetParent().listView.searchBar:SetText("")
+        L.ToyboxFrame:RefreshToyBoxes()
     end)
 
     self.CancelButton = CreateFrame("Button", "$parent_CancelButton", L.AttachedFrame.IconSelectionFrame, "UIPanelButtonTemplate")
@@ -138,6 +140,7 @@ function ListMixin:OnLoad()
     self.CancelButton:SetScript("OnClick", function(self)
         L.AttachedFrame.ScrollFrame:UpdateIcon(previousIcon)
         L.AttachedFrame.IconSelectionFrame:Hide()
+        self:GetParent().listView.searchBar:SetText("")
     end)
     
 

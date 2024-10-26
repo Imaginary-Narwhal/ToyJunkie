@@ -1,9 +1,9 @@
-## Interface: 110002
+## Interface: 110005
 
 ## Title: ToyJunkie
 ## Notes: Shows a small window with you favorite toys
 ## Author: dragonflyy
-## Version: 1.0652
+## Version: 1.1
 ## SavedVariables: ToyJunkieDB
 
 ## DefaultState: Enabled
@@ -26,6 +26,7 @@ Libs\AceHook-3.0\AceHook-3.0.xml
 Config.lua
 Functions.lua
 Data\Icons.lua
+Data\Hearthstones.lua
 Core.lua
 utils\DragFrame.lua
 

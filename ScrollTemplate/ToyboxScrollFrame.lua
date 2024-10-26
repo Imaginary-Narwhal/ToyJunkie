@@ -40,16 +40,16 @@ function ListMixin:OnLoad()
     self.scrollView:SetElementResetter(GenerateClosure(self.OnElementReset, self))
 
     self.scrollBox = CreateFrame("Frame", nil, self, "WowScrollBoxList")
-    self.scrollBox:SetPoint("TOPLEFT", 10, -28)
-    self.scrollBox:SetPoint("BOTTOMRIGHT", -26, 5)
+    self.scrollBox:SetPoint("TOPLEFT", 2, -2)
+    self.scrollBox:SetPoint("BOTTOMRIGHT", -2, 2)
 
     self.scrollBar = CreateFrame("EventFrame", nil, self, "MinimalScrollBar")
     self.scrollBar:SetPoint("TOPLEFT", self.scrollBox, "TOPRIGHT", 8, 0)
     self.scrollBar:SetPoint("BOTTOMLEFT", self.scrollBox, "BOTTOMRIGHT", 8, 0)
 
     self.searchBar = CreateFrame("EditBox", "$parent_SearchBar", self, "InputBoxTemplate")
-    self.searchBar:SetPoint("TOPRIGHT", -5, -2)
-    self.searchBar:SetSize(125,25)
+    self.searchBar:SetPoint("TOPRIGHT", 0, 25)
+    self.searchBar:SetSize(85,25)
     self.searchBar:SetAutoFocus(false)
     self.searchBar:SetFont("Fonts\\ARIALN.TTF", 12, "MONOCHROME")
     self.searchBar:SetScript("OnTextChanged", function(self)
@@ -81,10 +81,10 @@ function ListMixin:OnLoad()
     self.searchBar.ClearButton:SetScript("OnClick", function(self, button)
         self:GetParent():SetText("")
     end)
-    
-
+    self.searchBar:SetScale(.85)
     ScrollUtil.InitScrollBoxListWithScrollBar(self.scrollBox, self.scrollBar, self.scrollView)
 end
+
 function ListMixin:OnElementInitialize(element, elementData)
     if(not element.OnLoad) then
         Mixin(element, ItemListMixin)
@@ -102,10 +102,10 @@ end
 function ListMixin:OnElementClicked(element, button)
     local data = element:GetData()
     if(button == "LeftButton" and not element.disabled) then
-        L.ToyboxFrame.ToyboxSelectionFrame:Hide()
         L.ToyJunkie.db.profile.selectedToybox = data.name
         L.ToyboxFrame:UpdateToyboxDisplay()
         L.ToyboxFrame:UpdateToyButtons()
+        L.ToyboxFrame:SelectNewRandomToy()
     end
 end
 

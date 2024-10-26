@@ -16,7 +16,7 @@ function L.ToyJunkie:OnInitialize()
             if (button == "LeftButton") then
                 L.ToyboxFrame:Toggle()
             elseif (button == "RightButton") then
-                L:SettingsMenuDropdown()
+                Settings.OpenToCategory(L.catID)
             end
         end
     })
@@ -27,30 +27,6 @@ function L.ToyJunkie:OnInitialize()
 end
 
 function L.ToyJunkie:OnEnable()
-    ----------------------------------
-    -- Update old profile if needed --
-
-    if (L.ToyJunkie.db.profile.boxes ~= nil) then
-        for key, toybox in pairs(L.ToyJunkie.db.profile.boxes) do
-            if (toybox.isCollapsed == nil) then
-                toybox.isCollapsed = false
-            end
-            if (toybox.icon == nil) then
-                toybox.icon = 454046
-            end
-            if (toybox.toyColor == nil) then
-                toybox.toyColor = {
-                    red = 0.0,
-                    green = 0.0,
-                    blue = 1.0,
-                    alpha = 0.25
-                }
-            end
-        end
-    end
-    ----------------------------------
-
-
     self:RegisterEvent("TOYS_UPDATED")
     self:RegisterEvent("PLAYER_REGEN_DISABLED")
     self:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -64,8 +40,27 @@ function L.ToyJunkie:OnEnable()
         L.ToyJunkie.Icon:AddButtonToCompartment(addonName)
     end
 
-    L.ToyboxFrame:ChangeFrame()
-    L.ToyboxFrame.RandomToyButton:SetToy()
+    if(L.ToyJunkie.db.profile.minimap.hide) then
+        L.ToyJunkie.Icon:Hide(addonName)
+    else
+        L.ToyJunkie.Icon:Show(addonName)
+    end
+
+    if(L.ToyJunkie.db.profile.minimap.lock) then
+        L.ToyJunkie.Icon:Lock(addonName)
+    else
+        L.ToyJunkie.Icon:Unlock(addonName)
+    end
+
+    if(L.ToyJunkie.db.profile.addonCompartment) then
+        L.ToyJunkie.Icon:AddButtonToCompartment(addonName)
+    else
+        L.ToyJunkie.Icon:RemoveButtonFromCompartment(addonName)
+    end
+
+    L.ToyboxFrame:UpdatePosition()
+    L.ToyboxFrame:SelectNewRandomToy()
+    L.ToyboxFrame:SelectNewRandomHearthstone()
 end
 
 function L.ToyJunkie:TJCommand(msg)
