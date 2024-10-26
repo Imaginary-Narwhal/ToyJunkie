@@ -670,9 +670,7 @@ function ListMixin:OnElementClicked(element, button)
                                             table.remove(L.ToyJunkie.db.profile.boxes, data.id)
                                             if (#L.ToyJunkie.db.profile.boxes > 0) then
                                                 if (L.ToyJunkie.db.profile.selectedToybox == data.name) then
-                                                    L.ToyJunkie.db.profile.selectedToybox = L.ToyJunkie.db.profile.boxes
-                                                        [1].name
-                                                    L.ToyboxFrame:UpdateAll()
+                                                    L.ToyJunkie.db.profile.selectedToybox = L.ToyJunkie.db.profile.boxes[1].name
                                                 end
                                             else
                                                 L.ToyJunkie.db.profile.selectedToybox = nil
@@ -680,6 +678,8 @@ function ListMixin:OnElementClicked(element, button)
                                             end
                                             self:Refresh()
                                             L.ToyboxFrame:RefreshToyBoxes()
+                                            L.ToyboxFrame:SelectNewRandomToy()
+                                            L.ToyboxFrame:UpdateToyButtons()
                                         end
                                     end
                                 },
