@@ -50,7 +50,6 @@ function L:GetUsableHearthstones()
             table.insert(hearthstones, hsID)
         end
     end
-
     return hearthstones
 end
 

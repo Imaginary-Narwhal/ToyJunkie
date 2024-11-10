@@ -3,6 +3,7 @@ local addon, L = ...
 local isMoving = false
 local isResizing = false
 local randomToyAvailable = false
+local selectedHearthstoneId = 0
 
 ------------------------------
 -- Create main toybox frame --
@@ -104,28 +105,32 @@ end)
 ------------------------
 
 L.ToyboxFrame.LockButton = CreateFrame("Button", "$parent_LockButton", L.ToyboxFrame, "UIPanelButtonTemplate")
-L.ToyboxFrame.LockButton:SetSize(42,16)
-L.ToyboxFrame.LockButton:SetText("Lock")
---[[L.ToyboxFrame.LockButton:SetNormalTexture("Interface/Addons/ToyJunkie/images/settings-buttons.png")
-L.ToyboxFrame.LockButton:GetNormalTexture():SetTexCoord(0.21875, 0.765625, 0.023438, 0.3125)
+L.ToyboxFrame.LockButton:SetSize(18,17)
+L.ToyboxFrame.LockButton:SetText("L")
 
-L.ToyboxFrame.LockButton:SetPushedTexture("Interface/Addons/ToyJunkie/images/settings-buttons.png")
-L.ToyboxFrame.LockButton:GetPushedTexture():SetTexCoord(0.21875, 0.765625, 0.335938, 0.625)
-
-L.ToyboxFrame.LockButton:SetHighlightTexture("Interface/Buttons/UI-Common-MouseHilight", "ADD")]]
-
-L.ToyboxFrame.LockButton:SetPoint("TOPRIGHT", -37, 1)
+L.ToyboxFrame.LockButton:SetPoint("TOPRIGHT", -37, 1.5)
 L.ToyboxFrame.LockButton:SetScript("OnClick", function(self, button)
     L.ToyJunkie.db.profile.toyBoxFrame.locked = not L.ToyJunkie.db.profile.toyBoxFrame.locked
     if(L.ToyJunkie.db.profile.toyBoxFrame.locked) then
-        L.ToyboxFrame.LockButton:SetText("Unlock")
-        L.ToyboxFrame.LockButton:SetWidth(55)
+        L.ToyboxFrame.LockButton:SetText("U")
         L.ToyboxFrame.ResizeButton:Hide()
     else
-        L.ToyboxFrame.LockButton:SetText("Lock")
-        L.ToyboxFrame.LockButton:SetWidth(42)
+        L.ToyboxFrame.LockButton:SetText("L")
         L.ToyboxFrame.ResizeButton:Show()
     end
+end)
+L.ToyboxFrame.LockButton:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+    if(self:GetText() == "L") then
+        GameTooltip:AddLine("Lock Toybox Window")
+    else
+        GameTooltip:AddLine("Unlock Toybox Window")
+    end
+    GameTooltip:Show()
+end)
+
+L.ToyboxFrame.LockButton:SetScript("OnLeave", function(self)
+    GameTooltip:Hide()
 end)
 
 -------------------
@@ -244,6 +249,26 @@ L.ToyboxFrame.RandomHearthstoneButton:SetPoint("TOPLEFT", L.ToyboxFrame.RandomTo
 L.ToyboxFrame.RandomHearthstoneButton:SetHighlightTexture("Interface/Buttons/UI-Common-MouseHilight", "ADD")
 L.ToyboxFrame.RandomHearthstoneButton:RegisterForClicks("AnyDown")
 L.ToyboxFrame.RandomHearthstoneButton:SetAttribute("type1", "toy")
+
+L.ToyboxFrame.RandomHearthstoneButton.Cooldown = CreateFrame("Cooldown", nil, L.ToyboxFrame.RandomHearthstoneButton, "CooldownFrameTemplate")
+L.ToyboxFrame.RandomHearthstoneButton.Cooldown:SetAllPoints()
+L.ToyboxFrame.RandomHearthstoneButton.Cooldown:SetScale(.75)
+L.ToyboxFrame.RandomHearthstoneButton.Cooldown:Hide()
+L.ToyboxFrame.RandomHearthstoneButton:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+
+function L.ToyboxFrame.RandomHearthstoneButton:CheckCooldown()
+    if(selectedHearthstoneId ~= 0) then
+        local start, duration, enable = C_Item.GetItemCooldown(selectedHearthstoneId)
+        if(start > 0) then
+            CooldownFrame_Set(self.Cooldown, start, duration, enable)
+        else
+            self.Cooldown:Hide()
+        end
+    else
+        self.Cooldown:Hide()
+    end
+end
+
 L.ToyboxFrame.RandomHearthstoneButton:HookScript("OnClick", function(self, button)
     if(button == "LeftButton") then
         L.ToyboxFrame:SelectNewRandomHearthstone()
@@ -260,7 +285,13 @@ L.ToyboxFrame.RandomHearthstoneButton:SetScript("OnEnter", function(self)
     GameTooltip:Show()
 end)
 L.ToyboxFrame.RandomHearthstoneButton:SetScript("OnLeave", function(self)
-GameTooltip:Hide()
+    GameTooltip:Hide()
+end)
+
+L.ToyboxFrame.RandomHearthstoneButton:SetScript("OnEvent", function(self, event)
+    if(event == "SPELL_UPDATE_COOLDOWN") then
+        self:CheckCooldown()
+    end
 end)
 ---------------
 -- Functions --
@@ -292,9 +323,13 @@ function L.ToyboxFrame:SelectNewRandomHearthstone()
     local hearthstones = L:GetUsableHearthstones()
     if(#hearthstones > 0) then
         local selected = random(#hearthstones)
+        selectedHearthstoneId = hearthstones[selected]
         L.ToyboxFrame.RandomHearthstoneButton:SetAttribute("toy1", hearthstones[selected])
+        L.ToyboxFrame.RandomHearthstoneButton:CheckCooldown()
     else
+        selectedHearthstoneId = 0
         L.ToyboxFrame.RandomHearthstoneButton:SetAttribute("toy1", "0")
+        L.ToyboxFrame.RandomHearthstoneButton:CheckCooldown()
     end
 end
 
@@ -492,12 +527,10 @@ function L.ToyboxFrame:UpdatePosition()
     end
 
     if(L.ToyJunkie.db.profile.toyBoxFrame.locked) then
-        L.ToyboxFrame.LockButton:SetText("Unlock")
-        L.ToyboxFrame.LockButton:SetWidth(55)
+        L.ToyboxFrame.LockButton:SetText("U")
         L.ToyboxFrame.ResizeButton:Hide()
     else
-        L.ToyboxFrame.LockButton:SetText("Lock")
-        L.ToyboxFrame.LockButton:SetWidth(42)
+        L.ToyboxFrame.LockButton:SetText("L")
         L.ToyboxFrame.ResizeButton:Show()
     end
 end

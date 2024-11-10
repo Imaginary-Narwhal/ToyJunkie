@@ -1,5 +1,7 @@
 local addonName, L = ...
 
+local hearthstonesLoaded = false
+
 function L.ToyJunkie:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("ToyJunkieDB", L.defaults, true)
     L.ToyJunkie:ConfigurationInitialize(self)
@@ -60,7 +62,6 @@ function L.ToyJunkie:OnEnable()
 
     L.ToyboxFrame:UpdatePosition()
     L.ToyboxFrame:SelectNewRandomToy()
-    L.ToyboxFrame:SelectNewRandomHearthstone()
 end
 
 function L.ToyJunkie:TJCommand(msg)
@@ -124,6 +125,13 @@ function L.ToyJunkie:TOYS_UPDATED()
     if (L.ToyJunkie.db.profile.toyboxShown) then
         L.ToyboxFrame:Toggle(true, "OPEN")
     end
+
+    if(not hearthstonesLoaded) then
+        C_Timer.After(2, function()
+            L.ToyboxFrame:SelectNewRandomHearthstone()
+            hearthstonesLoaded = true
+        end)
+    end
 end
 
 function L.ToyJunkie:PLAYER_REGEN_DISABLED()
@@ -138,9 +146,14 @@ function L.ToyJunkie:PLAYER_REGEN_ENABLED()
     end
 end
 
-
 CollectionsJournal:HookScript("OnHide", function()
     if(L.ToyJunkie_DragBackdrop ~= nil) then
         L.ToyJunkie_DragBackdrop:Hide()
     end
 end)
+
+
+-- Binding settings --
+BINDING_HEADER_HTOYJUNKIE = "ToyJunkie Keybindings"
+_G["BINDING_NAME_CLICK ToyJunkie_ToyboxFrame_RandomHearthstoneButton:LeftButton"] = "Use Random Hearthstone"
+_G["BINDING_NAME_CLICK ToyJunkie_ToyboxFrame_RandomToyButton:LeftButton"] = "Use Random Toy from current toybox"
