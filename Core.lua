@@ -6,7 +6,9 @@ function L.ToyJunkie:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("ToyJunkieDB", L.defaults, true)
     L.ToyJunkie:ConfigurationInitialize(self)
 
-    V = L
+    if(JunkieDebug) then --Debug command
+        LVar = L
+    end
 
     local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
     ---@diagnostic disable-next-line: missing-fields
@@ -88,13 +90,23 @@ function L.ToyJunkie:TJCommand(msg)
                     self:Print("Toybox '" .. search .."' not found.")
                 end
             end
+        elseif(cmd[1]:lower() == "clean") then
+            for k, boxes in pairs(L.ToyJunkie.db.profile.boxes) do
+                local tempToys = {}
+                for i, toy in pairs(L.ToyJunkie.db.profile.boxes[k].toys) do
+                    table.insert(tempToys, toy)
+                end
+                L.ToyJunkie.db.profile.boxes[k].toys = tempToys
+            end
         elseif(cmd[1]:lower() == "help") then
-            self:Print("/tj without a parameter will toggle the toy box window")
-            self:Print("/tj box _name_ will open the toybox to the toybox with the matching name")
+            self:Print("/tj --without a parameter will toggle the toy box window")
+            self:Print("/tj box _name_ --will open the toybox to the toybox with the matching name")
+            self:print("/tj clean --will attempt to clean up the toys in your toyboxes if you get a nil error when selecting a toybox")
         else
             self:Print("Command '" .. cmd[1] .. "' not found.")
             self:Print("/tj without a parameter will toggle the toy box window")
             self:Print("/tj box _name_ will open the toybox to the toybox with the matching name")
+            self:print("/tj clean --will attempt to clean up the toys in your toyboxes if you get a nil error when selecting a toybox")
         end
     end
 end
