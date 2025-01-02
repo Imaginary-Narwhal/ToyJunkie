@@ -38,7 +38,10 @@ end)
 
 function L.AttachedFrame:SetFrame()
     self:SetParent(ToyBox)
-    self:SetFrameStrata("MEDIUM")
+    CollectionsJournal:SetFrameLevel(self:GetFrameLevel() + 5)
+    self:SetFrameLevel(1)
+    self.TitleContainer:SetFrameLevel(self:GetFrameLevel() + 1)
+    self.NineSlice:SetFrameLevel(self:GetFrameLevel() + 1)
     self:ClearAllPoints()
     local tex = self.ToggleButton:GetNormalTexture()
     if(L.ToyJunkie.db.profile.isAttachedWindowHidden) then
