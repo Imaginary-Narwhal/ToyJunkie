@@ -36,4 +36,8 @@ L.HearthstoneIds = {
     210455, -- Draenic Hologem
     212337, -- Stone of the Hearth
     228940, -- Notorious Thread's Hearthstone
+    236687, -- Explosive Hearthstone
+    246565, -- Redeployment Module
+    245970, -- P.O.S.T. Master's Express Hearthstone
+    246565, -- Cosmic Hearthstone
 }

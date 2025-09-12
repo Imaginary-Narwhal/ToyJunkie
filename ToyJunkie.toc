@@ -1,4 +1,4 @@
-## Interface: 110007
+## Interface: 110200
 
 ## Title: ToyJunkie
 ## Notes: Shows a small window with you favorite toys
