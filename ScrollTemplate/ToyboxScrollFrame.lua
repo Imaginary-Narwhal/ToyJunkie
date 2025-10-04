@@ -24,9 +24,9 @@ function ItemListMixin:Init(elementData)
     self.Text:SetText(elementData.name)
     self.Icon:SetTexture(elementData.icon)
     if(elementData.name == L.ToyJunkie.db.profile.selectedToybox) then
-        ActionButton_ShowOverlayGlow(self)
-        --self:SetAlpha(.5)
-        --self.disabled = true
+        --ActionButton_ShowOverlayGlow(self)
+        self:SetAlpha(.5)
+        self.disabled = true
     else
         self:SetAlpha(1)
         self.disabled = false

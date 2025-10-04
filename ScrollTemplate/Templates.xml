@@ -331,4 +331,97 @@
             </OnLeave>
         </Scripts>
     </Button>
+
+    <Button name="TJ_HearthstoneTemplate" virtual="true" inherits="BackdropTemplate">
+        <Size y="42" />
+        <Frames>
+            <Frame parentKey="icon">
+                <Size x="35" y="35" />
+                <Anchors>
+                    <Anchor point="LEFT" x="0" />
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture parentKey="texture">
+                            <Size x="32" y="32" />
+                            <Anchors>
+                                <Anchor point="LEFT" x="10" y="0.5" />
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Frame>
+            <Frame parentKey="favoriteHeart">
+                <Size x="16" y="16" />
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="0"/>
+                </Anchors>
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <Texture parentKey="texture" atlas="delves-scenario-heart-icon">
+                            <Size x="16" y="16"/>
+                            <Anchors>
+                                <Anchor point="TOPLEFT" x="0" y="0" />
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Frame>
+            <Frame parentKey="hearthstoneCard" inherits="BackdropTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="21" y="0" />
+                    <Anchor point="BOTTOMRIGHT" x="0" y="0" />
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString parentKey="Text" inherits="GameFontNormal" justifyH="CENTER"
+                            wordwrap="true">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" x="27" y="0" />
+                                <Anchor point="BOTTOMRIGHT" x="-10" y="0" />
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
+        </Frames>
+    </Button>
+    <Button name="TJ_HearthstoneUnownedTemplate" virtual="true" inherits="BackdropTemplate">
+        <Size y="42" />
+        <Frames>
+            <Frame parentKey="icon">
+                <Size x="35" y="35" />
+                <Anchors>
+                    <Anchor point="LEFT" x="0" />
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture parentKey="texture">
+                            <Size x="32" y="32" />
+                            <Anchors>
+                                <Anchor point="LEFT" x="10" y="0.5" />
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Frame>
+            <Frame parentKey="hearthstoneCard" inherits="BackdropTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="21" y="0" />
+                    <Anchor point="BOTTOMRIGHT" x="0" y="0" />
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString parentKey="Text" inherits="GameFontDisable" justifyH="CENTER"
+                            wordwrap="true">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" x="27" y="0" />
+                                <Anchor point="BOTTOMRIGHT" x="-10" y="0" />
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
+        </Frames>
+    </Button>
 </Ui>

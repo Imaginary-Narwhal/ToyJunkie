@@ -1,5 +1,40 @@
 local addonName, L = ...
 
+--[[L.HearthstoneIds = {
+    54452,  -- Ethereal Portal
+    64488,  -- The Innkeeper's Daughter
+    93672,  -- Dark Portal
+    142542, -- Tome of Town Portal
+    162973, -- Greatfather Winter's Hearthstone
+    163045, -- Headless Horseman's Hearthstone
+    165669, -- Lunar Elder's Hearthstone
+    165670, -- Peddlefeet's Lovely Hearthstone
+    165802, -- Noble Gardener's Hearthstone
+    166746, -- Fire Eater's Hearthstone
+    166747, -- Brewfest Reveler's Hearthstone
+    168907, -- Holographic Digitalization Hearthstone
+    246565, -- Cosmic Hearthstone
+    172179, -- Eternal Traveler's Hearthstone
+    180290, -- Night Fae Hearthstone
+    182773, -- Necrolord Hearthstone
+    183716, -- Venthyr Sinstone
+    184353, -- Kyrian Hearthstone
+    188952, -- Dominated Hearthstone
+    190196, -- Enlightened Hearthstone
+    190237, -- Broker Translocation Matrix
+    193588, -- Timewalker's Hearthstone
+    200630, -- Ohn'ir Windsage's Hearthstone
+    206195, -- Path of the Naaru
+    208704, -- Deepdweller's Earthen Hearthstone
+    209035, -- Hearthstone of the Flame
+    210455, -- Draenic Hologem
+    212337, -- Stone of the Hearth
+    228940, -- Notorious Thread's Hearthstone
+    236687, -- Explosive Hearthstone
+    246565, -- Redeployment Module
+    245970, -- P.O.S.T. Master's Express Hearthstone
+}]]
+
 L.ToyJunkie = LibStub("AceAddon-3.0"):NewAddon("ToyJunkie","AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0")
 L.ToyJunkie.Icon = LibStub("LibDBIcon-1.0")
 
@@ -15,7 +50,6 @@ L.isInCombat = false
 ------------------------------
 -- Default Profile Settings --
 ------------------------------
-
 L.defaults = {
     profile = {
         isAttachedWindowHidden = true,
@@ -35,13 +69,13 @@ L.defaults = {
             width = 194,
             height = 204,
             iconSize = 48,
+            cooldownScale = .75,
             isSideBarShown = true,
             isShown = false
         },
         addonCompartment = true,
-        boxes = {
-            
-        }
+        boxes = {},
+        hearthstoneFavoriteIds = {}
     }
 }
 
@@ -132,6 +166,23 @@ local options = {
                         L.ToyboxFrame:UpdateToyButtons()
                         L.ToyboxFrame:UpdateBounds()
                     end)
+                },
+                cooldownScale = {
+                    type = "range",
+                    order = 2,
+                    min = .5,
+                    max = 1.5,
+                    softMin = .5,
+                    softMax = 1.5,
+                    name = "Cooldown Text Scale",
+                    step = .05,
+                    get = (function(info)
+                        return L.ToyJunkie.db.profile.toyBoxFrame.cooldownScale
+                    end),
+                    set = (function(info, val)
+                        L.ToyJunkie.db.profile.toyBoxFrame.cooldownScale = val
+                        L:CheckAllCooldowns()
+                    end)
                 }--[[,
                 spacer = {
                     type = "header",
@@ -186,16 +237,3 @@ function L.ToyJunkie:ConfigurationInitialize(self)
     AC:RegisterOptionsTable("ToyJunkie", profiles)
     ACD:AddToBlizOptions("ToyJunkie", "Profiles", "ToyJunkie")
 end
-
---[[ 
-    settings: 
-        displaySize = 1-Compact, 2-Normal, 3-Special?
-        showTooltips = true/false
-            (Possible option to hold shift to show tooltips)
-        minimap button = hide - true/false, lock - true/false
-            (Message to mention about LDB addon)
-        addonCompartment = true/false
-        profiles = button to open profiles in addonsettings
-
-        134400 130724
-]]

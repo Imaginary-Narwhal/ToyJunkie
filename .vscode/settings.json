@@ -61,14 +61,15 @@
         "ADD",
         "PANEL_BACKGROUND_COLOR",
         "UIParent",
-        "Mixin",
         "GameTooltip",
         "SOUNDKIT",
         "CreateScrollBoxLinearView",
         "StaticPopup_Hide",
         "OrderHallCommandBar",
         "TooltipDataProcessor",
-        "ActionButton_ShowOverlayGlow"
+        "ActionButton_ShowOverlayGlow",
+        "FrameTemplate_SetButtonBarHeight",
+        "FrameTemplate_SetAtticHeight"
     ],
     "Lua.runtime.version": "Lua 5.1",
     "Lua.runtime.builtin": {
@@ -83,6 +84,7 @@
         "utf8": "disable"
     },
     "Lua.workspace.library": [
-        "~\\.vscode\\extensions\\ketho.wow-api-0.20.8\\Annotations\\Core"
-    ]
+        "~\\.vscode\\extensions\\ketho.wow-api-0.21.0\\Annotations\\Core"
+    ],
+    "Lua.type.weakUnionCheck": true
 }

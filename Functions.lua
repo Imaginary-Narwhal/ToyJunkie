@@ -47,10 +47,58 @@ function L:GetUsableHearthstones()
     local hearthstones = {}
     for k, hsID in pairs(L.HearthstoneIds) do
         if(PlayerHasToy(hsID) and C_ToyBox.IsToyUsable(hsID)) then
-            table.insert(hearthstones, hsID)
+            if(L:IsHearthstoneFavorited(hsID)) then
+                table.insert(hearthstones, hsID)
+            end
         end
     end
     return hearthstones
+end
+
+function L:IsHearthstoneFavorited(id)
+    for k,v in pairs(L.ToyJunkie.db.profile.hearthstoneFavoriteIds) do
+        if(v == id) then
+            return true
+        end
+    end
+    return false
+end
+
+function L:GetAllHearthstones()
+    local hearthstones = {}
+    for k, hsID in pairs(L.HearthstoneIds) do
+        local id, name, icon = C_ToyBox.GetToyInfo(hsID)
+        hearthstones[id] = {}
+        hearthstones[id].Name = name
+        hearthstones[id].Icon = icon
+        hearthstones[id].Owned = PlayerHasToy(hsID)
+    end
+    return hearthstones
+end
+
+function L:RemoveFavoriteHearthstone(hsID) --return 0 if successful, 1 if not found, 2 if last HS left on list
+    local idx = 0
+    if(#L.ToyJunkie.db.profile.hearthstoneFavoriteIds == 1) then
+        return 2
+    end
+    for k,v in pairs(L.ToyJunkie.db.profile.hearthstoneFavoriteIds) do
+        if(v == hsID) then
+            idx = k
+        end
+    end
+    if(idx > 0) then
+        table.remove(L.ToyJunkie.db.profile.hearthstoneFavoriteIds, idx)
+        return 0
+    end
+    return 1
+end
+
+function L:AddFavoriteHearthstone(hsID)
+    table.insert(L.ToyJunkie.db.profile.hearthstoneFavoriteIds, hsID)
+end
+
+function L:IsHearthstoneOwned(hID)
+    return PlayerHasToy(hID)
 end
 
 function L:GetBackdropColorByToyboxId(id)
@@ -227,12 +275,13 @@ function L:CreateToyButton()
     button.Cooldown:Hide()
     button:SetScript("OnEvent", function(self, event)
         if(event == "SPELL_UPDATE_COOLDOWN") then
-            if(self.id ~= nil) then
-                local start, duration, enable = C_Item.GetItemCooldown(self.id)
-                if(start > 0) then
-                    CooldownFrame_Set(self.Cooldown, start, duration, enable)
-                end
-            end
+            --if(self.id ~= nil) then
+                --local start, duration, enable = C_Item.GetItemCooldown(self.id)
+                --if(start > 0) then
+                  --  CooldownFrame_Set(self.Cooldown, start, duration, enable)
+                --end
+            --end
+            self:CheckCooldown()
         end
     end)
 
@@ -279,9 +328,11 @@ function L:CreateToyButton()
             local start, duration, enable = C_Item.GetItemCooldown(button.id)
             if (start > 0) then
                 CooldownFrame_Set(button.Cooldown, start, duration, enable)
+                button.Cooldown:Show()
             else
                 button.Cooldown:Hide()
             end
+            button.Cooldown:SetScale(L.ToyJunkie.db.profile.toyBoxFrame.cooldownScale)
         end
     end
 
@@ -309,4 +360,10 @@ function L:GetNumOfActiveButtons()
         end
     end
     return count
+end
+
+function L:DebugMsg(...)
+    if(JunkieDebug) then
+        Debug(...)
+    end
 end

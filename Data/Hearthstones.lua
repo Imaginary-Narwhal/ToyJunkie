@@ -1,4 +1,4 @@
-local addon, L = ...
+local addonName, L = ...
 
 --[[
 Wowhead link to show all toys that are hearthstones:
@@ -13,13 +13,13 @@ L.HearthstoneIds = {
     142542, -- Tome of Town Portal
     162973, -- Greatfather Winter's Hearthstone
     163045, -- Headless Horseman's Hearthstone
-    163206, -- Weary Spirit Binding (This item is in databases, but never made it into the game. Leaving here in case it ever gets put in)
     165669, -- Lunar Elder's Hearthstone
     165670, -- Peddlefeet's Lovely Hearthstone
     165802, -- Noble Gardener's Hearthstone
     166746, -- Fire Eater's Hearthstone
     166747, -- Brewfest Reveler's Hearthstone
     168907, -- Holographic Digitalization Hearthstone
+    246565, -- Cosmic Hearthstone
     172179, -- Eternal Traveler's Hearthstone
     180290, -- Night Fae Hearthstone
     182773, -- Necrolord Hearthstone
@@ -39,5 +39,4 @@ L.HearthstoneIds = {
     236687, -- Explosive Hearthstone
     246565, -- Redeployment Module
     245970, -- P.O.S.T. Master's Express Hearthstone
-    246565, -- Cosmic Hearthstone
 }

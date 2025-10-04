@@ -8,6 +8,7 @@ function L.ToyJunkie:OnInitialize()
 
     if(JunkieDebug) then --Debug command
         LVar = L
+        DB = L.ToyJunkie.db.profile
     end
 
     local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
@@ -62,6 +63,8 @@ function L.ToyJunkie:OnEnable()
         L.ToyJunkie.Icon:RemoveButtonFromCompartment(addonName)
     end
 
+    table.sort(L.HearthstoneIds)
+
     L.ToyboxFrame:UpdatePosition()
     L.ToyboxFrame:SelectNewRandomToy()
 end
@@ -106,7 +109,7 @@ function L.ToyJunkie:TJCommand(msg)
             self:Print("Command '" .. cmd[1] .. "' not found.")
             self:Print("/tj without a parameter will toggle the toy box window")
             self:Print("/tj box _name_ will open the toybox to the toybox with the matching name")
-            self:print("/tj clean --will attempt to clean up the toys in your toyboxes if you get a nil error when selecting a toybox")
+            self:Print("/tj clean --will attempt to clean up the toys in your toyboxes if you get a nil error when selecting a toybox")
         end
     end
 end
@@ -127,7 +130,7 @@ function L.ToyJunkie:TJBoxCommand(msg)
     end
 end
 
-function L.ToyJunkie:TOYS_UPDATED()
+function L.ToyJunkie:TOYS_UPDATED(eventName, toyId, isNew)
     if (L.AttachedFrame ~= nil and ToyBox ~= nil) then
         if (not L.AttachedFrame.isAttached) then
             L.AttachedFrame:SetFrame()
@@ -138,11 +141,29 @@ function L.ToyJunkie:TOYS_UPDATED()
         L.ToyboxFrame:Toggle(true, "OPEN")
     end
 
+    if(isNew) then
+        for k,v in pairs(L.HearthstoneIds) do
+            if(v == toyId) then
+                table.insert(L.ToyJunkie.db.profile.hearthstoneFavoriteIds, toyId)
+                L.ToyboxFrame:SelectNewRandomHearthstone()
+            end
+        end
+    end
+
     if(not hearthstonesLoaded) then
         C_Timer.After(2, function()
             L.ToyboxFrame:SelectNewRandomHearthstone()
             hearthstonesLoaded = true
+            currentHearthstones = L:GetAllHearthstones()
         end)
+    end
+
+    if(#L.ToyJunkie.db.profile.hearthstoneFavoriteIds < 1) then
+        for k,v in pairs(L.HearthstoneIds) do
+            if(L:IsHearthstoneOwned(v)) then
+                table.insert(L.ToyJunkie.db.profile.hearthstoneFavoriteIds, v)
+            end
+        end
     end
 end
 
@@ -163,7 +184,6 @@ CollectionsJournal:HookScript("OnHide", function()
         L.ToyJunkie_DragBackdrop:Hide()
     end
 end)
-
 
 -- Binding settings --
 BINDING_HEADER_HTOYJUNKIE = "ToyJunkie Keybindings"

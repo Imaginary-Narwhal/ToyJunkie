@@ -3,12 +3,13 @@
 ## Title: ToyJunkie
 ## Notes: Shows a small window with you favorite toys
 ## Author: dragonflyy
-## Version: 1.221
+## Version: 1.3
 ## SavedVariables: ToyJunkieDB
 
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 ## RequiredDeps: Blizzard_Collections
+
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
@@ -23,17 +24,20 @@ Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 Libs\LibDBIcon-1.0\lib.xml
 Libs\AceHook-3.0\AceHook-3.0.xml
 
+Data\Hearthstones.lua
+Data\Icons.lua
+
 Config.lua
 Functions.lua
-Data\Icons.lua
-Data\Hearthstones.lua
 Core.lua
 utils\DragFrame.lua
 
 ScrollTemplate\AttachedFrameScroll.lua
 ScrollTemplate\IconScrollFrame.lua
 ScrollTemplate\ToyboxScrollFrame.lua
+ScrollTemplate\HearthstoneScrollFrame.lua
 ScrollTemplate\templates.xml
 
 Windows\CollectionAttachedWindow.lua
 Windows\ToyboxWindow.lua
+Windows\HearthstoneFavoritesWindow.lua

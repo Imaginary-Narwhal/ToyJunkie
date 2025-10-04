@@ -183,7 +183,11 @@ L.ToyboxFrame.SideMenuBar.ToyboxSelectionFrame:OnLoad()
 -- Toy Button Holder Frame --
 -----------------------------
 
-L.ToyboxFrame.ToyButtonHolderFrame = CreateFrame("Frame", "$parent_ToyButtonHolderFrame", L.ToyboxFrame)
+L.ToyboxFrame.ToyButtonHolderFrame = CreateFrame("Frame", "$parent_ToyButtonHolderFrame", L.ToyboxFrame, "BackdropTemplate")
+L.ToyboxFrame.ToyButtonHolderFrame:SetBackdrop({
+    bgFile = "Interface/Buttons/WHITE8X8"
+})
+L.ToyboxFrame.ToyButtonHolderFrame:SetBackdropColor(PANEL_BACKGROUND_COLOR.r, PANEL_BACKGROUND_COLOR.g, PANEL_BACKGROUND_COLOR.b, 1)
 L.ToyboxFrame.ToyButtonHolderFrame:SetPoint("TOPLEFT", 130, -27)
 L.ToyboxFrame.ToyButtonHolderFrame:SetPoint("BOTTOMRIGHT", -25, 15)
 
@@ -288,12 +292,17 @@ L.ToyboxFrame.RandomHearthstoneButton:HookScript("OnClick", function(self, butto
     if(button == "LeftButton") then
         L.ToyboxFrame:SelectNewRandomHearthstone()
     end
+    if(button == "RightButton") then
+        L.HearthstoneFavorites:SetShown(not L.HearthstoneFavorites:IsShown())
+    end
 end)
 L.ToyboxFrame.RandomHearthstoneButton:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_LEFT")
     if(#L:GetUsableHearthstones() > 0) then
         GameTooltip:AddLine("Random Hearthstone")
         GameTooltip:AddLine("Returns you to " .. GetBindLocation())
+        GameTooltip:AddLine(" ")
+        GameTooltip:AddLine("Right click to select favorite hearthstones")
     else
         GameTooltip:AddLine("No hearthstones currently available")
     end
@@ -462,8 +471,8 @@ function L.ToyboxFrame:UpdateToyButtons()
                    ((L:GetIconMargin() + L.ToyJunkie.db.profile.toyBoxFrame.iconSize) * (row - 1)) + L:GetIconMargin(),
                    -(((L:GetIconMargin() + L.ToyJunkie.db.profile.toyBoxFrame.iconSize) * (column - 1)) + L:GetIconMargin())
                 )
-                button:UpdateButton(button.id)
                 button:Show()
+                button:UpdateButton(button.id)
                 row = row + 1
                 if(row > iconsPerRow) then
                     row = 1
