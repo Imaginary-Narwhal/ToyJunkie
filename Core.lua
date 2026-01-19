@@ -9,6 +9,7 @@ function L.ToyJunkie:OnInitialize()
     if(JunkieDebug) then --Debug command
         LVar = L
         DB = L.ToyJunkie.db.profile
+        self:Print("Debug loaded ...")
     end
 
     local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
