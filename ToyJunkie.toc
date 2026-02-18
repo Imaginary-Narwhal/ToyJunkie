@@ -3,7 +3,7 @@
 ## Title: ToyJunkie
 ## Notes: Shows a small window with you favorite toys
 ## Author: dragonflyy
-## Version: 1.5
+## Version: 1.5.1
 ## SavedVariables: ToyJunkieDB
 
 ## DefaultState: Enabled

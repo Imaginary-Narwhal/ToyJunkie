@@ -320,7 +320,7 @@ function L:CreateToyButton()
                 if(button == "RightButton") then
                     local contextMenu
                     local foundKey, foundId = 0, 0
-                    for k, v in pairs(DB.quickToys) do
+                    for k, v in pairs(L.ToyJunkie.db.profile.quickToys) do
                         if(v == toyId) then
                             foundKey, foundId = k,v
                         end
