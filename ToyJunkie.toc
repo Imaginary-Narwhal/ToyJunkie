@@ -1,9 +1,9 @@
-## Interface: 120000
+## Interface: 120001
 
 ## Title: ToyJunkie
 ## Notes: Shows a small window with you favorite toys
 ## Author: dragonflyy
-## Version: 1.4
+## Version: 1.5
 ## SavedVariables: ToyJunkieDB
 
 ## DefaultState: Enabled

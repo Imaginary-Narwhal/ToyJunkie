@@ -328,6 +328,121 @@ L.ToyboxFrame.RandomHearthstoneButton:SetScript("OnUpdate", function(self)
         self.CooldownTimer:SetText(format("%02dm %02ds", minutes, seconds))
     end
 end)
+
+----------------
+-- Quick Toys --
+----------------
+L.ToyboxFrame.QuickButtons = {}
+function L.ToyboxFrame:UpdateQuickButtons()
+    for i=1, 5 do
+        L.ToyboxFrame.QuickButtons[i]:Hide()
+        L.ToyboxFrame.QuickButtons[i].Button.id = nil
+        L.ToyboxFrame.QuickButtons[i].Button.Cooldown:Hide()
+    end
+
+    for key, toyId in pairs(L.ToyJunkie.db.profile.quickToys) do
+        local button = L.ToyboxFrame.QuickButtons[key].Button
+        local _, _, toyIcon = C_ToyBox.GetToyInfo(toyId)
+        if(toyIcon == nil) then
+            toyIcon = 134400
+        end
+        button.id = toyId
+        button:SetNormalTexture(toyIcon)
+        button:SetAttribute("type1", "toy")
+        button:SetAttribute("toy1", toyId)
+        button:HookScript("OnMouseDown", function(self, button)
+            print(button)
+        end)
+        button:CheckCooldown()
+        L.ToyboxFrame.QuickButtons[key]:Show()
+    end
+end
+
+for i=1, 5, 1 do
+    L.ToyboxFrame.QuickButtons[i] = CreateFrame("Frame", "$parent_QuickButton_" .. i, L.ToyboxFrame, "BackdropTemplate")
+    local qb = L.ToyboxFrame.QuickButtons[i]
+    qb:SetFrameLevel(509)
+    qb:SetBackdrop({
+        bgFile = "Interface/Buttons/WHITE8X8",
+        edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+        edgeSize = 16,
+        insets = { left = 3.2, right = 3.2, top = 3.2, bottom = 3.2 }
+    })
+    qb:SetBackdropColor(PANEL_BACKGROUND_COLOR.r, PANEL_BACKGROUND_COLOR.g, PANEL_BACKGROUND_COLOR.b, 1)
+    qb:SetBackdropBorderColor(.5, .5, .5, 1)
+    qb:SetSize(36,34)
+    qb:SetPoint("TOPLEFT", L.ToyboxFrame, "TOPRIGHT", -10, (-36 * (i-1)) - 15)
+    qb.Button = CreateFrame("Button", "$parent_Button", qb, "SecureActionButtonTemplate")
+    qb.Button:RegisterForClicks("AnyUp", "AnyDown")
+    qb.Button:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+    qb.Button:SetSize(22,22)
+    qb.Button:SetPoint("Center", qb, "Center", 2, -1)
+    qb.Button.Hover = qb.Button:CreateTexture("$parent_Hover", "OVERLAY")
+    qb.Button.Hover:SetTexture("Interface\\Buttons\\CheckButtonHilight")
+    qb.Button.Hover:SetBlendMode("ADD")
+    qb.Button.Hover:SetSize(24,24)
+    qb.Button.Hover:SetPoint("Center")
+    qb.Button.Hover:Hide()
+    qb.Button:SetScript("OnEnter", function(self)
+        self.Hover:Show()
+    end)
+    qb.Button:SetScript("OnLeave", function(self)
+        self.Hover:Hide()
+    end)
+
+    qb.Button.Cooldown = CreateFrame("Cooldown", nil, qb.Button, "CooldownFrameTemplate")
+    qb.Button.Cooldown:SetAllPoints()
+    qb.Button.Cooldown:SetScale(0.7)
+    qb.Button.Cooldown:Hide()
+
+    qb.Button:SetScript("OnEvent", function(self, event)
+        if(event == "SPELL_UPDATE_COOLDOWN") then
+            self:CheckCooldown()
+        end
+    end)
+
+    function qb.Button:CheckCooldown()
+        if(self.id ~= nil) then
+            local start, duration, enable = C_Item.GetItemCooldown(self.id)
+            if(start > 0) then
+                CooldownFrame_Set(self.Cooldown, start, duration, enable)
+            end
+        end
+    end
+
+    qb:Hide()
+end
+
+--[[L.ToyboxFrame.QuickButtonAdd = CreateFrame("Frame", "$parent_QuickButtonAdd", L.ToyboxFrame, "BackdropTemplate")
+L.ToyboxFrame.QuickButtonAdd:SetFrameLevel(509)
+L.ToyboxFrame.QuickButtonAdd:SetBackdrop({
+        bgFile = "Interface/Buttons/WHITE8X8",
+        edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+        edgeSize = 16,
+        insets = { left = 3.2, right = 3.2, top = 3.2, bottom = 3.2 }
+    })
+L.ToyboxFrame.QuickButtonAdd:SetBackdropColor(PANEL_BACKGROUND_COLOR.r, PANEL_BACKGROUND_COLOR.g, PANEL_BACKGROUND_COLOR.b, 1)
+L.ToyboxFrame.QuickButtonAdd:SetBackdropBorderColor(.5, .5, .5, 1)
+L.ToyboxFrame.QuickButtonAdd:SetSize(36,34)
+L.ToyboxFrame.QuickButtonAdd:SetPoint("TOPLEFT", L.ToyboxFrame, "TOPRIGHT", -10, -15)
+L.ToyboxFrame.QuickButtonAdd.Button = CreateFrame("Button", "$parent_Button", L.ToyboxFrame.QuickButtonAdd)
+L.ToyboxFrame.QuickButtonAdd.Button:SetSize(32,32)
+L.ToyboxFrame.QuickButtonAdd.Button:SetPoint("TOPRIGHT", 0, -1)
+L.ToyboxFrame.QuickButtonAdd.Button:SetNormalAtlas("Garr_Building-AddFollowerPlus")
+
+L.ToyboxFrame.QuickButtonAdd.Button.Hover = L.ToyboxFrame.QuickButtonAdd.Button:CreateTexture("$parent_Hover", "OVERLAY")
+L.ToyboxFrame.QuickButtonAdd.Button.Hover:SetTexture("Interface\\Buttons\\CheckButtonHilight")
+L.ToyboxFrame.QuickButtonAdd.Button.Hover:SetBlendMode("ADD")
+L.ToyboxFrame.QuickButtonAdd.Button.Hover:SetSize(24,24)
+L.ToyboxFrame.QuickButtonAdd.Button.Hover:SetPoint("Center")
+L.ToyboxFrame.QuickButtonAdd.Button.Hover:Hide()
+L.ToyboxFrame.QuickButtonAdd.Button:SetScript("OnEnter", function(self)
+    self.Hover:Show()
+end)
+L.ToyboxFrame.QuickButtonAdd.Button:SetScript("OnLeave", function(self)
+    self.Hover:Hide()
+end)
+L.ToyboxFrame.QuickButtonAdd:Hide()]]
 ---------------
 -- Functions --
 ---------------
@@ -581,4 +696,3 @@ function L.ToyboxFrame:SavePosition()
 end
 --Final Setup
 L.ToyboxFrame:Hide()
---L.ToyboxFrame:CreateToyButtons()

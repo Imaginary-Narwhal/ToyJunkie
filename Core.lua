@@ -68,6 +68,7 @@ function L.ToyJunkie:OnEnable()
 
     L.ToyboxFrame:UpdatePosition()
     L.ToyboxFrame:SelectNewRandomToy()
+    L.ToyboxFrame:UpdateQuickButtons()
 end
 
 function L.ToyJunkie:TJCommand(msg)

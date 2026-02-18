@@ -315,6 +315,56 @@ function L:CreateToyButton()
             button:RegisterEvent("SPELL_UPDATE_COOLDOWN")
             button:CheckCooldown()
             button:SetSize(L:GetIconSize())
+
+            button:HookScript("OnMouseDown", function(self, button)
+                if(button == "RightButton") then
+                    local contextMenu
+                    local foundKey, foundId = 0, 0
+                    for k, v in pairs(DB.quickToys) do
+                        if(v == toyId) then
+                            foundKey, foundId = k,v
+                        end
+                    end
+                    if(foundId == 0) then
+                        contextMenu = L:CreateContextMenu(
+                            {
+                                name = "quickToyMenu",
+                                parent = self,
+                                items = {
+                                    {
+                                        text = "Add toy to Quick toys",
+                                        func = function()
+                                            if(#L.ToyJunkie.db.profile.quickToys == 5) then
+                                                L.ToyJunkie:Print("Only 5 quick toys are allowed. Please remove one before trying to add another.")
+                                            else
+                                                table.insert(L.ToyJunkie.db.profile.quickToys, toyId)
+                                                L.ToyboxFrame:UpdateQuickButtons()
+                                            end
+                                        end
+                                    }
+                                }
+                            }
+                        )
+                    else
+                        contextMenu = L:CreateContextMenu(
+                            {
+                                name = "quickToyMenu",
+                                parent = self,
+                                    items = {
+                                    {
+                                        text = "Remove toy to Quick toys",
+                                        func = function() 
+                                            table.remove(L.ToyJunkie.db.profile.quickToys, foundKey)
+                                            L.ToyboxFrame:UpdateQuickButtons()
+                                        end
+                                    }
+                                }
+                            }
+                        )                    
+                    end
+                    ToggleDropDownMenu(1, nil, contextMenu, "cursor", 10, 5)
+                end
+            end)
         end
     end
 
