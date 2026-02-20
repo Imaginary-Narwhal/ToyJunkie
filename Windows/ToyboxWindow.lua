@@ -412,37 +412,6 @@ for i=1, 5, 1 do
 
     qb:Hide()
 end
-
---[[L.ToyboxFrame.QuickButtonAdd = CreateFrame("Frame", "$parent_QuickButtonAdd", L.ToyboxFrame, "BackdropTemplate")
-L.ToyboxFrame.QuickButtonAdd:SetFrameLevel(509)
-L.ToyboxFrame.QuickButtonAdd:SetBackdrop({
-        bgFile = "Interface/Buttons/WHITE8X8",
-        edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-        edgeSize = 16,
-        insets = { left = 3.2, right = 3.2, top = 3.2, bottom = 3.2 }
-    })
-L.ToyboxFrame.QuickButtonAdd:SetBackdropColor(PANEL_BACKGROUND_COLOR.r, PANEL_BACKGROUND_COLOR.g, PANEL_BACKGROUND_COLOR.b, 1)
-L.ToyboxFrame.QuickButtonAdd:SetBackdropBorderColor(.5, .5, .5, 1)
-L.ToyboxFrame.QuickButtonAdd:SetSize(36,34)
-L.ToyboxFrame.QuickButtonAdd:SetPoint("TOPLEFT", L.ToyboxFrame, "TOPRIGHT", -10, -15)
-L.ToyboxFrame.QuickButtonAdd.Button = CreateFrame("Button", "$parent_Button", L.ToyboxFrame.QuickButtonAdd)
-L.ToyboxFrame.QuickButtonAdd.Button:SetSize(32,32)
-L.ToyboxFrame.QuickButtonAdd.Button:SetPoint("TOPRIGHT", 0, -1)
-L.ToyboxFrame.QuickButtonAdd.Button:SetNormalAtlas("Garr_Building-AddFollowerPlus")
-
-L.ToyboxFrame.QuickButtonAdd.Button.Hover = L.ToyboxFrame.QuickButtonAdd.Button:CreateTexture("$parent_Hover", "OVERLAY")
-L.ToyboxFrame.QuickButtonAdd.Button.Hover:SetTexture("Interface\\Buttons\\CheckButtonHilight")
-L.ToyboxFrame.QuickButtonAdd.Button.Hover:SetBlendMode("ADD")
-L.ToyboxFrame.QuickButtonAdd.Button.Hover:SetSize(24,24)
-L.ToyboxFrame.QuickButtonAdd.Button.Hover:SetPoint("Center")
-L.ToyboxFrame.QuickButtonAdd.Button.Hover:Hide()
-L.ToyboxFrame.QuickButtonAdd.Button:SetScript("OnEnter", function(self)
-    self.Hover:Show()
-end)
-L.ToyboxFrame.QuickButtonAdd.Button:SetScript("OnLeave", function(self)
-    self.Hover:Hide()
-end)
-L.ToyboxFrame.QuickButtonAdd:Hide()]]
 ---------------
 -- Functions --
 ---------------
@@ -637,6 +606,7 @@ function L.ToyboxFrame:Toggle(auto, force)
             if (not L.isInCombat) then
                 self:UpdateToyboxDisplay()
                 self:UpdateToyButtons()
+                self:UpdateQuickButtons()
                 self:Show()
             end
         end
@@ -649,6 +619,7 @@ function L.ToyboxFrame:Toggle(auto, force)
             if (not L.isInCombat) then
                 self:UpdateToyboxDisplay()
                 self:UpdateToyButtons()
+                self:UpdateQuickButtons()
                 self:Show()
                 PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
                 L.ToyJunkie.db.profile.toyboxShown = true
