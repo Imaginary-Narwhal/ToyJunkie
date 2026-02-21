@@ -275,12 +275,6 @@ function L:CreateToyButton()
     button.Cooldown:Hide()
     button:SetScript("OnEvent", function(self, event)
         if(event == "SPELL_UPDATE_COOLDOWN") then
-            --if(self.id ~= nil) then
-                --local start, duration, enable = C_Item.GetItemCooldown(self.id)
-                --if(start > 0) then
-                  --  CooldownFrame_Set(self.Cooldown, start, duration, enable)
-                --end
-            --end
             self:CheckCooldown()
         end
     end)
@@ -316,9 +310,9 @@ function L:CreateToyButton()
             button:CheckCooldown()
             button:SetSize(L:GetIconSize())
 
-            button:HookScript("OnMouseDown", function(self, button)
+            button:SetScript("OnMouseDown", function(self, button)
                 if(button == "RightButton") then
-                    local contextMenu
+                    local contextMenu = nil
                     local foundKey, foundId = 0, 0
                     for k, v in pairs(L.ToyJunkie.db.profile.quickToys) do
                         if(v == toyId) then
