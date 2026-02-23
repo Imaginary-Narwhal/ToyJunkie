@@ -42,6 +42,21 @@ function L.ToyJunkie:OnEnable()
         L.ToyJunkie.db.profile.toyboxShown = false
     end
 
+    if(L.ToyJunkie.db.profile.boxes["special"] == nil) then
+        L.ToyJunkie.db.profile.boxes["special"] = {
+            icon = 413591,
+            name = "Quick Toys",
+            isCollapsed = true,
+            toyColor = {
+                green = 0,
+                alpha = 0.25,
+                blue = 1,
+                red = 0
+            },
+            toys = {}
+        }
+    end
+
     if (L.ToyJunkie.db.profile.addonCompartment) then
         L.ToyJunkie.Icon:AddButtonToCompartment(addonName)
     end

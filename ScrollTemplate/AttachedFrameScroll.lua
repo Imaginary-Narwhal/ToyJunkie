@@ -133,6 +133,11 @@ function ItemListMixin:Init(elementData)
     if (elementData.isHeader) then
         self.Text:SetText(elementData.name)
         self.icon:SetTexture(elementData.icon)
+        if(#L.ToyJunkie.db.profile.boxes[elementData.id].toys > 99) then
+            self.counterText:SetText("--")
+        else
+            self.counterText:SetText(#L.ToyJunkie.db.profile.boxes[elementData.id].toys)
+        end
         if (elementData.isCollapsed) then
             self.expandIcon:SetTexture(130838)
         else
@@ -560,20 +565,23 @@ function ListMixin:OnEditTextChanged(renameBox, human)
 end
 
 function ListMixin:OnDragStart(element)
+    ar = self
     local data = element:GetData()
     if (movingHeader == nil and movingToy == nil and GetCursorInfo() == nil) then
-        if (data.isHeader) then
-            movingHeader = data
-            self:CollapseHeaders()
-            L.ToyJunkie.DragBackdrop:Show()
-            SetCursor("ITEM_CURSOR")
-            L.ToyJunkie.DragHeader.Text:SetText(data.name)
-            L.ToyJunkie.DragHeader.Icon:SetTexture(data.icon)
-            L.ToyJunkie.DragHeader:Show()
-        else
-            movingToy = data
-            C_Item.PickupItem(data.toyId)
-            self:Refresh()
+        if(data.id ~= "special") then
+            if (data.isHeader) then
+                movingHeader = data
+                self:CollapseHeaders()
+                L.ToyJunkie.DragBackdrop:Show()
+                SetCursor("ITEM_CURSOR")
+                L.ToyJunkie.DragHeader.Text:SetText(data.name)
+                L.ToyJunkie.DragHeader.Icon:SetTexture(data.icon)
+                L.ToyJunkie.DragHeader:Show()
+            else
+                movingToy = data
+                C_Item.PickupItem(data.toyId)
+                self:Refresh()
+            end
         end
     end
 end
@@ -587,7 +595,7 @@ function ListMixin:OnElementClicked(element, button)
                     L.ToyJunkie.db.profile.boxes[data.id].isCollapsed = not data.isCollapsed
                     self:Refresh()
                     self:SetExpandCollapseButton()
-                elseif (button == "RightButton") then
+                elseif (button == "RightButton" and data.id ~= "special") then
                     local headerContext = L:CreateContextMenu(
                         {
                             name = "headerContextMenu",
@@ -736,6 +744,9 @@ function ListMixin:Refresh()
     if (L.ToyJunkie.db.profile.boxes ~= nil) then
         local data = CreateDataProvider()
         for id, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
+            if(movingHeader ~= nil and id == "special") then
+                break
+            end
             local excludeToybox = false
             if (searchText ~= "") then
                 if (not L:strContains(toyBox.name, searchText)) then

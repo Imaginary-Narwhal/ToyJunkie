@@ -2,7 +2,7 @@
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/ UI_shared.xsd">
 
     <Button name="TJ_ToyBoxHeaderTemplate" virtual="true" inherits="BackdropTemplate">
-        <Size y="30" />
+        <Size y="36" />
         <KeyValues>
             <KeyValue key="backdropInfo" value="BACKDROP_TOAST_12_12" type="global" />
         </KeyValues>
@@ -25,11 +25,18 @@
                 </Texture>
                 <Texture parentKey="icon"
                     file="Interface/Icons/TRADE_ARCHAEOLOGY_CHESTOFTINYGLASSANIMALS">
-                    <Size x="20" y="20" />
+                    <Size x="26" y="26" />
                     <Anchors>
                         <Anchor point="LEFT" x="25" y="0.5" />
                     </Anchors>
                 </Texture>
+                <FontString parentKey="counterText" inherits="GameFontHighlightOutline" justifyH="RIGHT" wordwrap="false">
+                    <Size x="32" y="32"/>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" x="18" y="-3"/>
+                    </Anchors> 
+
+                </FontString>
             </Layer>
             <Layer level="HIGH">
                 <Texture parentKey="highlightLeft" file="Interface/Buttons/WHITE8X8">

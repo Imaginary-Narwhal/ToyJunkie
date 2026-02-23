@@ -184,6 +184,12 @@ function L:searchSplit(inputstr, sep)
 end
 
 function L:AddToy(toyId, toyboxId, index)
+    if(toyboxId == "special") then
+        if(#L.ToyJunkie.db.profile.boxes[toyboxId].toys == 5) then
+            UIErrorsFrame:AddExternalErrorMessage("You can only register up to 5 toys in the Quick Toys toybox.")
+            return
+        end
+    end
     for key, id in pairs(L.ToyJunkie.db.profile.boxes[toyboxId].toys) do
         if (id == toyId) then
             UIErrorsFrame:AddExternalErrorMessage("That toy is already in this toy box.")
