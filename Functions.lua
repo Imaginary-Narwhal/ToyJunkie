@@ -101,6 +101,10 @@ function L:IsHearthstoneOwned(hID)
     return PlayerHasToy(hID)
 end
 
+function L:EditToyBox(toyBox)
+    print(toyBox.name)
+end
+
 function L:GetBackdropColorByToyboxId(id)
     if (L.ToyJunkie.db.profile.boxes[id] ~= nil) then
         if (L.ToyJunkie.db.profile.boxes[id].toyColor ~= nil) then

@@ -38,6 +38,7 @@ ScrollTemplate\ToyboxScrollFrame.lua
 ScrollTemplate\HearthstoneScrollFrame.lua
 ScrollTemplate\templates.xml
 
+Windows\ToyJunkieIconSelectionFrame.lua
 Windows\CollectionAttachedWindow.lua
 Windows\ToyboxWindow.lua
 Windows\HearthstoneFavoritesWindow.lua

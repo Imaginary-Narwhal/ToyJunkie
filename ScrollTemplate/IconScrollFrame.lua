@@ -22,6 +22,9 @@ function ItemListMixin:OnLoad()
     self.icon5:SetScript("OnMouseDown", self.OnClick)
     self.icon6:SetScript("OnMouseDown", self.OnClick)
     self.icon7:SetScript("OnMouseDown", self.OnClick)
+    self.icon8:SetScript("OnMouseDown", self.OnClick)
+    self.icon9:SetScript("OnMouseDown", self.OnClick)
+    self.icon10:SetScript("OnMouseDown", self.OnClick)
 end
 
 function ItemListMixin:OnClick(button)
@@ -71,6 +74,24 @@ function ItemListMixin:Init(elementData)
     else
         self.icon7:Hide()
     end
+    if(elementData[8] ~= -1) then
+        self.icon8.texture:SetTexture(elementData[8])
+        self.icon8:Show()
+    else
+        self.icon8:Hide()
+    end
+    if(elementData[9] ~= -1) then
+        self.icon9.texture:SetTexture(elementData[9])
+        self.icon9:Show()
+    else
+        self.icon9:Hide()
+    end
+    if(elementData[10] ~= -1) then
+        self.icon10.texture:SetTexture(elementData[10])
+        self.icon10:Show()
+    else
+        self.icon10:Hide()
+    end
 end
 
 local ListMixin = {}
@@ -89,7 +110,7 @@ function ListMixin:OnLoad()
     self.scrollBar:SetPoint("BOTTOMLEFT", self.scrollBox, "BOTTOMRIGHT", 8, 0)
 
     -- search bar
-    self.searchBar = CreateFrame("EditBox", "$parent_SearchBar", L.AttachedFrame.IconSelectionFrame, "InputBoxTemplate")
+    self.searchBar = CreateFrame("EditBox", "$parent_SearchBar", L.IconSelectionFrame, "InputBoxTemplate")
     self.searchBar:SetPoint("TOPLEFT", 15, -17)
     self.searchBar:SetSize(250,40)
     self.searchBar:SetAutoFocus(false)
@@ -100,7 +121,7 @@ function ListMixin:OnLoad()
             self.Placeholder:Hide()
         end
         searchText = self:GetText()
-        L.AttachedFrame.IconSelectionFrame.listView:Refresh()
+        L.IconSelectionFrame.listView:Refresh()
     end)
     self.searchBar.Placeholder = self.searchBar:CreateFontString("SearchPlaceholder", "OVERLAY", "GameFontDisable")
     self.searchBar.Placeholder:SetText("Search icons")
@@ -123,23 +144,23 @@ function ListMixin:OnLoad()
     end)
 
     -- Okay and cancel buttons
-    self.SaveButton = CreateFrame("Button", "$parent_SaveButton", L.AttachedFrame.IconSelectionFrame, "UIPanelButtonTemplate")
+    self.SaveButton = CreateFrame("Button", "$parent_SaveButton", L.IconSelectionFrame, "UIPanelButtonTemplate")
     self.SaveButton:SetText("Save")
     self.SaveButton:SetPoint("BOTTOMLEFT", 12, 5)
     self.SaveButton:SetWidth(100)
     self.SaveButton:SetScript("OnClick", function(self)
-        L.AttachedFrame.IconSelectionFrame:Hide()
+        L.IconSelectionFrame:Hide()
         self:GetParent().listView.searchBar:SetText("")
         L.ToyboxFrame:RefreshToyBoxes()
     end)
 
-    self.CancelButton = CreateFrame("Button", "$parent_CancelButton", L.AttachedFrame.IconSelectionFrame, "UIPanelButtonTemplate")
+    self.CancelButton = CreateFrame("Button", "$parent_CancelButton", L.IconSelectionFrame, "UIPanelButtonTemplate")
     self.CancelButton:SetText("Cancel")
     self.CancelButton:SetPoint("BOTTOMRIGHT", -10, 5)
     self.CancelButton:SetWidth(100)
     self.CancelButton:SetScript("OnClick", function(self)
         L.AttachedFrame.ScrollFrame:UpdateIcon(previousIcon)
-        L.AttachedFrame.IconSelectionFrame:Hide()
+        L.IconSelectionFrame:Hide()
         self:GetParent().listView.searchBar:SetText("")
     end)
     
@@ -168,6 +189,8 @@ end
 function ListMixin:Refresh()
     local iconTable = {}
     local data = CreateDataProvider()
+    local iconsPerRow = 10  -- Changed from 7 to 10
+    
     if(searchText == "") then
         iconTable = L.Icons
     else
@@ -178,11 +201,11 @@ function ListMixin:Refresh()
         end
     end
 
-    for i=1, math.ceil(#iconTable / 7) do
-        local start = ((i - 1) * 7) + 1
+    for i=1, math.ceil(#iconTable / iconsPerRow) do
+        local start = ((i - 1) * iconsPerRow) + 1
         local icons = {}
 
-        for j=start, start + 6 do
+        for j=start, start + (iconsPerRow - 1) do
             if(iconTable[j] ~= nil) then
                 table.insert(icons, iconTable[j].id)
             else

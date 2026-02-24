@@ -34,8 +34,7 @@
                     <Size x="32" y="32"/>
                     <Anchors>
                         <Anchor point="BOTTOMLEFT" x="18" y="-3"/>
-                    </Anchors> 
-
+                    </Anchors>
                 </FontString>
             </Layer>
             <Layer level="HIGH">
@@ -64,6 +63,34 @@
             </Layer>
         </Layers>
         <Frames>
+            <Button parentKey="EditButton" hidden="true">
+                <Size x="16" y="16"/>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture file="Interface/WorldMap/Gear_64Grey" alpha="0.5" parentKey="texture"/>
+                    </Layer>
+                </Layers>
+                
+                <Anchors>
+                    <Anchor point="RIGHT" x="-5" y="0"/>
+                </Anchors>
+                <Scripts>
+                    <OnEnter>
+                        self:Show()
+                        self.texture:SetAlpha(1.0)
+                        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                        GameTooltip:AddLine("Toybox settings")
+                        GameTooltip:Show()
+                    </OnEnter>
+                    <OnLeave>
+                        self.texture:SetAlpha(0.5)
+                        GameTooltip:Hide()
+                    </OnLeave>
+                    <OnMouseDown>
+                        EditToyBox(self:GetParent())
+                    </OnMouseDown>
+                </Scripts>
+            </Button>
             <EditBox parentKey="RenameBox" inherits="InputBoxTemplate" autoFocus="false">
                 <Anchors>
                     <Anchor point="TOPLEFT" x="54" y="0" />
@@ -250,6 +277,45 @@
                 <Size x="32" y="32" />
                 <Anchors>
                     <Anchor point="LEFT" x="204" />
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture parentKey="texture" setAllPoints="true">
+                            <Size x="32" y="32" />
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Button>
+            <Button parentKey="icon8">
+                <Size x="32" y="32" />
+                <Anchors>
+                    <Anchor point="LEFT" x="238" />
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture parentKey="texture" setAllPoints="true">
+                            <Size x="32" y="32" />
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Button>
+            <Button parentKey="icon9">
+                <Size x="32" y="32" />
+                <Anchors>
+                    <Anchor point="LEFT" x="272" />
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture parentKey="texture" setAllPoints="true">
+                            <Size x="32" y="32" />
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Button>
+            <Button parentKey="icon10">
+                <Size x="32" y="32" />
+                <Anchors>
+                    <Anchor point="LEFT" x="306" />
                 </Anchors>
                 <Layers>
                     <Layer level="ARTWORK">

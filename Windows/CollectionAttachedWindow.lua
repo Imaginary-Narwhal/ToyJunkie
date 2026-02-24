@@ -105,7 +105,7 @@ L.AttachedFrame.IconSelectionFrame = Mixin(CreateFrame("Frame", "$parent_IconSel
 ButtonFrameTemplate_HidePortrait(L.AttachedFrame.IconSelectionFrame)
 L.AttachedFrame.IconSelectionFrame.CloseButton:Hide()
 L.AttachedFrame.IconSelectionFrame:SetPoint("TOPLEFT", L.AttachedFrame, "TOPRIGHT", 10, 0)
-L.AttachedFrame.IconSelectionFrame:SetSize(270, 500)
+L.AttachedFrame.IconSelectionFrame:SetSize(370, 500)
 L.AttachedFrame.IconSelectionFrame:OnLoad()
 L.AttachedFrame.IconSelectionFrame:SetScript("OnShow", function(self)
     L.ToyJunkie.noInteraction = true

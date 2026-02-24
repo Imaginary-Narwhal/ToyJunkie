@@ -122,10 +122,16 @@ function ItemListMixin:EditEnterPressed()
 end
 
 function ItemListMixin:OnEnter()
+    if(self.GetData().isHeader and self.GetData().id ~= "special") then
+        self.EditButton:Show()
+    end
     self:TriggerEvent("OnEnter", self)
 end
 
 function ItemListMixin:OnLeave()
+    if(self.GetData().isHeader) then
+        self.EditButton:Hide()  
+    end
     self:TriggerEvent("OnLeave", self)
 end
 
@@ -633,8 +639,8 @@ function ListMixin:OnElementClicked(element, button)
                                     tooltipText = "Change the toy box icon",
                                     func = function()
                                         iconToyBoxId = data.id
-                                        L.AttachedFrame.IconSelectionFrame:Show()
-                                        L.AttachedFrame.IconSelectionFrame:OnShow()
+                                        L.IconSelectionFrame:Show()
+                                        L.IconSelectionFrame:OnShow()
                                         L.ToyJunkie.noInteraction = true
                                     end
                                 },
@@ -922,4 +928,9 @@ function L.AttachedScrollTemplateMixin:GetIcon()
     if (iconToyBoxId ~= nil) then
         return L.ToyJunkie.db.profile.boxes[iconToyBoxId].icon
     end
+end
+
+function EditToyBox(element)
+    local toyBox = element:GetData()
+    v = element:GetElementData()
 end
