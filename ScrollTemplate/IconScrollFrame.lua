@@ -110,7 +110,7 @@ function ListMixin:OnLoad()
     self.scrollBar:SetPoint("BOTTOMLEFT", self.scrollBox, "BOTTOMRIGHT", 8, 0)
 
     -- search bar
-    self.searchBar = CreateFrame("EditBox", "$parent_SearchBar", L.IconSelectionFrame, "InputBoxTemplate")
+    self.searchBar = CreateFrame("EditBox", "$parent_SearchBar", L.ToyBoxEditFrame.IconSelectionFrame, "InputBoxTemplate")
     self.searchBar:SetPoint("TOPLEFT", 15, -17)
     self.searchBar:SetSize(250,40)
     self.searchBar:SetAutoFocus(false)
@@ -121,7 +121,7 @@ function ListMixin:OnLoad()
             self.Placeholder:Hide()
         end
         searchText = self:GetText()
-        L.IconSelectionFrame.listView:Refresh()
+        L.ToyBoxEditFrame.IconSelectionFrame.listView:Refresh()
     end)
     self.searchBar.Placeholder = self.searchBar:CreateFontString("SearchPlaceholder", "OVERLAY", "GameFontDisable")
     self.searchBar.Placeholder:SetText("Search icons")
@@ -142,28 +142,28 @@ function ListMixin:OnLoad()
     self.searchBar.ClearButton:SetScript("OnClick", function(self, button)
         self:GetParent():SetText("")
     end)
-
+    --[[
     -- Okay and cancel buttons
-    self.SaveButton = CreateFrame("Button", "$parent_SaveButton", L.IconSelectionFrame, "UIPanelButtonTemplate")
+    self.SaveButton = CreateFrame("Button", "$parent_SaveButton", L.ToyBoxEditFrame.IconSelectionFrame, "UIPanelButtonTemplate")
     self.SaveButton:SetText("Save")
     self.SaveButton:SetPoint("BOTTOMLEFT", 12, 5)
     self.SaveButton:SetWidth(100)
     self.SaveButton:SetScript("OnClick", function(self)
-        L.IconSelectionFrame:Hide()
+        L.ToyBoxEditFrame:Hide()
         self:GetParent().listView.searchBar:SetText("")
         L.ToyboxFrame:RefreshToyBoxes()
     end)
 
-    self.CancelButton = CreateFrame("Button", "$parent_CancelButton", L.IconSelectionFrame, "UIPanelButtonTemplate")
+    self.CancelButton = CreateFrame("Button", "$parent_CancelButton", L.ToyBoxEditFrame.IconSelectionFrame, "UIPanelButtonTemplate")
     self.CancelButton:SetText("Cancel")
     self.CancelButton:SetPoint("BOTTOMRIGHT", -10, 5)
     self.CancelButton:SetWidth(100)
     self.CancelButton:SetScript("OnClick", function(self)
         L.AttachedFrame.ScrollFrame:UpdateIcon(previousIcon)
-        L.IconSelectionFrame:Hide()
+        L.ToyBoxEditFrame:Hide()
         self:GetParent().listView.searchBar:SetText("")
     end)
-    
+    ]]
 
     ScrollUtil.InitScrollBoxListWithScrollBar(self.scrollBox, self.scrollBar, self.scrollView)
 end

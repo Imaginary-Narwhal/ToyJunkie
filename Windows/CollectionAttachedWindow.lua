@@ -101,7 +101,7 @@ L.AttachedFrame.AddToyboxButton:SetScript("OnClick", function()
     L.AttachedFrame.ScrollFrame:AddToybox()
 end)
 
-L.AttachedFrame.IconSelectionFrame = Mixin(CreateFrame("Frame", "$parent_IconSelectionFrame", L.AttachedFrame, "ButtonFrameBaseTemplate"), IconScrollTemplateMixin)
+--[[L.AttachedFrame.IconSelectionFrame = Mixin(CreateFrame("Frame", "$parent_IconSelectionFrame", L.AttachedFrame, "ButtonFrameBaseTemplate"), IconScrollTemplateMixin)
 ButtonFrameTemplate_HidePortrait(L.AttachedFrame.IconSelectionFrame)
 L.AttachedFrame.IconSelectionFrame.CloseButton:Hide()
 L.AttachedFrame.IconSelectionFrame:SetPoint("TOPLEFT", L.AttachedFrame, "TOPRIGHT", 10, 0)
@@ -113,4 +113,4 @@ end)
 L.AttachedFrame.IconSelectionFrame:SetScript("OnHide", function(self)
     L.ToyJunkie.noInteraction = false
 end)
-L.AttachedFrame.IconSelectionFrame:Hide()
+L.AttachedFrame.IconSelectionFrame:Hide()]]
