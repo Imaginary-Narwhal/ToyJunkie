@@ -105,18 +105,6 @@ function L:EditToyBox(toyBox)
     print(toyBox.name)
 end
 
-function L:GetBackdropColorByToyboxId(id)
-    if (L.ToyJunkie.db.profile.boxes[id] ~= nil) then
-        if (L.ToyJunkie.db.profile.boxes[id].toyColor ~= nil) then
-            return L.ToyJunkie.db.profile.boxes[id].toyColor.red,
-                L.ToyJunkie.db.profile.boxes[id].toyColor.green,
-                L.ToyJunkie.db.profile.boxes[id].toyColor.blue,
-                L.ToyJunkie.db.profile.boxes[id].toyColor.alpha
-        end
-    end
-    return 0, 1, 0, .25
-end
-
 function L:IsToyboxNameDuplicate(name, checkCase, ignore)
     checkCase = checkCase or false
     for _, box in pairs(L.ToyJunkie.db.profile.boxes) do

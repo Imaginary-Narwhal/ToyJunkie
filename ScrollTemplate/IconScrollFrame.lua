@@ -142,28 +142,6 @@ function ListMixin:OnLoad()
     self.searchBar.ClearButton:SetScript("OnClick", function(self, button)
         self:GetParent():SetText("")
     end)
-    --[[
-    -- Okay and cancel buttons
-    self.SaveButton = CreateFrame("Button", "$parent_SaveButton", L.ToyBoxEditFrame.IconSelectionFrame, "UIPanelButtonTemplate")
-    self.SaveButton:SetText("Save")
-    self.SaveButton:SetPoint("BOTTOMLEFT", 12, 5)
-    self.SaveButton:SetWidth(100)
-    self.SaveButton:SetScript("OnClick", function(self)
-        L.ToyBoxEditFrame:Hide()
-        self:GetParent().listView.searchBar:SetText("")
-        L.ToyboxFrame:RefreshToyBoxes()
-    end)
-
-    self.CancelButton = CreateFrame("Button", "$parent_CancelButton", L.ToyBoxEditFrame.IconSelectionFrame, "UIPanelButtonTemplate")
-    self.CancelButton:SetText("Cancel")
-    self.CancelButton:SetPoint("BOTTOMRIGHT", -10, 5)
-    self.CancelButton:SetWidth(100)
-    self.CancelButton:SetScript("OnClick", function(self)
-        L.AttachedFrame.ScrollFrame:UpdateIcon(previousIcon)
-        L.ToyBoxEditFrame:Hide()
-        self:GetParent().listView.searchBar:SetText("")
-    end)
-    ]]
 
     ScrollUtil.InitScrollBoxListWithScrollBar(self.scrollBox, self.scrollBar, self.scrollView)
 end
@@ -183,7 +161,7 @@ function ListMixin:OnElementReset(element)
 end
 
 function ListMixin:OnElementClicked(element, button)
-    L.AttachedFrame.ScrollFrame:UpdateIcon(element.texture:GetTexture())
+    L.ToyBoxEditFrame:UpdateIcon(element.texture:GetTexture())
 end
 
 function ListMixin:Refresh()

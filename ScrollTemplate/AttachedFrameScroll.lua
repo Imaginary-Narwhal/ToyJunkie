@@ -158,7 +158,7 @@ function ItemListMixin:Init(elementData)
         self.toyCard.Text:SetText(elementData.name)
         self.icon.texture:SetTexture(elementData.icon)
         self.toyCard:SetBackdrop(TJ_TOYLISTBACKDROP)
-        self.toyCard:SetBackdropColor(L:GetBackdropColorByToyboxId(elementData.toyBoxId))
+        self.toyCard:SetBackdropColor(0,0,1,0.25)
     end
     if (elementData.pickedUp) then
         self:SetAlpha(.25)
@@ -601,7 +601,7 @@ function ListMixin:OnElementClicked(element, button)
                     L.ToyJunkie.db.profile.boxes[data.id].isCollapsed = not data.isCollapsed
                     self:Refresh()
                     self:SetExpandCollapseButton()
-                elseif (button == "RightButton" and data.id ~= "special") then
+                --[[elseif (button == "RightButton" and data.id ~= "special") then
                     local headerContext = L:CreateContextMenu(
                         {
                             name = "headerContextMenu",
@@ -645,33 +645,6 @@ function ListMixin:OnElementClicked(element, button)
                                     end
                                 },
                                 {
-                                    text = "Change Toy Colors",
-                                    tooltipTitle = "Change toy color",
-                                    tooltipText = "Change the background color of the toys in this toy box",
-                                    func = function()
-                                        local colors = L.ToyJunkie.db.profile.boxes[data.id].toyColor
-
-                                        ColorPickerFrame:SetupColorPickerAndShow({
-                                            r = colors.red,
-                                            g = colors.green,
-                                            b = colors.blue,
-                                            opacity = colors.alpha,
-                                            hasOpacity = true,
-                                            swatchFunc = function()
-                                                colors.red, colors.green, colors.blue = ColorPickerFrame:GetColorRGB()
-                                                colors.alpha = ColorPickerFrame:GetColorAlpha()
-                                                L.AttachedFrame.ScrollFrame.listView:Refresh()
-                                            end,
-                                            cancelFunc = function()
-                                                colors.red, colors.green, colors.blue, colors.alpha =
-                                                    ColorPickerFrame.previousValues.r, ColorPickerFrame.previousValues.g,
-                                                    ColorPickerFrame.previousValues.b, ColorPickerFrame.previousValues.a
-                                                L.AttachedFrame.ScrollFrame.listView:Refresh()
-                                            end
-                                        })
-                                    end
-                                },
-                                {
                                     separator = true
                                 },
                                 {
@@ -706,7 +679,7 @@ function ListMixin:OnElementClicked(element, button)
                             }
                         }
                     )
-                    ToggleDropDownMenu(1, nil, headerContext, "cursor", 10, 5)
+                    ToggleDropDownMenu(1, nil, headerContext, "cursor", 10, 5)]]
                 end
             else
                 if (button == "RightButton") then
@@ -890,12 +863,6 @@ function L.AttachedScrollTemplateMixin:AddToybox()
             name = "New Toy box (" .. numList[#numList] + 1 .. ")",
             isCollapsed = true,
             icon = 454046,
-            toyColor = {
-                red = 0,
-                blue = 1,
-                green = 0,
-                alpha = 0.25
-            },
             toys = {}
         })
     else
@@ -903,12 +870,6 @@ function L.AttachedScrollTemplateMixin:AddToybox()
             name = "New Toy box (1)",
             isCollapsed = true,
             icon = 454046,
-            toyColor = {
-                red = 0,
-                blue = 1,
-                green = 0,
-                alpha = 0.25
-            },
             toys = {}
         })
     end
@@ -930,7 +891,15 @@ function L.AttachedScrollTemplateMixin:GetIcon()
     end
 end
 
-function EditToyBox(element)
+function TJ_EditToyBox(element)
     local toyBox = element:GetData()
-    v = element:GetElementData()
+    L.ToyBoxEditFrame:Open(toyBox.name, toyBox.icon)
+    L.ToyBoxEditFrame:SetCallback(function(savedName, savedIcon)
+        print(savedName, savedIcon)
+        local selectedToybox = L.ToyJunkie.db.profile.boxes[L:GetToyboxId(toyBox)]
+        selectedToybox.name = savedName
+        selectedToybox.icon = savedIcon
+        L.AttachedFrame.ScrollFrame.listView:Refresh()
+        L.ToyBoxEditFrame:Hide()
+    end)
 end

@@ -11,7 +11,7 @@
                 <FontString parentKey="Text" inherits="GameFontWhite" justifyH="LEFT"
                     wordwrap="false">
                     <Anchors>
-                        <Anchor point="TOPLEFT" x="50" y="0" />
+                        <Anchor point="TOPLEFT" x="54" y="0" />
                         <Anchor point="BOTTOMRIGHT" x="-4" y="0" />
                     </Anchors>
                 </FontString>
@@ -87,7 +87,7 @@
                         GameTooltip:Hide()
                     </OnLeave>
                     <OnMouseDown>
-                        EditToyBox(self:GetParent())
+                        TJ_EditToyBox(self:GetParent())
                     </OnMouseDown>
                 </Scripts>
             </Button>

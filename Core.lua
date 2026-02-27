@@ -47,12 +47,6 @@ function L.ToyJunkie:OnEnable()
             icon = 413591,
             name = "Quick Toys",
             isCollapsed = true,
-            toyColor = {
-                green = 0,
-                alpha = 0.25,
-                blue = 1,
-                red = 0
-            },
             toys = {}
         }
     end
