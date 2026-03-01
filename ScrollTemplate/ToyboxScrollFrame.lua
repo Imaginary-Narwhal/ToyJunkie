@@ -22,9 +22,7 @@ end
 
 function ItemListMixin:Init(elementData)
     self.Text:SetText(elementData.name)
-    self.Icon:SetTexture(elementData.icon)
     if(elementData.name == L.ToyJunkie.db.profile.selectedToybox) then
-        --ActionButton_ShowOverlayGlow(self)
         self:SetAlpha(.5)
         self.disabled = true
     else
@@ -112,12 +110,15 @@ end
 
 function ListMixin:Refresh()
     local data = CreateDataProvider()
-    for id, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
+    for id, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do            
         local excludeToybox = false
         if(searchText ~= "") then
             if(not L:strContains(toyBox.name, searchText)) then
                 excludeToybox = true
             end
+        end
+        if(id == "special") then
+            excludeToybox = true
         end
         if(not excludeToybox) then
             data:InsertTable({

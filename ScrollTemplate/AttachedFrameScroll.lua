@@ -202,6 +202,7 @@ function ListMixin:OnLoad()
                             L:AddToy(toyId, elementData.id)
                             ClearCursor()
                             self:Refresh()
+                            L.ToyboxFrame:UpdateQuickButtons()
                             L.ToyJunkie.DragBackdrop:Hide()
                         else
                             for id, toy in pairs(L.ToyJunkie.db.profile.boxes[elementData.toyBoxId].toys) do
@@ -217,6 +218,7 @@ function ListMixin:OnLoad()
                             end
                             ClearCursor()
                             self:Refresh()
+                            L.ToyboxFrame:UpdateQuickButtons()
                             L.ToyJunkie.DragBackdrop:Hide()
                         end
                     end
@@ -231,6 +233,7 @@ function ListMixin:OnLoad()
                                 SetCursor(nil)
                                 movingToy = nil
                                 self:Refresh()
+                                L.ToyboxFrame:UpdateQuickButtons()
                                 L.ToyJunkie.DragBackdrop:Hide()
                             else -- Different toy box (drop on toy box name)
                                 if (not L:CheckIfToyExistsInToybox(toyId, elementData.id)) then
@@ -246,6 +249,7 @@ function ListMixin:OnLoad()
                                 SetCursor(nil)
                                 movingToy = nil
                                 self:Refresh()
+                                L.ToyboxFrame:UpdateQuickButtons()
                                 L.ToyJunkie.DragBackdrop:Hide()
                             end
                         else                                                     -- move toy to different location in same or different toybox
@@ -255,6 +259,7 @@ function ListMixin:OnLoad()
                                     SetCursor(nil)
                                     movingToy = nil
                                     self:Refresh()
+                                    L.ToyboxFrame:UpdateQuickButtons()
                                     L.ToyJunkie.DragBackdrop:Hide()
                                 else
                                     for key, id in pairs(L.ToyJunkie.db.profile.boxes[movingToy.toyBoxId].toys) do
@@ -279,6 +284,7 @@ function ListMixin:OnLoad()
                                     SetCursor(nil)
                                     movingToy = nil
                                     self:Refresh()
+                                    L.ToyboxFrame:UpdateQuickButtons()
                                     L.ToyJunkie.DragBackdrop:Hide()
                                 end
                             else -- different toyboxes
@@ -300,6 +306,7 @@ function ListMixin:OnLoad()
                                 SetCursor(nil)
                                 movingToy = nil
                                 self:Refresh()
+                                L.ToyboxFrame:UpdateQuickButtons()
                                 L.ToyJunkie.DragBackdrop:Hide()
                             end
                         end
@@ -493,6 +500,7 @@ function ListMixin:OnDragStart(element)
                 movingToy = data
                 C_Item.PickupItem(data.toyId)
                 self:Refresh()
+                L.ToyboxFrame:UpdateQuickButtons()
             end
         end
     end
@@ -722,6 +730,7 @@ function TJ_EditToyBox(element)
                 L.ToyboxFrame:RefreshToyBoxes()
                 L.ToyboxFrame:SelectNewRandomToy()
                 L.ToyboxFrame:UpdateToyButtons()
+                L.ToyboxFrame:UpdateQuickButtons()
             else
                 L.ToyJunkie.db.profile.selectedToybox = nil
                 L.ToyboxFrame:Toggle(true, "CLOSE")
@@ -735,9 +744,11 @@ function TJ_RemoveToy(element)
     local cToy = element:GetData()
     print(cToy.name)
     for k, toy in pairs(L.ToyJunkie.db.profile.boxes[cToy.toyBoxId].toys) do
+        print(k, toy)
         if(cToy.toyId == toy) then
-            table.remove(L.ToyJunkie.db.profile.boxes[cToy.toyBoxId].toys, key)
+            table.remove(L.ToyJunkie.db.profile.boxes[cToy.toyBoxId].toys, k)
             L.ToyboxFrame:UpdateToyButtons()
+            L.ToyboxFrame:UpdateQuickButtons()
             L.ToyboxFrame:SelectNewRandomToy()
         end
     end

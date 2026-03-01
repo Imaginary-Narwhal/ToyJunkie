@@ -107,6 +107,7 @@ function L.ToyBoxEditFrame:Open(toyBoxId)
     nameInputBox:SetText(name)
     selectedIcon.texture:SetTexture(icon)
     self:Show()
+    nameInputBox:SetFocus()
     deleteButton:Show()
 end
 
@@ -118,6 +119,7 @@ function L.ToyBoxEditFrame:New()
     nameInputBox:SetText("")
     selectedIcon.texture:SetTexture(icon)
     self:Show()
+    nameInputBox:SetFocus()
     deleteButton:Hide()
 end
 

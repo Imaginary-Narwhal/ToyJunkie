@@ -334,13 +334,18 @@ end)
 ----------------
 L.ToyboxFrame.QuickButtons = {}
 function L.ToyboxFrame:UpdateQuickButtons()
+    if(L.ToyboxFrame.QuickButtons[1] == nil) then
+        self:CreateQuickButtons()
+    end
+
     for i=1, 5 do
         L.ToyboxFrame.QuickButtons[i]:Hide()
         L.ToyboxFrame.QuickButtons[i].Button.id = nil
         L.ToyboxFrame.QuickButtons[i].Button.Cooldown:Hide()
     end
 
-    for key, toyId in pairs(L.ToyJunkie.db.profile.quickToys) do
+    for key, toyId in pairs(L.ToyJunkie.db.profile.boxes["special"].toys) do
+        print(key)
         local button = L.ToyboxFrame.QuickButtons[key].Button
         local _, _, toyIcon = C_ToyBox.GetToyInfo(toyId)
         if(toyIcon == nil) then
@@ -358,59 +363,61 @@ function L.ToyboxFrame:UpdateQuickButtons()
     end
 end
 
-for i=1, 5, 1 do
-    L.ToyboxFrame.QuickButtons[i] = CreateFrame("Frame", "$parent_QuickButton_" .. i, L.ToyboxFrame, "BackdropTemplate")
-    local qb = L.ToyboxFrame.QuickButtons[i]
-    qb:SetFrameLevel(509)
-    qb:SetBackdrop({
-        bgFile = "Interface/Buttons/WHITE8X8",
-        edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-        edgeSize = 16,
-        insets = { left = 3.2, right = 3.2, top = 3.2, bottom = 3.2 }
-    })
-    qb:SetBackdropColor(PANEL_BACKGROUND_COLOR.r, PANEL_BACKGROUND_COLOR.g, PANEL_BACKGROUND_COLOR.b, 1)
-    qb:SetBackdropBorderColor(.5, .5, .5, 1)
-    qb:SetSize(36,34)
-    qb:SetPoint("TOPLEFT", L.ToyboxFrame, "TOPRIGHT", -10, (-36 * (i-1)) - 15)
-    qb.Button = CreateFrame("Button", "$parent_Button", qb, "SecureActionButtonTemplate")
-    qb.Button:RegisterForClicks("AnyUp", "AnyDown")
-    qb.Button:RegisterEvent("SPELL_UPDATE_COOLDOWN")
-    qb.Button:SetSize(22,22)
-    qb.Button:SetPoint("Center", qb, "Center", 2, -1)
-    qb.Button.Hover = qb.Button:CreateTexture("$parent_Hover", "OVERLAY")
-    qb.Button.Hover:SetTexture("Interface\\Buttons\\CheckButtonHilight")
-    qb.Button.Hover:SetBlendMode("ADD")
-    qb.Button.Hover:SetSize(24,24)
-    qb.Button.Hover:SetPoint("Center")
-    qb.Button.Hover:Hide()
-    qb.Button:SetScript("OnEnter", function(self)
-        self.Hover:Show()
-    end)
-    qb.Button:SetScript("OnLeave", function(self)
-        self.Hover:Hide()
-    end)
+function L.ToyboxFrame:CreateQuickButtons()
+    for i=1, 5, 1 do
+        L.ToyboxFrame.QuickButtons[i] = CreateFrame("Frame", "$parent_QuickButton_" .. i, L.ToyboxFrame, "BackdropTemplate")
+        local qb = L.ToyboxFrame.QuickButtons[i]
+        qb:SetFrameLevel(509)
+        qb:SetBackdrop({
+            bgFile = "Interface/Buttons/WHITE8X8",
+            edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+            edgeSize = 16,
+            insets = { left = 3.2, right = 3.2, top = 3.2, bottom = 3.2 }
+        })
+        qb:SetBackdropColor(PANEL_BACKGROUND_COLOR.r, PANEL_BACKGROUND_COLOR.g, PANEL_BACKGROUND_COLOR.b, 1)
+        qb:SetBackdropBorderColor(.5, .5, .5, 1)
+        qb:SetSize(36,34)
+        qb:SetPoint("TOPLEFT", L.ToyboxFrame, "TOPRIGHT", -10, (-36 * (i-1)) - 15)
+        qb.Button = CreateFrame("Button", "$parent_Button", qb, "SecureActionButtonTemplate")
+        qb.Button:RegisterForClicks("AnyUp", "AnyDown")
+        qb.Button:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+        qb.Button:SetSize(22,22)
+        qb.Button:SetPoint("Center", qb, "Center", 2, -1)
+        qb.Button.Hover = qb.Button:CreateTexture("$parent_Hover", "OVERLAY")
+        qb.Button.Hover:SetTexture("Interface\\Buttons\\CheckButtonHilight")
+        qb.Button.Hover:SetBlendMode("ADD")
+        qb.Button.Hover:SetSize(24,24)
+        qb.Button.Hover:SetPoint("Center")
+        qb.Button.Hover:Hide()
+        qb.Button:SetScript("OnEnter", function(self)
+            self.Hover:Show()
+        end)
+        qb.Button:SetScript("OnLeave", function(self)
+            self.Hover:Hide()
+        end)    
 
-    qb.Button.Cooldown = CreateFrame("Cooldown", nil, qb.Button, "CooldownFrameTemplate")
-    qb.Button.Cooldown:SetAllPoints()
-    qb.Button.Cooldown:SetScale(0.7)
-    qb.Button.Cooldown:Hide()
+        qb.Button.Cooldown = CreateFrame("Cooldown", nil, qb.Button, "CooldownFrameTemplate")
+        qb.Button.Cooldown:SetAllPoints()
+        qb.Button.Cooldown:SetScale(0.7)
+        qb.Button.Cooldown:Hide()   
 
-    qb.Button:SetScript("OnEvent", function(self, event)
-        if(event == "SPELL_UPDATE_COOLDOWN") then
-            self:CheckCooldown()
-        end
-    end)
-
-    function qb.Button:CheckCooldown()
-        if(self.id ~= nil) then
-            local start, duration, enable = C_Item.GetItemCooldown(self.id)
-            if(start > 0) then
-                CooldownFrame_Set(self.Cooldown, start, duration, enable)
+        qb.Button:SetScript("OnEvent", function(self, event)
+            if(event == "SPELL_UPDATE_COOLDOWN") then
+                self:CheckCooldown()
             end
-        end
-    end
+        end)    
 
-    qb:Hide()
+        function qb.Button:CheckCooldown()
+            if(self.id ~= nil) then
+                local start, duration, enable = C_Item.GetItemCooldown(self.id)
+                if(start > 0) then
+                    CooldownFrame_Set(self.Cooldown, start, duration, enable)
+                end
+            end
+        end 
+
+        qb:Hide()
+    end
 end
 ---------------
 -- Functions --
