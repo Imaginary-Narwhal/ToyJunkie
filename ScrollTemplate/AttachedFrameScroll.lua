@@ -23,25 +23,6 @@ local function ValidateName(newName, oldName)
     return changes
 end
 
-local invalidFrame = CreateFrame("Frame", "ToyJunkie_InvalidNameFrame", UIParent, "BackdropTemplate")
-invalidFrame:SetBackdrop({
-    bgFile = "Interface\\FriendsFrame\\UI-Toast-Background",
-    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-    tile = true,
-    tileEdge = true,
-    tileSize = 16,
-    edgeSize = 16,
-    insets = { left = 3, right = 5, top = 3, bottom = 5 },
-})
-invalidFrame:ApplyBackdrop()
-invalidFrame:SetSize(220, 30)
-invalidFrame:SetFrameStrata("TOOLTIP")
-invalidFrame.Text = invalidFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-invalidFrame.Text:SetAllPoints()
-invalidFrame.Text:SetText("That toy box name already exists")
-invalidFrame.Text:SetTextColor(1, 0, 0, 1)
-invalidFrame:Hide()
-
 ---------------
 -- Backdrops --
 ---------------
@@ -63,9 +44,6 @@ local ItemListMixin = CreateFromMixins(CallbackRegistryMixin)
 ItemListMixin:GenerateCallbackEvents(
     {
         "OnMouseUp",
-        "OnEditCancelMouseDown",
-        "OnEditSubmitMouseDown",
-        "OnEditTextChanged",
         "OnReceiveDrag",
         "OnDragStart",
         "OnEnter",
@@ -80,13 +58,6 @@ function ItemListMixin:OnLoad()
     self:SetScript("OnDragStart", self.OnDragStart)
     self:SetScript("OnEnter", self.OnEnter)
     self:SetScript("OnLeave", self.OnLeave)
-    if (self.RenameBox ~= nil) then
-        self.RenameBox.Cancel:SetScript("OnMouseDown", self.EditCancelOnClick)
-        self.RenameBox.Submit:SetScript("OnMouseDown", self.EditSubmitOnClick)
-        self.RenameBox:SetScript("OnEscapePressed", self.EditEscapePressed)
-        self.RenameBox:SetScript("OnEnterPressed", self.EditEnterPressed)
-        self.RenameBox:SetScript("OnTextChanged", self.EditTextChanged)
-    end
 end
 
 function ItemListMixin:OnClick(button)
@@ -101,29 +72,12 @@ function ItemListMixin:OnDragStart()
     self:TriggerEvent("OnDragStart", self)
 end
 
-function ItemListMixin:EditCancelOnClick(button)
-    self:GetParent():GetParent():TriggerEvent("OnEditCancelMouseDown", self, button)
-end
-
-function ItemListMixin:EditSubmitOnClick(button)
-    self:GetParent():GetParent():TriggerEvent("OnEditSubmitMouseDown", self, button)
-end
-
-function ItemListMixin:EditTextChanged(human)
-    self:GetParent():TriggerEvent("OnEditTextChanged", self, human)
-end
-
-function ItemListMixin:EditEscapePressed()
-    self:GetParent():TriggerEvent("OnEditCancelMouseDown", self.Cancel, "LeftButton")
-end
-
-function ItemListMixin:EditEnterPressed()
-    self:GetParent():TriggerEvent("OnEditSubmitMouseDown", self.Submit, "LeftButton")
-end
-
 function ItemListMixin:OnEnter()
     if(self.GetData().isHeader and self.GetData().id ~= "special") then
         self.EditButton:Show()
+    end
+    if(not self.GetData().isHeader) then
+        self.DeleteToyButton:Show()
     end
     self:TriggerEvent("OnEnter", self)
 end
@@ -131,6 +85,9 @@ end
 function ItemListMixin:OnLeave()
     if(self.GetData().isHeader) then
         self.EditButton:Hide()  
+    else
+        self.DeleteToyButton:Hide()
+
     end
     self:TriggerEvent("OnLeave", self)
 end
@@ -487,9 +444,6 @@ function ListMixin:OnElementInitialize(element, elementData)
     end
     element:Init(elementData)
     element:RegisterCallback("OnMouseUp", self.OnElementClicked, self)
-    element:RegisterCallback("OnEditCancelMouseDown", self.OnEditCancelMouseDown, self)
-    element:RegisterCallback("OnEditSubmitMouseDown", self.OnEditSubmitMouseDown, self)
-    element:RegisterCallback("OnEditTextChanged", self.OnEditTextChanged, self)
     element:RegisterCallback("OnDragStart", self.OnDragStart, self)
     element:RegisterCallback("OnEnter", self.OnEnter, self)
     element:RegisterCallback("OnLeave", self.OnLeave, self)
@@ -497,9 +451,6 @@ end
 
 function ListMixin:OnElementReset(element)
     element:UnregisterCallback("OnMouseUp", self)
-    element:UnregisterCallback("OnEditCancelMouseDown", self)
-    element:UnregisterCallback("OnEditTextChanged", self)
-    element:UnregisterCallback("OnEditSubmitMouseDown", self)
     element:UnregisterCallback("OnDragStart", self)
     element:UnregisterCallback("OnEnter", self)
     element:UnregisterCallback("OnLeave", self)
@@ -521,51 +472,6 @@ function ListMixin:OnLeave(element)
         if (L:CursorHasToy() or movingToy) then
             element.highlightLeft:Hide()
             element.highlightRight:Hide()
-        end
-    end
-end
-
-function ListMixin:OnEditCancelMouseDown(element)
-    element:GetParent():Hide()
-    element:GetParent():GetParent().Text:Show()
-    L.ToyJunkie.noInteraction = false
-    invalidFrame:ClearAllPoints()
-    invalidFrame:Hide()
-end
-
-function ListMixin:OnEditSubmitMouseDown(element)
-    local validate = ValidateName(element:GetParent():GetText(), element:GetParent():GetParent().Text:GetText())
-    if(validate == 2) then
-        if (L.ToyJunkie.db.profile.selectedToybox == L.ToyJunkie.db.profile.boxes[element:GetParent():GetParent():GetData().id].name) then
-            L.ToyJunkie.db.profile.selectedToybox = element:GetParent():GetText()
-            L.ToyJunkie.db.profile.boxes[element:GetParent():GetParent():GetData().id].name = element:GetParent():GetText()
-        else
-            L.ToyJunkie.db.profile.boxes[element:GetParent():GetParent():GetData().id].name = element:GetParent():GetText()
-        end
-
-        element:GetParent():Hide()
-        element:GetParent():GetParent().Text:Show()
-        L.ToyJunkie.noInteraction = false
-        self:Refresh()
-        L.ToyboxFrame:RefreshToyBoxes()
-    end
-end
-
-function ListMixin:OnEditTextChanged(renameBox, human)
-    if (human) then
-        local validate = ValidateName(renameBox:GetText(), renameBox:GetParent().Text:GetText())
-        if (validate == 0) then
-            renameBox.Submit:Disable()
-            invalidFrame:ClearAllPoints()
-            invalidFrame:Hide()
-        elseif (validate == 1) then
-            renameBox.Submit:Disable()
-            invalidFrame:SetPoint("BOTTOM", renameBox, "TOP", 0, 0)
-            invalidFrame:Show()
-        else
-            renameBox.Submit:Enable()
-            invalidFrame:ClearAllPoints()
-            invalidFrame:Hide()
         end
     end
 end
@@ -601,87 +507,8 @@ function ListMixin:OnElementClicked(element, button)
                     L.ToyJunkie.db.profile.boxes[data.id].isCollapsed = not data.isCollapsed
                     self:Refresh()
                     self:SetExpandCollapseButton()
-                --[[elseif (button == "RightButton" and data.id ~= "special") then
-                    local headerContext = L:CreateContextMenu(
-                        {
-                            name = "headerContextMenu",
-                            parent = element,
-                            title = "Toy box Options",
-                            items = {
-                                {
-                                    text = "Open This Toy Box",
-                                    tooltipTitle = "Open This Toy Box",
-                                    tooltipText = "Open/set the main window to this toy box",
-                                    func = function()
-                                        L.ToyJunkie.db.profile.selectedToybox = data.name
-                                        L.ToyboxFrame:UpdateToyboxDisplay()
-                                        L.ToyboxFrame:UpdateToyButtons()
-                                        L.ToyboxFrame:SelectNewRandomToy()
-                                        L.ToyboxFrame:Show()
-                                    end
-                                },
-                                {
-                                    text = "Rename",
-                                    tooltipTitle = "Rename",
-                                    tooltipText = "Rename the toy box",
-                                    func = function()
-                                        element.Text:Hide()
-                                        element.RenameBox:SetText(data.name)
-                                        element.RenameBox:Show()
-                                        element.RenameBox:SetFocus()
-                                        element.RenameBox.Submit:Disable()
-                                        L.ToyJunkie.noInteraction = true
-                                    end
-                                },
-                                {
-                                    text = "Change Icon",
-                                    tooltipTitle = "Change Icon",
-                                    tooltipText = "Change the toy box icon",
-                                    func = function()
-                                        iconToyBoxId = data.id
-                                        L.IconSelectionFrame:Show()
-                                        L.IconSelectionFrame:OnShow()
-                                        L.ToyJunkie.noInteraction = true
-                                    end
-                                },
-                                {
-                                    separator = true
-                                },
-                                {
-                                    text = "Delete Toy box",
-                                    color = "|cffff0000",
-                                    tooltipTitle = "Delete toy box",
-                                    tooltipWarning = "Hold SHIFT to delete this toy box",
-                                    func = function()
-                                        if (IsShiftKeyDown()) then
-                                            table.remove(L.ToyJunkie.db.profile.boxes, data.id)
-                                            if (#L.ToyJunkie.db.profile.boxes > 0) then
-                                                if (L.ToyJunkie.db.profile.selectedToybox == data.name) then
-                                                    L.ToyJunkie.db.profile.selectedToybox = L.ToyJunkie.db.profile.boxes[1].name
-                                                end
-                                            else
-                                                L.ToyJunkie.db.profile.selectedToybox = nil
-                                                L.ToyboxFrame:Toggle(true, "CLOSE")
-                                            end
-                                            self:Refresh()
-                                            L.ToyboxFrame:RefreshToyBoxes()
-                                            L.ToyboxFrame:SelectNewRandomToy()
-                                            L.ToyboxFrame:UpdateToyButtons()
-                                        end
-                                    end
-                                },
-                                {
-                                    separator = true
-                                },
-                                {
-                                    text = "Close"
-                                }
-                            }
-                        }
-                    )
-                    ToggleDropDownMenu(1, nil, headerContext, "cursor", 10, 5)]]
                 end
-            else
+            --[[else
                 if (button == "RightButton") then
                     local toyContext = L:CreateContextMenu({
                         name = "toyContextMenu",
@@ -713,7 +540,7 @@ function ListMixin:OnElementClicked(element, button)
                         }
                     })
                     ToggleDropDownMenu(1, nil, toyContext, "cursor", 10, 5)
-                end
+                end]]
             end
         end
     end
@@ -843,39 +670,22 @@ function L.AttachedScrollTemplateMixin:OnLoad()
 end
 
 function L.AttachedScrollTemplateMixin:AddToybox()
-    if (#L.ToyJunkie.db.profile.boxes < 1) then
-        L.ToyJunkie.db.profile.selectedToybox = "New Toy box (1)"
-    end
-
-    local numList = {}
-    for id, toyBox in pairs(L.ToyJunkie.db.profile.boxes) do
-        toyBox.isCollapsed = true
-        if (L:strStart(toyBox.name, "New Toy box")) then
-            local num = toyBox.name:match("%((%d+)%)")
-            if (num ~= nil) then
-                table.insert(numList, tonumber(num))
-            end
+    L.ToyBoxEditFrame:New()
+    L.ToyBoxEditFrame:SetCallback(function(id, newName, newIcon, delete)
+        if(#L.ToyJunkie.db.profile.boxes < 1) then
+            L.ToyJunkie.db.profile.selectedToybox = newName
         end
-    end
-    if (#numList > 0) then
-        table.sort(numList)
+
         table.insert(L.ToyJunkie.db.profile.boxes, 1, {
-            name = "New Toy box (" .. numList[#numList] + 1 .. ")",
+            name = newName,
             isCollapsed = true,
-            icon = 454046,
+            icon = newIcon,
             toys = {}
         })
-    else
-        table.insert(L.ToyJunkie.db.profile.boxes, 1, {
-            name = "New Toy box (1)",
-            isCollapsed = true,
-            icon = 454046,
-            toys = {}
-        })
-    end
-    self.listView:Refresh()
-    self.listView.scrollBox:ScrollToBegin()
-    L.ToyboxFrame:RefreshToyBoxes()
+        self.listView:Refresh()
+        self.listView.scrollBox:ScrollToBegin()
+        L.ToyboxFrame:RefreshToyBoxes()
+    end)
 end
 
 function L.AttachedScrollTemplateMixin:UpdateIcon(newId)
@@ -893,13 +703,43 @@ end
 
 function TJ_EditToyBox(element)
     local toyBox = element:GetData()
-    L.ToyBoxEditFrame:Open(toyBox.name, toyBox.icon)
-    L.ToyBoxEditFrame:SetCallback(function(savedName, savedIcon)
-        print(savedName, savedIcon)
-        local selectedToybox = L.ToyJunkie.db.profile.boxes[L:GetToyboxId(toyBox)]
-        selectedToybox.name = savedName
-        selectedToybox.icon = savedIcon
-        L.AttachedFrame.ScrollFrame.listView:Refresh()
-        L.ToyBoxEditFrame:Hide()
+    L.ToyBoxEditFrame:Open(toyBox.id)
+    L.ToyBoxEditFrame:SetCallback(function(id, newName, newIcon, delete)
+        if(not delete) then
+            local editToybox = L.ToyJunkie.db.profile.boxes[id]
+            editToybox.name = newName
+            editToybox.icon = newIcon
+            L.AttachedFrame.ScrollFrame.listView:Refresh()
+            L.ToyboxFrame:RefreshToyBoxes()
+            L.ToyBoxEditFrame:Hide()
+        else
+            local editToybox = L.ToyJunkie.db.profile.boxes[id]
+            table.remove(L.ToyJunkie.db.profile.boxes, id)
+            if(#L.ToyJunkie.db.profile.boxes > 0) then
+                if(L.ToyJunkie.db.profile.selectedToybox == editToybox.name) then
+                    L.ToyJunkie.db.profile.selectedToybox = L.ToyJunkie.db.profile.boxes[1].name
+                end
+                L.ToyboxFrame:RefreshToyBoxes()
+                L.ToyboxFrame:SelectNewRandomToy()
+                L.ToyboxFrame:UpdateToyButtons()
+            else
+                L.ToyJunkie.db.profile.selectedToybox = nil
+                L.ToyboxFrame:Toggle(true, "CLOSE")
+            end
+            L.AttachedFrame.ScrollFrame.listView:Refresh()
+        end
     end)
+end
+
+function TJ_RemoveToy(element)
+    local cToy = element:GetData()
+    print(cToy.name)
+    for k, toy in pairs(L.ToyJunkie.db.profile.boxes[cToy.toyBoxId].toys) do
+        if(cToy.toyId == toy) then
+            table.remove(L.ToyJunkie.db.profile.boxes[cToy.toyBoxId].toys, key)
+            L.ToyboxFrame:UpdateToyButtons()
+            L.ToyboxFrame:SelectNewRandomToy()
+        end
+    end
+    L.AttachedFrame.ScrollFrame.listView:Refresh()
 end

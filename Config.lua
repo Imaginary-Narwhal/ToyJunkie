@@ -18,7 +18,7 @@ L.isInCombat = false
 ------------------------------
 L.defaults = {
     profile = {
-        isAttachedWindowHidden = true,
+        isAttachedWindowHidden = false,
         selectedToybox = nil,
         minimap = {
             hide = false,
@@ -44,7 +44,8 @@ L.defaults = {
         hearthstoneFavoriteIds = {},
         hearthstoneShowAll = false,
         quickToys = {},
-        showQuickToys = true
+        showQuickToys = true,
+        tutorial = false
     }
 }
 

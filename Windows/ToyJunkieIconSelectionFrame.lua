@@ -3,6 +3,7 @@ local addon, L = ...
 local callbackFunction = nil
 local name = ""
 local icon = 0
+local id = 0
 
 L.ToyBoxEditFrame = CreateFrame("Frame", "ToyJunkie_ToyBoxEditFrame", UIParent, "ButtonFrameTemplate")
 ButtonFrameTemplate_HidePortrait(L.ToyBoxEditFrame)
@@ -45,42 +46,81 @@ L.ToyBoxEditFrame.IconSelectionFrame:SetPoint("TOPLEFT", 5, -60)
 L.ToyBoxEditFrame.IconSelectionFrame:SetPoint("BOTTOMRIGHT", -5, 0)
 L.ToyBoxEditFrame.IconSelectionFrame:OnLoad()
 
-local saveButton = CreateFrame("Button", "$parent_SaveButton", L.ToyBoxEditFrame, "UIPanelButtonTemplate")
-saveButton:SetText("Save")
-saveButton:SetPoint("BOTTOMLEFT", 12, 5)
-saveButton:SetWidth(100)
+local saveButton = CreateFrame("Button", "$parent_SaveButton", L.ToyBoxEditFrame, "UIMenuButtonStretchTemplate")
+saveButton:SetText("Okay")
+saveButton:SetPoint("BOTTOMRIGHT", -110, 3)
+saveButton:SetSize(100, 23)
 saveButton:SetScript("OnClick", function(self)
-    local newName = nameInputBox:GetText()
+    if(nameInputBox:GetText() == "" or nameInputBox:GetText():match("^%s*$")) then
+        L.ModalContainer:Open(IN_MODAL.Okay, "Toy box name", "Toy box must have a name.")
+        return
+    end
+
+    if(L:IsToyboxNameDuplicate(nameInputBox:GetText(), false, name)) then
+        L.ModalContainer:Open(IN_MODAL.Okay, "Toy box name", "Toy box name already exists, please try another.")
+        return
+    end
+
     if callbackFunction then
-        callbackFunction(newName, icon)
-        L.ToyboxFrame:RefreshToyBoxes()
+        callbackFunction(id, nameInputBox:GetText(), icon, false)
         L.ToyBoxEditFrame:Hide()
     else
         L.ToyJunkie:Print("Callback function not set!")
     end
 end)
 
-local cancelButton = CreateFrame("Button", "$parent_CancelButton", L.ToyBoxEditFrame, "UIPanelButtonTemplate")
+local cancelButton = CreateFrame("Button", "$parent_CancelButton", L.ToyBoxEditFrame, "UIMenuButtonStretchTemplate")
 cancelButton:SetText("Cancel")
-cancelButton:SetPoint("BOTTOMRIGHT", -10, 5)
-cancelButton:SetWidth(100)
+cancelButton:SetPoint("BOTTOMRIGHT", -10, 3)
+cancelButton:SetSize(100, 23)
 cancelButton:SetScript("OnClick", function(self)
     L.ToyBoxEditFrame:Hide()
 end)
 L.ToyBoxEditFrame:Hide()
 
+local deleteButton = CreateFrame("Button", "$parent_DeleteButton", L.ToyBoxEditFrame, "UIPanelButtonTemplate")
+deleteButton:SetText("Delete")
+deleteButton:SetPoint("BOTTOMLEFT", 10, 4)
+deleteButton:SetWidth(100)
+deleteButton:SetScript("OnClick", function(self)
+    L.ModalContainer:Open(IN_MODAL.YesNo, 
+        "Delete toy box [" .. name .. "]", 
+        "Are you sure you want to delete this toy box? This cannot be undone.",
+        function(result)
+            if(result == IN_MODAL_RESULT.Yes) then
+                callbackFunction(id, name, icon, true)
+                L.ToyBoxEditFrame:Hide()
+            end
+        end
+    )
+end)
+
 if(JunkieDebug) then
     tjicons = L.ToyBoxEditFrame
 end
 
-function L.ToyBoxEditFrame:Open(initialName, initialIcon)
-    name = initialName or ""
-    icon = initialIcon or 454046
+function L.ToyBoxEditFrame:Open(toyBoxId)
+    id = toyBoxId
+    name = L.ToyJunkie.db.profile.boxes[toyBoxId].name
+    icon = L.ToyJunkie.db.profile.boxes[toyBoxId].icon
 
     nameInputBox:SetText(name)
     selectedIcon.texture:SetTexture(icon)
     self:Show()
+    deleteButton:Show()
 end
+
+function L.ToyBoxEditFrame:New()
+    id = 0
+    name = ""
+    icon = 454046
+
+    nameInputBox:SetText("")
+    selectedIcon.texture:SetTexture(icon)
+    self:Show()
+    deleteButton:Hide()
+end
+
 
 function L.ToyBoxEditFrame:UpdateIcon(id)
     selectedIcon.texture:SetTexture(id)

@@ -133,6 +133,9 @@ function L:GetToyboxId(toybox) -- toybox can be from the profile boxes or from l
 end
 
 function L:GetToyBoxIdByName(name)
+    if(name == nil) then
+        return nil
+    end
     for k, v in pairs(L.ToyJunkie.db.profile.boxes) do
         if (string.lower(v.name) == string.lower(name)) then
             return k
