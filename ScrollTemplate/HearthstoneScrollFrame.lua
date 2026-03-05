@@ -45,6 +45,11 @@ function ItemListMixin:Init(elementData)
     self.icon.texture:SetTexture(elementData.icon)
     self.hearthstoneCard:SetBackdrop(TJ_BACKDROP)
     self.hearthstoneCard:SetBackdropColor(PANEL_BACKGROUND_COLOR.r, PANEL_BACKGROUND_COLOR.g, PANEL_BACKGROUND_COLOR.b, 1)
+
+    self:RegisterForClicks("AnyDown")
+    self:SetAttribute("type2", "toy")
+    self:SetAttribute("toy2", elementData.id)
+
     if(not elementData.owned) then
         self.icon.texture:SetDesaturated(true)
     else
@@ -54,6 +59,26 @@ function ItemListMixin:Init(elementData)
         else
             self.favoriteHeart.texture:SetDesaturated(false)
         end
+
+        self.favoriteHeart:SetScript("OnMouseUp", function(self, button)
+        if(PlayerHasToy(elementData.id)) then
+            if(elementData.owned) then
+                if(L:IsHearthstoneFavorited(elementData.id)) then
+                    local result = L:RemoveFavoriteHearthstone(elementData.id)
+                    if(result == 2) then
+                        UIErrorsFrame:AddExternalErrorMessage("Must have at least one Hearthstone favorited!")
+                    else
+                        L.HearthstoneFavorites.ScrollFrame.listView:Refresh()
+                        L.ToyboxFrame:SelectNewRandomHearthstone()
+                    end
+                else
+                    L:AddFavoriteHearthstone(elementData.id)
+                        L.HearthstoneFavorites.ScrollFrame.listView:Refresh()
+                    L.ToyboxFrame:SelectNewRandomHearthstone()
+                end
+            end
+        end
+    end)
     end
 end
 
@@ -116,6 +141,21 @@ function ListMixin:OnLoad()
         self:GetParent():SetText("")
     end)
 
+    self.hearthstoneFilter = CreateFrame("CheckButton", "$parent_HearthstoneFilter", self, "UICheckButtonTemplate")
+    self.hearthstoneFilter:SetPoint("TOPRIGHT", L.HearthstoneFavorites, "TOPRIGHT", -125, -19)
+    self.hearthstoneFilter.text:SetText("Show all Hearthstones")
+    self.hearthstoneFilter:SetChecked(showAllHearthstones)
+    self.hearthstoneFilter:SetScript("OnClick", function(self, button)
+        if(self:GetChecked()) then
+            showAllHearthstones = true
+            self:GetParent():Refresh()
+        else
+            showAllHearthstones = false
+            self:GetParent():Refresh()
+        end
+    end)
+    
+
     ScrollUtil.InitScrollBoxListWithScrollBar(self.scrollBox, self.scrollBar, self.scrollView)
 
     self:SetScript("OnUpdate", self.OnUpdate)
@@ -140,21 +180,23 @@ function ListMixin:OnElementReset(element)
 end
 
 function ListMixin:OnElementClicked(element, button)
+    if(button == "LeftButton") then
     local data = element:GetData()
-    if(PlayerHasToy(data.id)) then
-        if(data.owned) then
-            if(L:IsHearthstoneFavorited(data.id)) then
-                local result = L:RemoveFavoriteHearthstone(data.id)
-                if(result == 2) then
-                    UIErrorsFrame:AddExternalErrorMessage("Must have at least one Hearthstone favorited!")
+        if(PlayerHasToy(data.id)) then
+            if(data.owned) then
+                if(L:IsHearthstoneFavorited(data.id)) then
+                    local result = L:RemoveFavoriteHearthstone(data.id)
+                    if(result == 2) then
+                        UIErrorsFrame:AddExternalErrorMessage("Must have at least one Hearthstone favorited!")
+                    else
+                        self:Refresh()
+                        L.ToyboxFrame:SelectNewRandomHearthstone()
+                    end
                 else
+                    L:AddFavoriteHearthstone(data.id)
                     self:Refresh()
                     L.ToyboxFrame:SelectNewRandomHearthstone()
                 end
-            else
-                L:AddFavoriteHearthstone(data.id)
-                self:Refresh()
-                L.ToyboxFrame:SelectNewRandomHearthstone()
             end
         end
     end
@@ -213,11 +255,3 @@ function L.HearthstoneScrollTemplateMixin:UpdateHearthstones()
     HearthStones = L:GetAllHearthstones()
     self.listView:Refresh()
 end
-
-
-
---922035 (star texture)
---[[
-auctionhouse has a star
-Interface/Delves/ScenarioDelves2x/delves-scenario-heart-icon
-]]

@@ -345,7 +345,6 @@ function L.ToyboxFrame:UpdateQuickButtons()
     end
 
     for key, toyId in pairs(L.ToyJunkie.db.profile.boxes["special"].toys) do
-        print(key)
         local button = L.ToyboxFrame.QuickButtons[key].Button
         local _, _, toyIcon = C_ToyBox.GetToyInfo(toyId)
         if(toyIcon == nil) then
@@ -355,9 +354,6 @@ function L.ToyboxFrame:UpdateQuickButtons()
         button:SetNormalTexture(toyIcon)
         button:SetAttribute("type1", "toy")
         button:SetAttribute("toy1", toyId)
-        button:HookScript("OnMouseDown", function(self, button)
-            print(button)
-        end)
         button:CheckCooldown()
         L.ToyboxFrame.QuickButtons[key]:Show()
     end

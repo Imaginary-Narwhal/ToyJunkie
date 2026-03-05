@@ -742,9 +742,7 @@ end
 
 function TJ_RemoveToy(element)
     local cToy = element:GetData()
-    print(cToy.name)
     for k, toy in pairs(L.ToyJunkie.db.profile.boxes[cToy.toyBoxId].toys) do
-        print(k, toy)
         if(cToy.toyId == toy) then
             table.remove(L.ToyJunkie.db.profile.boxes[cToy.toyBoxId].toys, k)
             L.ToyboxFrame:UpdateToyButtons()

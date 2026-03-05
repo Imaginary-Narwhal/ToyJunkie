@@ -101,10 +101,6 @@ function L:IsHearthstoneOwned(hID)
     return PlayerHasToy(hID)
 end
 
-function L:EditToyBox(toyBox)
-    print(toyBox.name)
-end
-
 function L:IsToyboxNameDuplicate(name, checkCase, ignore)
     checkCase = checkCase or false
     for _, box in pairs(L.ToyJunkie.db.profile.boxes) do
