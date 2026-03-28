@@ -11,7 +11,7 @@ end
 
 function L:CountTable(table)
     local count = 0
-    for i,v in pairs(table) do
+    for i, v in pairs(table) do
         count = count + 1
     end
     return count
@@ -21,8 +21,8 @@ end
 function L:CursorHasToy()
     if (GetCursorInfo()) then
         local itemType, id = GetCursorInfo()
-        if(itemType == "item") then
-            if(id) then
+        if (itemType == "item") then
+            if (id) then
                 if (C_ToyBox.GetToyInfo(id)) then
                     return true
                 end
@@ -46,8 +46,8 @@ end
 function L:GetUsableHearthstones()
     local hearthstones = {}
     for k, hsID in pairs(L.HearthstoneIds) do
-        if(PlayerHasToy(hsID) and C_ToyBox.IsToyUsable(hsID)) then
-            if(L:IsHearthstoneFavorited(hsID)) then
+        if (PlayerHasToy(hsID) and C_ToyBox.IsToyUsable(hsID)) then
+            if (L:IsHearthstoneFavorited(hsID)) then
                 table.insert(hearthstones, hsID)
             end
         end
@@ -56,8 +56,8 @@ function L:GetUsableHearthstones()
 end
 
 function L:IsHearthstoneFavorited(id)
-    for k,v in pairs(L.ToyJunkie.db.profile.hearthstoneFavoriteIds) do
-        if(v == id) then
+    for k, v in pairs(L.ToyJunkie.db.profile.hearthstoneFavoriteIds) do
+        if (v == id) then
             return true
         end
     end
@@ -78,15 +78,15 @@ end
 
 function L:RemoveFavoriteHearthstone(hsID) --return 0 if successful, 1 if not found, 2 if last HS left on list
     local idx = 0
-    if(#L.ToyJunkie.db.profile.hearthstoneFavoriteIds == 1) then
+    if (#L.ToyJunkie.db.profile.hearthstoneFavoriteIds == 1) then
         return 2
     end
-    for k,v in pairs(L.ToyJunkie.db.profile.hearthstoneFavoriteIds) do
-        if(v == hsID) then
+    for k, v in pairs(L.ToyJunkie.db.profile.hearthstoneFavoriteIds) do
+        if (v == hsID) then
             idx = k
         end
     end
-    if(idx > 0) then
+    if (idx > 0) then
         table.remove(L.ToyJunkie.db.profile.hearthstoneFavoriteIds, idx)
         return 0
     end
@@ -129,7 +129,7 @@ function L:GetToyboxId(toybox) -- toybox can be from the profile boxes or from l
 end
 
 function L:GetToyBoxIdByName(name)
-    if(name == nil) then
+    if (name == nil) then
         return nil
     end
     for k, v in pairs(L.ToyJunkie.db.profile.boxes) do
@@ -175,8 +175,8 @@ function L:searchSplit(inputstr, sep)
 end
 
 function L:AddToy(toyId, toyboxId, index)
-    if(toyboxId == "special") then
-        if(#L.ToyJunkie.db.profile.boxes[toyboxId].toys == 5) then
+    if (toyboxId == "special") then
+        if (#L.ToyJunkie.db.profile.boxes[toyboxId].toys == 5) then
             UIErrorsFrame:AddExternalErrorMessage("You can only register up to 5 toys in the Quick Toys toybox.")
             return
         end
@@ -271,21 +271,25 @@ function L:CreateToyButton()
     button.Cooldown:SetAllPoints()
     button.Cooldown:Hide()
     button:SetScript("OnEvent", function(self, event)
-        if(event == "SPELL_UPDATE_COOLDOWN") then
+        if (event == "SPELL_UPDATE_COOLDOWN") then
             self:CheckCooldown()
         end
     end)
 
     button:HookScript("OnEnter", function(self)
-        if(self.id ~= nil) then
+        if (self.id ~= nil and L.ToyJunkie.db.profile.tooltipEnabled) then
             GameTooltip:SetOwner(self, "ANCHOR_TOP")
-            local _, toyName = C_ToyBox.GetToyInfo(self.id)
-            GameTooltip:AddLine(toyName)
+            if (L.ToyJunkie.db.profile.useCompactTooltips) then
+                local _, toyName = C_ToyBox.GetToyInfo(self.id)
+                GameTooltip:AddLine(toyName)
+            else
+                GameTooltip:SetToyByItemID(self.id)
+            end
             GameTooltip:Show()
         end
     end)
     button:HookScript("OnLeave", function(self)
-        if(self.id ~= nil) then
+        if (self.id ~= nil and L.ToyJunkie.db.profile.tooltipEnabled) then
             GameTooltip:Hide()
         end
     end)
@@ -293,9 +297,9 @@ function L:CreateToyButton()
     button:Hide()
 
     function button:UpdateButton(toyId)
-        if(toyId) then
+        if (toyId) then
             local _, _, toyIcon = C_ToyBox.GetToyInfo(toyId)
-            if(toyIcon == nil) then
+            if (toyIcon == nil) then
                 toyIcon = 134400
             end
 
@@ -306,56 +310,6 @@ function L:CreateToyButton()
             button:RegisterEvent("SPELL_UPDATE_COOLDOWN")
             button:CheckCooldown()
             button:SetSize(L:GetIconSize())
-
-            button:SetScript("OnMouseDown", function(self, button)
-                if(button == "RightButton") then
-                    local contextMenu = nil
-                    local foundKey, foundId = 0, 0
-                    for k, v in pairs(L.ToyJunkie.db.profile.quickToys) do
-                        if(v == toyId) then
-                            foundKey, foundId = k,v
-                        end
-                    end
-                    if(foundId == 0) then
-                        contextMenu = L:CreateContextMenu(
-                            {
-                                name = "quickToyMenu",
-                                parent = self,
-                                items = {
-                                    {
-                                        text = "Add toy to Quick toys",
-                                        func = function()
-                                            if(#L.ToyJunkie.db.profile.quickToys == 5) then
-                                                L.ToyJunkie:Print("Only 5 quick toys are allowed. Please remove one before trying to add another.")
-                                            else
-                                                table.insert(L.ToyJunkie.db.profile.quickToys, toyId)
-                                                L.ToyboxFrame:UpdateQuickButtons()
-                                            end
-                                        end
-                                    }
-                                }
-                            }
-                        )
-                    else
-                        contextMenu = L:CreateContextMenu(
-                            {
-                                name = "quickToyMenu",
-                                parent = self,
-                                    items = {
-                                    {
-                                        text = "Remove toy to Quick toys",
-                                        func = function() 
-                                            table.remove(L.ToyJunkie.db.profile.quickToys, foundKey)
-                                            L.ToyboxFrame:UpdateQuickButtons()
-                                        end
-                                    }
-                                }
-                            }
-                        )                    
-                    end
-                    ToggleDropDownMenu(1, nil, contextMenu, "cursor", 10, 5)
-                end
-            end)
         end
     end
 
@@ -365,7 +319,7 @@ function L:CreateToyButton()
     end
 
     function button:CheckCooldown()
-        if(button.id ~= nil and button:IsShown()) then
+        if (button.id ~= nil and button:IsShown()) then
             local start, duration, enable = C_Item.GetItemCooldown(button.id)
             if (start > 0) then
                 CooldownFrame_Set(button.Cooldown, start, duration, enable)
@@ -381,9 +335,9 @@ function L:CreateToyButton()
 end
 
 function L:CheckAllCooldowns()
-    if(L.ToyboxFrame.ToyButtons ~= nil) then
+    if (L.ToyboxFrame.ToyButtons ~= nil) then
         for k, v in pairs(L.ToyboxFrame.ToyButtons) do
-            if(v.id  ~= nil) then
+            if (v.id ~= nil) then
                 v:CheckCooldown()
             end
         end
@@ -391,12 +345,12 @@ function L:CheckAllCooldowns()
 end
 
 function L:GetNumOfActiveButtons()
-    if(L.ToyboxFrame.ToyButtons == nil) then
+    if (L.ToyboxFrame.ToyButtons == nil) then
         return 0
     end
     local count = 0
     for k, v in pairs(L.ToyboxFrame.ToyButtons) do
-        if(v.id ~= nil) then
+        if (v.id ~= nil) then
             count = count + 1
         end
     end
@@ -404,7 +358,7 @@ function L:GetNumOfActiveButtons()
 end
 
 function L:DebugMsg(...)
-    if(JunkieDebug) then
+    if (JunkieDebug) then
         Debug(...)
     end
 end

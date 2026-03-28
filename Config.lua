@@ -1,7 +1,7 @@
 local addonName, L = ...
 
 
-L.ToyJunkie = LibStub("AceAddon-3.0"):NewAddon("ToyJunkie","AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0")
+L.ToyJunkie = LibStub("AceAddon-3.0"):NewAddon("ToyJunkie", "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0")
 L.ToyJunkie.Icon = LibStub("LibDBIcon-1.0")
 
 local AC = LibStub("AceConfig-3.0")
@@ -44,7 +44,9 @@ L.defaults = {
         hearthstoneFavoriteIds = {},
         hearthstoneShowAll = false,
         quickToys = {},
-        showQuickToys = true,
+        lastOpenVersion = "",
+        tooltipsEnabled = true,
+        useCompactTooltips = true,
         tutorial = false
     }
 }
@@ -55,7 +57,7 @@ local options = {
     type = "group",
     args = {
         minimap = {
-            order = 2,
+            order = 3,
             type = "group",
             name = "Minimap Button",
             inline = true,
@@ -67,7 +69,7 @@ local options = {
                     order = 2,
                     set = (function(info, val)
                         L.ToyJunkie.db.profile.minimap.hide = not val
-                        if(L.ToyJunkie.db.profile.minimap.hide) then
+                        if (L.ToyJunkie.db.profile.minimap.hide) then
                             L.ToyJunkie.Icon:Hide(addonName)
                         else
                             L.ToyJunkie.Icon:Show(addonName)
@@ -84,7 +86,7 @@ local options = {
                     order = 3,
                     set = (function(info, val)
                         L.ToyJunkie.db.profile.minimap.lock = val
-                        if(L.ToyJunkie.db.profile.minimap.lock) then
+                        if (L.ToyJunkie.db.profile.minimap.lock) then
                             L.ToyJunkie.Icon:Lock(addonName)
                         else
                             L.ToyJunkie.Icon:Unlock(addonName)
@@ -101,7 +103,7 @@ local options = {
                     order = 4,
                     set = (function(info, val)
                         L.ToyJunkie.db.profile.addonCompartment = val
-                        if(L.ToyJunkie.db.profile.addonCompartment) then
+                        if (L.ToyJunkie.db.profile.addonCompartment) then
                             L.ToyJunkie.Icon:AddButtonToCompartment(addonName)
                         else
                             L.ToyJunkie.Icon:RemoveButtonFromCompartment(addonName)
@@ -109,6 +111,41 @@ local options = {
                     end),
                     get = (function(info)
                         return L.ToyJunkie.db.profile.addonCompartment
+                    end)
+                }
+            }
+        },
+        tooltipSettings = {
+            type = "group",
+            name = "Tooltip Settings",
+            inline = true,
+            order = 2,
+            args = {
+                enableTooltips = {
+                    type = "toggle",
+                    name = "Enable tooltips",
+                    desc = "Enable tooltips in toy box window",
+                    order = 0,
+                    set = (function(info, val)
+                        L.ToyJunkie.db.profile.tooltipEnabled = val
+                    end),
+                    get = (function(info)
+                        return L.ToyJunkie.db.profile.tooltipEnabled
+                    end)
+                },
+                compactTooltips = {
+                    disabled = (function()
+                        return not L.ToyJunkie.db.profile.tooltipEnabled
+                    end),
+                    type = "toggle",
+                    name = "Use compact tooltips",
+                    desc = "Compact tooltip is just the name",
+                    order = 1,
+                    set = (function(info, val)
+                        L.ToyJunkie.db.profile.useCompactTooltips = val
+                    end),
+                    get = (function(info)
+                        return L.ToyJunkie.db.profile.useCompactTooltips
                     end)
                 }
             }
@@ -128,7 +165,7 @@ local options = {
                     softMax = 48,
                     name = "Toy Icon Size",
                     step = 1,
-                    get = (function(info) 
+                    get = (function(info)
                         return L.ToyJunkie.db.profile.toyBoxFrame.iconSize
                     end),
                     set = (function(info, val)

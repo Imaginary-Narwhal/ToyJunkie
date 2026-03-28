@@ -6,7 +6,7 @@ function L.ToyJunkie:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("ToyJunkieDB", L.defaults, true)
     L.ToyJunkie:ConfigurationInitialize(self)
 
-    if(JunkieDebug) then --Debug command
+    if (JunkieDebug) then --Debug command
         LVar = L
         DB = L.ToyJunkie.db.profile
         self:Print("Debug loaded ...")
@@ -42,7 +42,7 @@ function L.ToyJunkie:OnEnable()
         L.ToyJunkie.db.profile.toyboxShown = false
     end
 
-    if(L.ToyJunkie.db.profile.boxes["special"] == nil) then
+    if (L.ToyJunkie.db.profile.boxes["special"] == nil) then
         L.ToyJunkie.db.profile.boxes["special"] = {
             icon = 413591,
             name = "Quick Toys",
@@ -55,19 +55,19 @@ function L.ToyJunkie:OnEnable()
         L.ToyJunkie.Icon:AddButtonToCompartment(addonName)
     end
 
-    if(L.ToyJunkie.db.profile.minimap.hide) then
+    if (L.ToyJunkie.db.profile.minimap.hide) then
         L.ToyJunkie.Icon:Hide(addonName)
     else
         L.ToyJunkie.Icon:Show(addonName)
     end
 
-    if(L.ToyJunkie.db.profile.minimap.lock) then
+    if (L.ToyJunkie.db.profile.minimap.lock) then
         L.ToyJunkie.Icon:Lock(addonName)
     else
         L.ToyJunkie.Icon:Unlock(addonName)
     end
 
-    if(L.ToyJunkie.db.profile.addonCompartment) then
+    if (L.ToyJunkie.db.profile.addonCompartment) then
         L.ToyJunkie.Icon:AddButtonToCompartment(addonName)
     else
         L.ToyJunkie.Icon:RemoveButtonFromCompartment(addonName)
@@ -85,25 +85,25 @@ function L.ToyJunkie:TJCommand(msg)
     else
         local cmd = {}
         for word in msg:gmatch("%S+") do table.insert(cmd, word) end
-        if(cmd[1]:lower() == "box") then
+        if (cmd[1]:lower() == "box") then
             local search = table.concat(cmd, " ", 2)
-            if(not search or search:trim() == "") then
+            if (not search or search:trim() == "") then
                 self:Print("Command 'box' requires a parameter to search for a toybox.")
                 self:Print("Example: /tj box Hearthstones")
             else
                 local box = L:GetToyBoxIdByName(search)
-                if(box ~= nil) then
+                if (box ~= nil) then
                     L.ToyJunkie.db.profile.selectedToybox = L.ToyJunkie.db.profile.boxes[box].name
                     L.ToyboxFrame:UpdateToyboxDisplay()
                     L.ToyboxFrame:UpdateToyButtons()
-                    if(not L.ToyboxFrame:IsShown()) then
+                    if (not L.ToyboxFrame:IsShown()) then
                         L.ToyboxFrame:Toggle()
                     end
                 else
-                    self:Print("Toybox '" .. search .."' not found.")
+                    self:Print("Toybox '" .. search .. "' not found.")
                 end
             end
-        elseif(cmd[1]:lower() == "clean") then
+        elseif (cmd[1]:lower() == "clean") then
             for k, boxes in pairs(L.ToyJunkie.db.profile.boxes) do
                 local tempToys = {}
                 for i, toy in pairs(L.ToyJunkie.db.profile.boxes[k].toys) do
@@ -111,14 +111,18 @@ function L.ToyJunkie:TJCommand(msg)
                 end
                 L.ToyJunkie.db.profile.boxes[k].toys = tempToys
             end
-        elseif(cmd[1]:lower() == "help") then
+        elseif (cmd[1]:lower() == "options") then
+            Settings.OpenToCategory(L.catID)
+        elseif (cmd[1]:lower() == "help") then
             self:Print("/tj --without a parameter will toggle the toy box window")
             self:Print("/tj box _name_ --will open the toybox to the toybox with the matching name")
-            self:print("/tj clean --will attempt to clean up the toys in your toyboxes if you get a nil error when selecting a toybox")
+            self:Print("/tj options --will open the options for ToyJunkie")
+            self:Print("/tj clean --will attempt to clean up the toys in your toyboxes if you get a nil error when selecting a toybox")
         else
             self:Print("Command '" .. cmd[1] .. "' not found.")
-            self:Print("/tj without a parameter will toggle the toy box window")
-            self:Print("/tj box _name_ will open the toybox to the toybox with the matching name")
+            self:Print("/tj --without a parameter will toggle the toy box window")
+            self:Print("/tj box _name_ --will open the toybox to the toybox with the matching name")
+            self:Print("/tj options --will open the options for ToyJunkie")
             self:Print("/tj clean --will attempt to clean up the toys in your toyboxes if you get a nil error when selecting a toybox")
         end
     end
@@ -128,11 +132,11 @@ function L.ToyJunkie:TJBoxCommand(msg)
     self:Print(L.ToyJunkie.db.profile.selectedToybox)
 
     local found = L:GetToyBoxIdByName(msg)
-    if(found ~= nil) then
+    if (found ~= nil) then
         L.ToyJunkie.db.profile.selectedToybox = msg
         L.ToyboxFrame:UpdateToyboxDisplay()
         L.ToyboxFrame:UpdateToyButtons()
-        if(not L.ToyboxFrame:IsShown()) then
+        if (not L.ToyboxFrame:IsShown()) then
             L.ToyboxFrame:Toggle()
         end
     else
@@ -151,16 +155,16 @@ function L.ToyJunkie:TOYS_UPDATED(eventName, toyId, isNew)
         L.ToyboxFrame:Toggle(true, "OPEN")
     end
 
-    if(isNew) then
-        for k,v in pairs(L.HearthstoneIds) do
-            if(v == toyId) then
+    if (isNew) then
+        for k, v in pairs(L.HearthstoneIds) do
+            if (v == toyId) then
                 table.insert(L.ToyJunkie.db.profile.hearthstoneFavoriteIds, toyId)
                 L.ToyboxFrame:SelectNewRandomHearthstone()
             end
         end
     end
 
-    if(not hearthstonesLoaded) then
+    if (not hearthstonesLoaded) then
         C_Timer.After(2, function()
             L.ToyboxFrame:SelectNewRandomHearthstone()
             hearthstonesLoaded = true
@@ -168,9 +172,9 @@ function L.ToyJunkie:TOYS_UPDATED(eventName, toyId, isNew)
         end)
     end
 
-    if(#L.ToyJunkie.db.profile.hearthstoneFavoriteIds < 1) then
-        for k,v in pairs(L.HearthstoneIds) do
-            if(L:IsHearthstoneOwned(v)) then
+    if (#L.ToyJunkie.db.profile.hearthstoneFavoriteIds < 1) then
+        for k, v in pairs(L.HearthstoneIds) do
+            if (L:IsHearthstoneOwned(v)) then
                 table.insert(L.ToyJunkie.db.profile.hearthstoneFavoriteIds, v)
             end
         end
@@ -190,7 +194,7 @@ function L.ToyJunkie:PLAYER_REGEN_ENABLED()
 end
 
 CollectionsJournal:HookScript("OnHide", function()
-    if(L.ToyJunkie_DragBackdrop ~= nil) then
+    if (L.ToyJunkie_DragBackdrop ~= nil) then
         L.ToyJunkie_DragBackdrop:Hide()
     end
 end)
