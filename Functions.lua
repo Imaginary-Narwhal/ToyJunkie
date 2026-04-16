@@ -230,8 +230,14 @@ end
 function L:UpdateRandomHearthstoneMacro(hsID)
     local _, name = C_ToyBox.GetToyInfo(hsID)
     if (GetMacroInfo("tj_hs")) then
-        EditMacro("tj_hs", "tj_hs", "INV_Misc_QuestionMark", "/use " .. name)
+        EditMacro("tj_hs", "tj_hs", "INV_Misc_QuestionMark", "#showtooltip\n/use " .. name .. "\n/run ToyJunkie_SelectNewHearthstone()")
     end
+end
+
+function ToyJunkie_SelectNewHearthstone() --used for the macro to update the random hearthstone on use
+    C_Timer.After(0.5, function()
+        L.ToyboxFrame:SelectNewRandomHearthstone()
+    end)
 end
 
 ---------------------------
