@@ -217,6 +217,23 @@ function L:GetToyButton(id)
     end
 end
 
+function L:CreateRandomHearthstoneMacro()
+    if (not GetMacroInfo("tj_hs")) then
+        CreateMacro("tj_hs", "INV_Misc_QuestionMark", "", false)
+    end
+end
+
+function L:DeleteRandomHearthstoneMacro()
+    DeleteMacro("tj_hs")
+end
+
+function L:UpdateRandomHearthstoneMacro(hsID)
+    local _, name = C_ToyBox.GetToyInfo(hsID)
+    if (GetMacroInfo("tj_hs")) then
+        EditMacro("tj_hs", "tj_hs", "INV_Misc_QuestionMark", "/use " .. name)
+    end
+end
+
 ---------------------------
 -- Reusable Context Menu --
 ---------------------------
@@ -357,8 +374,8 @@ function L:GetNumOfActiveButtons()
     return count
 end
 
-function L:DebugMsg(...)
+function L:DebugMsg(msg)
     if (JunkieDebug) then
-        Debug(...)
+        L.ToyJunkie:Print(msg)
     end
 end

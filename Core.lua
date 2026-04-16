@@ -30,6 +30,11 @@ function L.ToyJunkie:OnInitialize()
 
     self:RegisterChatCommand("tj", "TJCommand")
     self:RegisterChatCommand("toyjunkie", "TJCommand")
+
+    --Check for and setup macro for random hearthstone casting
+    if (L.ToyJunkie.db.profile.createMacro) then
+        L:CreateRandomHearthstoneMacro()
+    end
 end
 
 function L.ToyJunkie:OnEnable()
@@ -113,6 +118,8 @@ function L.ToyJunkie:TJCommand(msg)
             end
         elseif (cmd[1]:lower() == "options") then
             Settings.OpenToCategory(L.catID)
+        elseif (cmd[1]:lower() == "hearthstone") then
+            L.ToyboxFrame.RandomHearthstoneButton:Click()
         elseif (cmd[1]:lower() == "help") then
             self:Print("/tj --without a parameter will toggle the toy box window")
             self:Print("/tj box _name_ --will open the toybox to the toybox with the matching name")
@@ -203,3 +210,26 @@ end)
 BINDING_HEADER_HTOYJUNKIE = "ToyJunkie Keybindings"
 _G["BINDING_NAME_CLICK ToyJunkie_ToyboxFrame_RandomHearthstoneButton:LeftButton"] = "Use Random Hearthstone"
 _G["BINDING_NAME_CLICK ToyJunkie_ToyboxFrame_RandomToyButton:LeftButton"] = "Use Random Toy from current toybox"
+
+
+
+
+--[[
+
+for macro creating and editing
+
+local macroIndex = CreateMacro("RandomHearthstone", 1, "/use [name of current toy]", false)
+
+function L.ToyboxFrame:SelectNewRandomHearthstone()
+    -- Your existing randomization logic...
+    local selectedToyName = -- however you get the name
+
+    -- Update the macro
+    local macroIndex = GetMacroIndexByName("RandomHearthstoneWheel")
+    if macroIndex > 0 then
+        EditMacro(macroIndex, "RandomHearthstoneWheel", 1, "/use " .. selectedToyName, false)
+    end
+end
+
+
+]]

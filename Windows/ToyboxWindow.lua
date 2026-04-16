@@ -22,7 +22,7 @@ L.ToyboxFrame:SetBackdrop({
 })
 L.ToyboxFrame:SetBackdropColor(PANEL_BACKGROUND_COLOR.r, PANEL_BACKGROUND_COLOR.g, PANEL_BACKGROUND_COLOR.b, 1)
 L.ToyboxFrame:SetBackdropBorderColor(.5, .5, .5, 1)
-L.ToyboxFrame:SetSize(400,300)
+L.ToyboxFrame:SetSize(400, 300)
 L.ToyboxFrame:SetPoint("TOPLEFT", nil, "TOPLEFT", 21, -18)
 L.ToyboxFrame:SetResizable(true)
 
@@ -53,7 +53,7 @@ L.ToyboxFrame:SetScript("OnHide", function(self)
 end)
 
 L.ToyboxFrame:SetScript("OnUpdate", function(self)
-    if(isResizing) then
+    if (isResizing) then
         L.ToyboxFrame:UpdateToyButtons()
     end
 end)
@@ -81,7 +81,7 @@ L.ToyboxFrame.SideMenuButton:SetNormalTexture("Interface/Addons/ToyJunkie/images
 L.ToyboxFrame.SideMenuButton:SetHighlightTexture("Interface/Buttons/UI-Common-MouseHilight", "ADD")
 L.ToyboxFrame.SideMenuButton:SetPoint("TOPLEFT", 10, -10)
 L.ToyboxFrame.SideMenuButton:SetScript("OnClick", function(self, button)
-    if(button == "LeftButton") then
+    if (button == "LeftButton") then
         L.ToyboxFrame:ToggleSideMenuBar()
     end
 end)
@@ -108,13 +108,13 @@ end)
 ------------------------
 
 L.ToyboxFrame.LockButton = CreateFrame("Button", "$parent_LockButton", L.ToyboxFrame, "UIPanelButtonTemplate")
-L.ToyboxFrame.LockButton:SetSize(18,17)
+L.ToyboxFrame.LockButton:SetSize(18, 17)
 L.ToyboxFrame.LockButton:SetText("L")
 
 L.ToyboxFrame.LockButton:SetPoint("TOPRIGHT", -37, 1.5)
 L.ToyboxFrame.LockButton:SetScript("OnClick", function(self, button)
     L.ToyJunkie.db.profile.toyBoxFrame.locked = not L.ToyJunkie.db.profile.toyBoxFrame.locked
-    if(L.ToyJunkie.db.profile.toyBoxFrame.locked) then
+    if (L.ToyJunkie.db.profile.toyBoxFrame.locked) then
         L.ToyboxFrame.LockButton:SetText("U")
         L.ToyboxFrame.ResizeButton:Hide()
     else
@@ -124,7 +124,7 @@ L.ToyboxFrame.LockButton:SetScript("OnClick", function(self, button)
 end)
 L.ToyboxFrame.LockButton:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-    if(self:GetText() == "L") then
+    if (self:GetText() == "L") then
         GameTooltip:AddLine("Lock Toybox Window")
     else
         GameTooltip:AddLine("Unlock Toybox Window")
@@ -147,7 +147,7 @@ L.ToyboxFrame.ResizeButton:SetPushedTexture(386862)
 L.ToyboxFrame.ResizeButton:SetHighlightTexture(386863)
 L.ToyboxFrame.ResizeButton:SetPoint("BOTTOMRIGHT", -1, 1)
 L.ToyboxFrame.ResizeButton:SetScript("OnMouseDown", function(self, button)
-    if(button == "LeftButton") then
+    if (button == "LeftButton") then
         L.ToyboxFrame:StartSizing("BOTTOMRIGHT", true)
         L.ToyboxFrame:SetUserPlaced(true)
         isResizing = true
@@ -167,7 +167,7 @@ L.ToyboxFrame.SideMenuBar = CreateFrame("Frame", "$parent_SideMenuBar", L.Toybox
 L.ToyboxFrame.SideMenuBar:SetBackdrop({
     bgFile = "Interface/Buttons/WHITE8X8"
 })
-L.ToyboxFrame.SideMenuBar:SetBackdropColor(1,1,1,.05)
+L.ToyboxFrame.SideMenuBar:SetBackdropColor(1, 1, 1, .05)
 L.ToyboxFrame.SideMenuBar:SetPoint("TOPLEFT", 8, -26)
 L.ToyboxFrame.SideMenuBar:SetPoint("BOTTOMLEFT", 8, 6)
 L.ToyboxFrame.SideMenuBar:SetWidth(100)
@@ -210,8 +210,8 @@ L.ToyboxFrame.ToyButtonHolderFrame.ScrollChild:SetHeight(300)
 L.ToyboxFrame.ToyButtonHolderFrame.ScrollChild.scrollable = true
 
 ScrollUtil.InitScrollBoxWithScrollBar(L.ToyboxFrame.ToyButtonHolderFrame.ScrollBox,
-                                      L.ToyboxFrame.ToyButtonHolderFrame.ScrollBar,
-                                      L.ToyboxFrame.ToyButtonHolderFrame.ScrollView)
+    L.ToyboxFrame.ToyButtonHolderFrame.ScrollBar,
+    L.ToyboxFrame.ToyButtonHolderFrame.ScrollView)
 
 
 -------------------
@@ -227,19 +227,19 @@ L.ToyboxFrame.RandomToyButton:SetPoint("TOPLEFT", L.ToyboxFrame.ToyButtonHolderF
 L.ToyboxFrame.RandomToyButton:RegisterForClicks("AnyDown")
 L.ToyboxFrame.RandomToyButton:SetAttribute("type1", "toy")
 L.ToyboxFrame.RandomToyButton:HookScript("OnClick", function(self, button)
-    if(button == "LeftButton") then
+    if (button == "LeftButton") then
         L.ToyboxFrame:SelectNewRandomToy()
     end
 end)
 L.ToyboxFrame.RandomToyButton:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-        if(randomToyAvailable) then
-            GameTooltip:AddLine("Random Toy")
-            GameTooltip:AddLine("Use a random toy from " .. L.ToyJunkie.db.profile.selectedToybox)
-        else
-            GameTooltip:AddLine("No toys currently available")
-        end
-        GameTooltip:Show()
+    GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+    if (randomToyAvailable) then
+        GameTooltip:AddLine("Random Toy")
+        GameTooltip:AddLine("Use a random toy from " .. L.ToyJunkie.db.profile.selectedToybox)
+    else
+        GameTooltip:AddLine("No toys currently available")
+    end
+    GameTooltip:Show()
 end)
 L.ToyboxFrame.RandomToyButton:SetScript("OnLeave", function(self)
     GameTooltip:Hide()
@@ -247,11 +247,11 @@ end)
 
 -------------------------------
 -- Random Hearthstone Button --
--------------------------------
+-------------------------------L:Pr
 
 L.ToyboxFrame.RandomHearthstoneButton = CreateFrame("Button", "$parent_RandomHearthstoneButton", L.ToyboxFrame, "SecureActionButtonTemplate")
 L.ToyboxFrame.RandomHearthstoneButton:SetNormalTexture(5524923)
-L.ToyboxFrame.RandomHearthstoneButton:SetSize(18,18)
+L.ToyboxFrame.RandomHearthstoneButton:SetSize(18, 18)
 L.ToyboxFrame.RandomHearthstoneButton:SetPoint("TOPLEFT", L.ToyboxFrame.RandomToyButton, 25, 0)
 L.ToyboxFrame.RandomHearthstoneButton:SetHighlightTexture("Interface/Buttons/UI-Common-MouseHilight", "ADD")
 L.ToyboxFrame.RandomHearthstoneButton:RegisterForClicks("AnyDown")
@@ -271,11 +271,11 @@ L.ToyboxFrame.RandomHearthstoneButton.CooldownTimer:SetScale(.75)
 L.ToyboxFrame.RandomHearthstoneButton.CooldownTimer:Hide()
 
 function L.ToyboxFrame.RandomHearthstoneButton:CheckCooldown()
-    if(selectedHearthstoneId ~= 0) then
+    if (selectedHearthstoneId ~= 0) then
         local start, duration, enable = C_Item.GetItemCooldown(selectedHearthstoneId)
-        if(start > 0) then
+        if (start > 0) then
             CooldownFrame_Set(self.Cooldown, start, duration, enable)
-            if(duration > 1.5) then
+            if (duration > 1.5) then
                 self.CooldownTimer:Show()
             end
         else
@@ -289,16 +289,16 @@ function L.ToyboxFrame.RandomHearthstoneButton:CheckCooldown()
 end
 
 L.ToyboxFrame.RandomHearthstoneButton:HookScript("OnClick", function(self, button)
-    if(button == "LeftButton") then
+    if (button == "LeftButton") then
         L.ToyboxFrame:SelectNewRandomHearthstone()
     end
-    if(button == "RightButton") then
+    if (button == "RightButton") then
         L.HearthstoneFavorites:SetShown(not L.HearthstoneFavorites:IsShown())
     end
 end)
 L.ToyboxFrame.RandomHearthstoneButton:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-    if(#L:GetUsableHearthstones() > 0) then
+    if (#L:GetUsableHearthstones() > 0) then
         GameTooltip:AddLine("Random Hearthstone")
         GameTooltip:AddLine("Returns you to " .. GetBindLocation())
         GameTooltip:AddLine(" ")
@@ -313,17 +313,17 @@ L.ToyboxFrame.RandomHearthstoneButton:SetScript("OnLeave", function(self)
 end)
 
 L.ToyboxFrame.RandomHearthstoneButton:SetScript("OnEvent", function(self, event)
-    if(event == "SPELL_UPDATE_COOLDOWN") then
+    if (event == "SPELL_UPDATE_COOLDOWN") then
         self:CheckCooldown()
     end
 end)
 
 L.ToyboxFrame.RandomHearthstoneButton:SetScript("OnUpdate", function(self)
     local start, duration, enable = C_Item.GetItemCooldown(selectedHearthstoneId)
-    if(start > 0) then
+    if (start > 0) then
         local time = math.floor(start + duration - GetTime())
         local minutes = math.floor(time / 60)
-        local seconds = math.floor(time -(minutes * 60))
+        local seconds = math.floor(time - (minutes * 60))
 
         self.CooldownTimer:SetText(format("%02dm %02ds", minutes, seconds))
     end
@@ -334,11 +334,11 @@ end)
 ----------------
 L.ToyboxFrame.QuickButtons = {}
 function L.ToyboxFrame:UpdateQuickButtons()
-    if(L.ToyboxFrame.QuickButtons[1] == nil) then
+    if (L.ToyboxFrame.QuickButtons[1] == nil) then
         self:CreateQuickButtons()
     end
 
-    for i=1, 5 do
+    for i = 1, 5 do
         L.ToyboxFrame.QuickButtons[i]:Hide()
         L.ToyboxFrame.QuickButtons[i].Button.id = nil
         L.ToyboxFrame.QuickButtons[i].Button.Cooldown:Hide()
@@ -347,7 +347,7 @@ function L.ToyboxFrame:UpdateQuickButtons()
     for key, toyId in pairs(L.ToyJunkie.db.profile.boxes["special"].toys) do
         local button = L.ToyboxFrame.QuickButtons[key].Button
         local _, _, toyIcon = C_ToyBox.GetToyInfo(toyId)
-        if(toyIcon == nil) then
+        if (toyIcon == nil) then
             toyIcon = 134400
         end
         button.id = toyId
@@ -360,7 +360,7 @@ function L.ToyboxFrame:UpdateQuickButtons()
 end
 
 function L.ToyboxFrame:CreateQuickButtons()
-    for i=1, 5, 1 do
+    for i = 1, 5, 1 do
         L.ToyboxFrame.QuickButtons[i] = CreateFrame("Frame", "$parent_QuickButton_" .. i, L.ToyboxFrame, "BackdropTemplate")
         local qb = L.ToyboxFrame.QuickButtons[i]
         qb:SetFrameLevel(509)
@@ -372,17 +372,17 @@ function L.ToyboxFrame:CreateQuickButtons()
         })
         qb:SetBackdropColor(PANEL_BACKGROUND_COLOR.r, PANEL_BACKGROUND_COLOR.g, PANEL_BACKGROUND_COLOR.b, 1)
         qb:SetBackdropBorderColor(.5, .5, .5, 1)
-        qb:SetSize(36,34)
-        qb:SetPoint("TOPLEFT", L.ToyboxFrame, "TOPRIGHT", -10, (-36 * (i-1)) - 15)
+        qb:SetSize(36, 34)
+        qb:SetPoint("TOPLEFT", L.ToyboxFrame, "TOPRIGHT", -10, (-36 * (i - 1)) - 15)
         qb.Button = CreateFrame("Button", "$parent_Button", qb, "SecureActionButtonTemplate")
         qb.Button:RegisterForClicks("AnyUp", "AnyDown")
         qb.Button:RegisterEvent("SPELL_UPDATE_COOLDOWN")
-        qb.Button:SetSize(22,22)
+        qb.Button:SetSize(22, 22)
         qb.Button:SetPoint("Center", qb, "Center", 2, -1)
         qb.Button.Hover = qb.Button:CreateTexture("$parent_Hover", "OVERLAY")
         qb.Button.Hover:SetTexture("Interface\\Buttons\\CheckButtonHilight")
         qb.Button.Hover:SetBlendMode("ADD")
-        qb.Button.Hover:SetSize(24,24)
+        qb.Button.Hover:SetSize(24, 24)
         qb.Button.Hover:SetPoint("Center")
         qb.Button.Hover:Hide()
         qb.Button:SetScript("OnEnter", function(self)
@@ -390,31 +390,32 @@ function L.ToyboxFrame:CreateQuickButtons()
         end)
         qb.Button:SetScript("OnLeave", function(self)
             self.Hover:Hide()
-        end)    
+        end)
 
         qb.Button.Cooldown = CreateFrame("Cooldown", nil, qb.Button, "CooldownFrameTemplate")
         qb.Button.Cooldown:SetAllPoints()
         qb.Button.Cooldown:SetScale(0.7)
-        qb.Button.Cooldown:Hide()   
+        qb.Button.Cooldown:Hide()
 
         qb.Button:SetScript("OnEvent", function(self, event)
-            if(event == "SPELL_UPDATE_COOLDOWN") then
+            if (event == "SPELL_UPDATE_COOLDOWN") then
                 self:CheckCooldown()
             end
-        end)    
+        end)
 
         function qb.Button:CheckCooldown()
-            if(self.id ~= nil) then
+            if (self.id ~= nil) then
                 local start, duration, enable = C_Item.GetItemCooldown(self.id)
-                if(start > 0) then
+                if (start > 0) then
                     CooldownFrame_Set(self.Cooldown, start, duration, enable)
                 end
             end
-        end 
+        end
 
         qb:Hide()
     end
 end
+
 ---------------
 -- Functions --
 ---------------
@@ -443,16 +444,23 @@ end
 
 function L.ToyboxFrame:SelectNewRandomHearthstone()
     local hearthstones = L:GetUsableHearthstones()
-    if(#hearthstones > 0) then
+    if (#hearthstones > 0) then
         local selected = random(#hearthstones)
         selectedHearthstoneId = hearthstones[selected]
         L.ToyboxFrame.RandomHearthstoneButton:SetAttribute("toy1", hearthstones[selected])
         L.ToyboxFrame.RandomHearthstoneButton:CheckCooldown()
+        if (L.ToyJunkie.db.profile.createMacro) then
+            L:UpdateRandomHearthstoneMacro(hearthstones[selected])
+        end
     else
         selectedHearthstoneId = 0
         L.ToyboxFrame.RandomHearthstoneButton:SetAttribute("toy1", "0")
         L.ToyboxFrame.RandomHearthstoneButton:CheckCooldown()
     end
+end
+
+function L.ToyboxFrame:GetCurrentlySelectedHearthstoneId()
+    return selectedHearthstoneId
 end
 
 function L.ToyboxFrame:RefreshToyBoxes()
@@ -462,7 +470,7 @@ end
 function L.ToyboxFrame:UpdateToyboxDisplay()
     self:ToggleSideMenuBar(true)
     self:RefreshToyBoxes()
-    if(L.ToyJunkie.db.profile.toyBoxFrame.locked) then
+    if (L.ToyJunkie.db.profile.toyBoxFrame.locked) then
         L.ToyboxFrame.ResizeButton:Hide()
     else
         L.ToyboxFrame.ResizeButton:Show()
@@ -470,14 +478,14 @@ function L.ToyboxFrame:UpdateToyboxDisplay()
 end
 
 function L.ToyboxFrame:ToggleSideMenuBar(redraw)
-    if(not redraw) then
-        local point, _,  relativePoint, x, y = self:GetPoint()
-        if(L.ToyJunkie.db.profile.toyBoxFrame.isSideBarShown) then -- If true, hide menu bar
+    if (not redraw) then
+        local point, _, relativePoint, x, y = self:GetPoint()
+        if (L.ToyJunkie.db.profile.toyBoxFrame.isSideBarShown) then -- If true, hide menu bar
             L.ToyboxFrame:SetWidth(L.ToyJunkie.db.profile.toyBoxFrame.width - 115)
-            if(point == "CENTER" or point == "TOP" or point == "BOTTOM") then
+            if (point == "CENTER" or point == "TOP" or point == "BOTTOM") then
                 L.ToyboxFrame:SetPoint(point, nil, relativePoint, x - (115 / 2), y)
             end
-            if(point == "TOPRIGHT" or point == "RIGHT" or point == "BOTTOMRIGHT") then
+            if (point == "TOPRIGHT" or point == "RIGHT" or point == "BOTTOMRIGHT") then
                 L.ToyboxFrame:SetPoint(point, nil, relativePoint, x - 115, y)
             end
             L.ToyboxFrame.ToyButtonHolderFrame:SetPoint("TOPLEFT", 15, -27)
@@ -487,10 +495,10 @@ function L.ToyboxFrame:ToggleSideMenuBar(redraw)
             L.ToyboxFrame:SavePosition()
         else
             L.ToyboxFrame:SetWidth(L.ToyJunkie.db.profile.toyBoxFrame.width + 115)
-            if(point == "CENTER" or point == "TOP" or point == "BOTTOM") then
+            if (point == "CENTER" or point == "TOP" or point == "BOTTOM") then
                 L.ToyboxFrame:SetPoint(point, nil, relativePoint, x + (115 / 2), y)
             end
-            if(point == "TOPRIGHT" or point == "RIGHT" or point == "BOTTOMRIGHT") then
+            if (point == "TOPRIGHT" or point == "RIGHT" or point == "BOTTOMRIGHT") then
                 L.ToyboxFrame:SetPoint(point, nil, relativePoint, x + 115, y)
             end
             L.ToyboxFrame.ToyButtonHolderFrame:SetPoint("TOPLEFT", 130, -27)
@@ -506,7 +514,7 @@ end
 
 function L.ToyboxFrame:UpdateBounds()
     local iconWidth = L:GetIconMargin() + L.ToyJunkie.db.profile.toyBoxFrame.iconSize * 3 + L:GetIconMargin()
-    if(L.ToyJunkie.db.profile.toyBoxFrame.isSideBarShown) then
+    if (L.ToyJunkie.db.profile.toyBoxFrame.isSideBarShown) then
         L.ToyboxFrame.SideMenuBar:Show()
         iconWidth = 165 + iconWidth
         L.ToyboxFrame:SetResizeBounds(iconWidth, 200)
@@ -516,22 +524,22 @@ function L.ToyboxFrame:UpdateBounds()
         L.ToyboxFrame:SetResizeBounds(iconWidth, 200)
     end
 
-    if(L.ToyboxFrame:GetWidth() < iconWidth) then
+    if (L.ToyboxFrame:GetWidth() < iconWidth) then
         L.ToyboxFrame:SetWidth(iconWidth)
     end
 end
 
 function L.ToyboxFrame:UpdateToyButtons()
     local numToyboxToys = #L.ToyJunkie.db.profile.boxes[L:GetToyBoxIdByName(L.ToyJunkie.db.profile.selectedToybox)].toys
-    if(L.ToyJunkie.db.profile.selectedToybox ~= nil) then
-        for k, v in pairs (L.ToyboxFrame.ToyButtons) do
+    if (L.ToyJunkie.db.profile.selectedToybox ~= nil) then
+        for k, v in pairs(L.ToyboxFrame.ToyButtons) do
             v:RemoveButton()
         end
 
         local numStoredToys = #L.ToyboxFrame.ToyButtons
 
-        if(numStoredToys - numToyboxToys < 0) then
-            for i = 1,math.abs(numStoredToys - numToyboxToys), 1 do
+        if (numStoredToys - numToyboxToys < 0) then
+            for i = 1, math.abs(numStoredToys - numToyboxToys), 1 do
                 table.insert(L.ToyboxFrame.ToyButtons, L:CreateToyButton())
             end
         end
@@ -544,30 +552,30 @@ function L.ToyboxFrame:UpdateToyButtons()
 
     local frameWidth = L.ToyboxFrame.ToyButtonHolderFrame.ScrollChild:GetWidth()
     local iconsPerRow = math.floor(frameWidth / (L.ToyJunkie.db.profile.toyBoxFrame.iconSize + (L:GetIconMargin())))
-    
+
 
     local activeButtons = L:GetNumOfActiveButtons()
 
-    if(activeButtons > 0) then
+    if (activeButtons > 0) then
         local row = 1
         local column = 1
         for k, button in pairs(L.ToyboxFrame.ToyButtons) do
-            if(button.id ~= nil) then
+            if (button.id ~= nil) then
                 button:ClearAllPoints()
-                button:SetPoint("TOPLEFT", L.ToyboxFrame.ToyButtonHolderFrame.ScrollChild, 
-                   ((L:GetIconMargin() + L.ToyJunkie.db.profile.toyBoxFrame.iconSize) * (row - 1)) + L:GetIconMargin(),
-                   -(((L:GetIconMargin() + L.ToyJunkie.db.profile.toyBoxFrame.iconSize) * (column - 1)) + L:GetIconMargin())
+                button:SetPoint("TOPLEFT", L.ToyboxFrame.ToyButtonHolderFrame.ScrollChild,
+                    ((L:GetIconMargin() + L.ToyJunkie.db.profile.toyBoxFrame.iconSize) * (row - 1)) + L:GetIconMargin(),
+                    -(((L:GetIconMargin() + L.ToyJunkie.db.profile.toyBoxFrame.iconSize) * (column - 1)) + L:GetIconMargin())
                 )
                 button:Show()
                 button:UpdateButton(button.id)
                 row = row + 1
-                if(row > iconsPerRow) then
+                if (row > iconsPerRow) then
                     row = 1
                     column = column + 1
                 end
             end
         end
-        if(row == 1) then
+        if (row == 1) then
             column = column - 1
         end
         L.ToyboxFrame.ToyButtonHolderFrame.ScrollChild:SetHeight((L:GetIconMargin() + L.ToyJunkie.db.profile.toyBoxFrame.iconSize) * (column) + L:GetIconMargin())
@@ -576,7 +584,7 @@ function L.ToyboxFrame:UpdateToyButtons()
     end
     L.ToyboxFrame.ToyButtonHolderFrame.ScrollView:RecalculateExtent(L.ToyboxFrame.ToyButtonHolderFrame.ScrollBox)
     L.ToyboxFrame.ToyButtonHolderFrame.ScrollBox:FullUpdate()
-    if(frameWidth == 0 and numToyboxToys > 0) then
+    if (frameWidth == 0 and numToyboxToys > 0) then
         L.ToyboxFrame:UpdateToyButtons()
     end
 end
@@ -642,7 +650,7 @@ function L.ToyboxFrame:UpdatePosition()
     )
     self:SetWidth(L.ToyJunkie.db.profile.toyBoxFrame.width)
     self:SetHeight(L.ToyJunkie.db.profile.toyBoxFrame.height)
-    if(L.ToyJunkie.db.profile.toyBoxFrame.isSideBarShown) then
+    if (L.ToyJunkie.db.profile.toyBoxFrame.isSideBarShown) then
         L.ToyboxFrame.ToyButtonHolderFrame:SetPoint("TOPLEFT", 130, -25)
         L.ToyboxFrame.RandomToyButton:SetPoint("TOPLEFT", L.ToyboxFrame.ToyButtonHolderFrame, 7, 20)
     else
@@ -650,7 +658,7 @@ function L.ToyboxFrame:UpdatePosition()
         L.ToyboxFrame.RandomToyButton:SetPoint("TOPLEFT", L.ToyboxFrame.ToyButtonHolderFrame, 15, 20)
     end
 
-    if(L.ToyJunkie.db.profile.toyBoxFrame.locked) then
+    if (L.ToyJunkie.db.profile.toyBoxFrame.locked) then
         L.ToyboxFrame.LockButton:SetText("U")
         L.ToyboxFrame.ResizeButton:Hide()
     else
@@ -668,5 +676,6 @@ function L.ToyboxFrame:SavePosition()
     L.ToyJunkie.db.profile.toyBoxFrame.width = L.ToyboxFrame:GetWidth()
     L.ToyJunkie.db.profile.toyBoxFrame.height = L.ToyboxFrame:GetHeight()
 end
+
 --Final Setup
 L.ToyboxFrame:Hide()

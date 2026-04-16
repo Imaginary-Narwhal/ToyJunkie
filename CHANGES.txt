@@ -1,12 +1,12 @@
-tag f0c6ce878f4908f76c092f4180a82b680552580e v1.101-release
-Author:	DragonFlyy <dragonflyysoftware@gmail.com>
-Date:	Sat Oct 26 00:29:26 2024 -0400
+tag 07bbf897d6e1664e8154778b8dfadbd8aba5eafb v1.6.2-release
+Author:	Imaginary-Narwhal <imaginarynarwhal@outlook.com>
+Date:	Fri Mar 27 21:18:20 2026 -0400
 
-Fixed bug when deleting toy box
+Update to enable/disable tooltips or use a compact/expanded tooltip
 
-commit a252868a0821bca94061e1c1d9d851d2b3b948c0
-Author: DragonFlyy <dragonflyysoftware@gmail.com>
-Date:   Sat Oct 26 00:28:51 2024 -0400
+commit c8dc5cf8585f4cdaa9c7605722c41d7619a60576
+Author: Imaginary-Narwhal <imaginarynarwhal@outlook.com>
+Date:   Fri Mar 27 21:16:29 2026 -0400
 
-    Fixed bug deleting toy box
+    Update to enable/disable tooltips or use a compact/expanded tooltip
 

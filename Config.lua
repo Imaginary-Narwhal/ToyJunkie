@@ -47,7 +47,8 @@ L.defaults = {
         lastOpenVersion = "",
         tooltipsEnabled = true,
         useCompactTooltips = true,
-        tutorial = false
+        tutorial = false,
+        createMacro = false
     }
 }
 
@@ -189,6 +190,32 @@ local options = {
                     set = (function(info, val)
                         L.ToyJunkie.db.profile.toyBoxFrame.cooldownScale = val
                         L:CheckAllCooldowns()
+                    end)
+                }
+            }
+        },
+        macroSettings = {
+            type = "group",
+            name = "Toybox Settings",
+            inline = true,
+            order = 1,
+            args = {
+                toggleMacro = {
+                    type = "toggle",
+                    name = "Random Toy Macro",
+                    desc = "Creates a macro that casts a random hearthstone when clicked. Macro will be named 'TJ_RandomHearthstone' and will be placed in the general tab of your macros.",
+                    order = 1,
+                    set = (function(info, val)
+                        L.ToyJunkie.db.profile.createMacro = val
+                        if (val) then
+                            L:CreateRandomHearthstoneMacro()
+                            L:UpdateRandomHearthstoneMacro(L.ToyboxFrame:GetCurrentlySelectedHearthstoneId())
+                        else
+                            L:DeleteRandomHearthstoneMacro()
+                        end
+                    end),
+                    get = (function(info)
+                        return L.ToyJunkie.db.profile.createMacro
                     end)
                 }
             }
