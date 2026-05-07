@@ -1,9 +1,9 @@
-## Interface: 120001
+## Interface: 120005
 
 ## Title: ToyJunkie
 ## Notes: Shows a small window with you favorite toys
 ## Author: dragonflyy
-## Version: 1.6.51
+## Version: 1.6.511
 ## SavedVariables: ToyJunkieDB
 
 ## DefaultState: Enabled
@@ -11,18 +11,18 @@
 ## RequiredDeps: Blizzard_Collections
 
 
-Libs\LibStub\LibStub.lua
-Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
-Libs\AceAddon-3.0\AceAddon-3.0.xml
-Libs\AceEvent-3.0\AceEvent-3.0.xml
-Libs\AceDB-3.0\AceDB-3.0.xml
-Libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
-Libs\AceConsole-3.0\AceConsole-3.0.xml
-Libs\AceGUI-3.0\AceGUI-3.0.xml
-Libs\AceConfig-3.0\AceConfig-3.0.xml
-Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
-Libs\LibDBIcon-1.0\lib.xml
-Libs\AceHook-3.0\AceHook-3.0.xml
+libs\LibStub\LibStub.lua
+libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+libs\AceAddon-3.0\AceAddon-3.0.xml
+libs\AceEvent-3.0\AceEvent-3.0.xml
+libs\AceDB-3.0\AceDB-3.0.xml
+libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
+libs\AceConsole-3.0\AceConsole-3.0.xml
+libs\AceGUI-3.0\AceGUI-3.0.xml
+libs\AceConfig-3.0\AceConfig-3.0.xml
+libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+libs\LibDBIcon-1.0\lib.xml
+libs\AceHook-3.0\AceHook-3.0.xml
 
 Data\Hearthstones.lua
 Data\Icons.lua
@@ -36,7 +36,7 @@ ScrollTemplate\AttachedFrameScroll.lua
 ScrollTemplate\IconScrollFrame.lua
 ScrollTemplate\ToyboxScrollFrame.lua
 ScrollTemplate\HearthstoneScrollFrame.lua
-ScrollTemplate\templates.xml
+ScrollTemplate\Templates.xml
 
 Windows\ModalFrames.lua
 Windows\ToyJunkieIconSelectionFrame.lua
